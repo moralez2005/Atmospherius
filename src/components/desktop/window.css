@@ -1,0 +1,50 @@
+.win {
+  position: absolute;
+  max-width: calc(100vw - 8px);
+  animation: win-in 0.18s ease-out;
+}
+.win:not(.win-focus) {
+  filter: saturate(0.75) brightness(0.97);
+}
+.win-title {
+  cursor: grab;
+  touch-action: none;
+}
+.win-title:active {
+  cursor: grabbing;
+}
+.win-close {
+  order: var(--close-order, -2);
+}
+.win-min {
+  order: var(--min-order, 1);
+}
+.win-btn {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: var(--bw) solid var(--btn-bd);
+  border-radius: var(--wb-r, 4px);
+  cursor: pointer;
+}
+.win-btn:hover {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.win-close:hover {
+  color: #fff;
+  background: #e5484d;
+  border-color: #a32;
+}
+.win-body {
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+}

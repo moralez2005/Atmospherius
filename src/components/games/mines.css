@@ -1,0 +1,77 @@
+/* Campo Minado: painel em relevo de sistema antigo, em tons pastel */
+.mn {
+  align-items: center;
+}
+.mn-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 312px;
+  padding: 6px;
+  border: 3px solid;
+  border-color: #9a8fb5 #fff #fff #9a8fb5;
+  background: #e9e0f7;
+}
+.mn-lcd {
+  min-width: 48px;
+  padding: 2px 4px;
+  font: 700 22px/1 "Courier New", monospace;
+  text-align: right;
+  color: #ff4fb8;
+  background: #1a0b2e;
+  text-shadow: 0 0 6px #ff4fb8;
+}
+.mn-face {
+  width: 44px;
+  height: 34px;
+  font: 700 12px/1 monospace;
+  border: 2px solid;
+  border-color: #fff #9a8fb5 #9a8fb5 #fff;
+  background: #ffe0f3;
+  cursor: pointer;
+}
+.mn-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 34px);
+  border: 3px solid;
+  border-color: #9a8fb5 #fff #fff #9a8fb5;
+}
+.mn-cell {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font: 700 17px/1 "Courier New", monospace;
+  color: #ff4fb8;
+  border: 3px solid;
+  border-color: #fff #a99fc2 #a99fc2 #fff;
+  background: #dcd2f0;
+  cursor: pointer;
+}
+.mn-cell.is-open {
+  border: 1px solid #b9b0cf;
+  background: #f4effc;
+  cursor: default;
+}
+.mn-cell.is-mine {
+  color: #fff;
+  background: #ff4fb8;
+}
+.mn-cell.n1 { color: #3d8bff; }
+.mn-cell.n2 { color: #22a36a; }
+.mn-cell.n3 { color: #e0407f; }
+.mn-cell.n4 { color: #6a2bbf; }
+.mn-cell.n5,
+.mn-cell.n6,
+.mn-cell.n7,
+.mn-cell.n8 { color: #b0186a; }
+.mn-msg {
+  min-height: 16px;
+  text-align: center;
+}
+.mn .gx-actions {
+  width: 100%;
+}
+.mn .os-btn.is-on {
+  color: var(--accent-ink);
+  background: var(--accent);
+}

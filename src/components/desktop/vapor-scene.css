@@ -1,0 +1,292 @@
+/* ================= VAPORWAVE: fita VHS + surrealismo ================= */
+.vx {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  --cycle: 15s; /* intervalo entre os surtos de glitch */
+}
+.vx.is-playing {
+  --cycle: 10s;
+}
+.vx > * {
+  position: absolute;
+}
+
+/* ---------- glitch: separação RGB e cortes deslocados ---------- */
+.vx-rgb,
+.vx-slice {
+  inset: 0;
+  isolation: isolate;
+  opacity: 0;
+}
+.vx-rgb {
+  mix-blend-mode: screen;
+  animation: vx-split var(--cycle) steps(1) infinite;
+}
+.vx-rgb-r {
+  filter: saturate(1.8) hue-rotate(-20deg);
+  --dx: 4px;
+}
+.vx-rgb-c {
+  filter: saturate(1.6) hue-rotate(150deg);
+  --dx: -4px;
+  animation-delay: -0.05s;
+}
+/* surto curto (≈3% do ciclo) e fraco: sem "lavar" a tela de cor */
+@keyframes vx-split {
+  0%, 94%, 97.5%, 100% { opacity: 0; transform: none; }
+  94.5% { opacity: 0.22; transform: translateX(var(--dx)); }
+  96% { opacity: 0.16; transform: translateX(calc(var(--dx) * -0.6)); }
+}
+.vx-slice {
+  animation: vx-slice var(--cycle) steps(1) infinite;
+}
+.vx-slice-0 {
+  clip-path: inset(17% 0 79% 0);
+  --dx: -12px;
+}
+.vx-slice-1 {
+  clip-path: inset(48% 0 48% 0);
+  --dx: 16px;
+  animation-delay: -0.08s;
+}
+.vx-slice-2 {
+  clip-path: inset(73% 0 24% 0);
+  --dx: -8px;
+  animation-delay: -0.03s;
+}
+@keyframes vx-slice {
+  0%, 94%, 97%, 100% { opacity: 0; transform: none; }
+  94.5% { opacity: 1; transform: translateX(var(--dx)); }
+  96% { opacity: 1; transform: translateX(calc(var(--dx) * -0.5)); }
+}
+
+/* ---------- orbe granulado com halo vermelho ---------- */
+.vx-orb {
+  left: 68%;
+  top: 36%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 32%, #ff7ae6 0%, #e244ff 34%, #8a3bff 60%, #5b2cff 70%, transparent 71%);
+  box-shadow: 0 0 70px 26px rgba(255, 70, 90, 0.38), 0 0 140px 60px rgba(160, 60, 255, 0.25);
+  mix-blend-mode: hard-light;
+  opacity: 0.78;
+  animation: vx-orb 9s ease-in-out infinite alternate;
+}
+/* borda "pixelada" do orbe nos glitches */
+.vx-orb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  clip-path: inset(58% 0 30% 0);
+  opacity: 0;
+  animation: vx-slice var(--cycle) steps(1) infinite;
+  --dx: 22px;
+}
+@keyframes vx-orb {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-20px, 14px) scale(1.05); }
+}
+
+/* ---------- coluna e golfinho ---------- */
+.vx-column {
+  left: 19%;
+  top: 22%;
+  filter: drop-shadow(6px 10px 0 rgba(42, 18, 56, 0.25));
+  animation: vx-float 7s ease-in-out infinite alternate;
+}
+@keyframes vx-float {
+  from { transform: translateY(0) rotate(-5deg); }
+  to { transform: translateY(-18px) rotate(5deg); }
+}
+/* golfinho holográfico: brilho ciano + linhas de varredura, salta em arco */
+.vx-dolphin {
+  left: -14%;
+  bottom: 8%;
+  width: 210px;
+  opacity: 0;
+  animation: vx-jump 16s ease-in-out infinite;
+  animation-delay: 3s;
+}
+.vx-dolphin img {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 0 8px rgba(120, 245, 255, 0.95)) drop-shadow(0 0 22px rgba(120, 245, 255, 0.55))
+    saturate(1.3) brightness(1.1);
+  -webkit-mask: repeating-linear-gradient(0deg, #000 0 3px, rgba(0, 0, 0, 0.72) 3px 4px);
+  mask: repeating-linear-gradient(0deg, #000 0 3px, rgba(0, 0, 0, 0.72) 3px 4px);
+  user-select: none;
+}
+/* a imagem já sobe para a direita: gira um pouco no topo e mergulha */
+@keyframes vx-jump {
+  0% { opacity: 0; transform: translate(0, 0) rotate(-6deg); }
+  2% { opacity: 0.95; }
+  11% { transform: translate(30vw, -36vh) rotate(28deg); }
+  21% { opacity: 0.95; transform: translate(60vw, 2vh) rotate(62deg); }
+  22.5%, 100% { opacity: 0; transform: translate(60vw, 2vh) rotate(62deg); }
+}
+
+/* ---------- janelas em cascata (Windows 95 rosa) ---------- */
+.vx-cascade {
+  left: 136px;
+  top: 26px;
+  width: 260px;
+  height: 160px;
+}
+.vx-win {
+  position: absolute;
+  left: calc(var(--i) * 11px);
+  top: calc(var(--i) * 10px);
+  width: 196px;
+  font-family: var(--f-pixel), monospace;
+  font-size: 15px;
+  color: #2a1238;
+  background: #d8d4de;
+  border: 2px solid;
+  border-color: #fff #4b3d6b #4b3d6b #fff;
+  box-shadow: 2px 2px 0 rgba(17, 17, 17, 0.55);
+  opacity: 0;
+  animation: vx-cascade 10s steps(1) infinite;
+  animation-delay: calc(var(--i) * 0.28s);
+}
+@keyframes vx-cascade {
+  0% { opacity: 0; }
+  2% { opacity: 1; }
+  78% { opacity: 1; }
+  80%, 100% { opacity: 0; }
+}
+.vx-win-t {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+  color: #fff;
+  background: linear-gradient(90deg, #ff4fc4, #ff9be6);
+}
+.vx-win-t i {
+  font-style: normal;
+  letter-spacing: 2px;
+}
+.vx-win-b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+}
+.vx-win-b small {
+  display: block;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.vx-star {
+  font-size: 26px;
+  color: #ffb000;
+  text-shadow: 1px 1px 0 #2a1238;
+}
+.vx-bar {
+  display: block;
+  width: 120px;
+  height: 9px;
+  margin-top: 3px;
+  background: #fff;
+  border: 1px solid #4b3d6b;
+}
+.vx-bar em {
+  display: block;
+  height: 100%;
+  background: #ff4fc4;
+  animation: vx-load 10s linear infinite;
+  animation-delay: calc(var(--i) * 0.28s);
+}
+@keyframes vx-load {
+  0% { width: 0; }
+  70%, 100% { width: 100%; }
+}
+
+/* ---------- letreiro LED ---------- */
+.vx-led {
+  left: 136px;
+  bottom: 74px;
+  width: 290px;
+  font-family: var(--f-pixel), monospace;
+  background: #d8d4de;
+  border: 2px solid;
+  border-color: #fff #4b3d6b #4b3d6b #fff;
+  box-shadow: 3px 3px 0 rgba(17, 17, 17, 0.55);
+}
+.vx-led-t {
+  padding: 0 6px;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(90deg, #2a2ad8, #7b4dff);
+}
+.vx-led-b {
+  margin: 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 30px;
+  line-height: 40px;
+  color: #3dff74;
+  text-shadow: 0 0 6px #3dff74, 0 0 14px rgba(61, 255, 116, 0.6);
+  background:
+    radial-gradient(circle, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.75) 60%) 0 0 / 4px 4px,
+    #050805;
+  border: 2px solid #111;
+}
+.vx-led-b > span {
+  display: inline-block;
+  animation: vx-led 16s linear infinite;
+}
+.vx-led-b b {
+  font-weight: 400;
+}
+@keyframes vx-led {
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- camadas da fita VHS ---------- */
+.vx-grain {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.05; /* ruído bem suave */
+  mix-blend-mode: overlay;
+}
+.vx-track {
+  left: 0;
+  right: 0;
+  top: -12vh;
+  height: 9vh;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 3px),
+    linear-gradient(transparent, rgba(255, 255, 255, 0.16) 45%, rgba(255, 255, 255, 0.05) 55%, transparent);
+  /* sem backdrop-filter: borrar a tela inteira a cada quadro pesava demais */
+  animation: vx-track 11s linear infinite;
+}
+@keyframes vx-track {
+  to { transform: translateY(125vh); }
+}
+.vx-jitter {
+  inset: 0;
+  opacity: 0;
+  background:
+    linear-gradient(transparent 31%, rgba(255, 255, 255, 0.55) 31.2%, transparent 31.5%),
+    linear-gradient(transparent 63%, rgba(120, 255, 255, 0.45) 63.15%, transparent 63.4%),
+    linear-gradient(transparent 84%, rgba(255, 120, 230, 0.5) 84.1%, transparent 84.4%);
+  animation: vx-split var(--cycle) steps(1) infinite;
+  --dx: 0px;
+}
+.vx-vignette {
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(60, 10, 70, 0.38) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx * {
+    animation: none !important;
+  }
+}

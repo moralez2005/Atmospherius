@@ -1,0 +1,72 @@
+/* Cobrinha: celular prateado com tela de LCD */
+.sn-phone {
+  align-self: center;
+  width: 340px;
+  padding: 16px 16px 18px;
+  border: 1px solid #6d7783;
+  border-radius: 28px 28px 40px 40px;
+  background: linear-gradient(160deg, #f1f4f7, #a9b3be 40%, #e3e8ed 55%, #8a95a2);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.8);
+}
+.sn-screen {
+  padding: 8px;
+  border-radius: 8px;
+  background: #2e3524;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+  font: 700 11px/1 "Courier New", monospace;
+  color: #1f2a10;
+}
+.sn-status,
+.sn-soft {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 4px;
+  background: #9db86a;
+}
+.sn-soft {
+  font-size: 10px;
+}
+.sn-screen canvas {
+  image-rendering: pixelated;
+}
+.sn-over {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  text-align: center;
+  font: 700 13px/1.2 "Courier New", monospace;
+  color: #1f2a10;
+  background: rgba(157, 184, 106, 0.85);
+}
+.sn-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+.sn-key {
+  height: 30px;
+  font: 700 12px/1 var(--f-sans), sans-serif;
+  color: #2a3440;
+  border: 1px solid #6d7783;
+  border-radius: 10px;
+  background: linear-gradient(#f8fafb, #b9c3cc);
+  cursor: pointer;
+}
+.sn-key:active {
+  background: linear-gradient(#b9c3cc, #f8fafb);
+}
+.sn-ok {
+  color: #fff;
+  border-color: #1b5fc0;
+  background: linear-gradient(#5aa8ff, #1b5fc0);
+}
+.sn-screen .gx-stage {
+  display: block;
+}
+.sn-screen canvas {
+  width: 100%;
+  height: auto;
+}

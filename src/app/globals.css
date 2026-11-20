@@ -1,0 +1,778 @@
+@import "tailwindcss";
+
+:root {
+  --bw: 2px;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #151515;
+  font-family: var(--f-sans), system-ui, sans-serif;
+}
+
+@keyframes win-in {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ============================ VAPORWAVE ============================ */
+[data-theme="vaporwave"] {
+  --sky: linear-gradient(100deg, #f59be0, #f98bd0 45%, #ff8aa0);
+  --floor: #f0529f;
+  --grid: #43e3ea;
+  --fx: 1;
+  --scan: 0.07;
+  --win-bg: #ffe0f3;
+  --pat: radial-gradient(circle, rgba(255, 110, 196, 0.3) 1px, transparent 1.6px) 0 0 / 9px 9px;
+  --ink: #111;
+  --bw: 2px;
+  --radius: 2px;
+  --shadow: 5px 5px 0 #111, inset 0 0 0 2px #fff;
+  --title-bg: #fff;
+  --title-ink: #111;
+  --title-h: 28px;
+  --stripe: #111;
+  --sd: block;
+  --tflex: 0 0 auto;
+  --close-order: -2;
+  --min-order: 1;
+  --tshadow: none;
+  --tt: none;
+  --text: #2a1238;
+  --font: var(--f-pixel), "Courier New", monospace;
+  --font-title: var(--f-pixel), "Courier New", monospace;
+  --fs: 19px;
+  --btn-bg: #fff;
+  --btn-radius: 2px;
+  --btn-shadow: 3px 3px 0 #111;
+  --btn-bd: #111;
+  --accent: #43e3ea;
+  --accent-ink: #111;
+  --accent2: #ff5cc8;
+  --wb-r: 2px;
+  --icon: linear-gradient(160deg, #7e6bff 0%, #3d8bff 55%, #33d1ff 100%);
+  --icon-bd: #111;
+  --ir: 14px;
+  --gloss: 0.55;
+  --icon-shadow: 3px 3px 0 #111;
+  --lbl-bg: #fff;
+  --lbl-ink: #111;
+  --lbl-bd: #111;
+  --lbl-r: 0;
+  --lbl-sh: 2px 2px 0 #111;
+  --lbl-ts: none;
+  --task-bg: #ffe0f3;
+  --task-ink: #111;
+  --task-bd: #111;
+  --task-bw: 2px 0 0 0;
+  --task-inset: 0px;
+  --task-r: 0px;
+  --task-sh: none;
+  --start-bg: #ff5cc8;
+  --start-ink: #111;
+  --tray-bg: #fff;
+  --blur: none;
+  --felt: radial-gradient(circle at 50% 35%, #ff9bd6, #b45ad0 75%);
+  --felt-ink: #fff;
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l15 9-7 2 4 8-3 1-4-8-5 5z' fill='%23fff' stroke='%23111' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto;
+}
+
+/* ============================ SYNTHWAVE ============================ */
+[data-theme="synthwave"] {
+  --sky: linear-gradient(180deg, #0e0225 0%, #3a0a63 55%, #ff2f92 100%);
+  --win-bg: #190832;
+  --pat: linear-gradient(rgba(255, 46, 200, 0.1) 1px, transparent 1px) 0 0 / 100% 22px,
+    linear-gradient(90deg, rgba(0, 229, 255, 0.07) 1px, transparent 1px) 0 0 / 22px 100%;
+  --ink: #ff2ec8;
+  --bw: 2px;
+  --radius: 3px;
+  --shadow: 0 0 0 1px #00e5ff, 0 0 26px rgba(255, 46, 200, 0.45), 6px 8px 0 rgba(0, 0, 0, 0.45);
+  --title-bg: linear-gradient(90deg, #ff2ec8, #8a1fd6 55%, #2e0d66);
+  --title-ink: #fff;
+  --title-h: 30px;
+  --stripe: transparent;
+  --sd: none;
+  --tflex: 1;
+  --close-order: 3;
+  --min-order: 2;
+  --tshadow: 0 0 8px rgba(255, 255, 255, 0.7);
+  --tt: uppercase;
+  --text: #f3e4ff;
+  --font: var(--f-raj), "Trebuchet MS", sans-serif;
+  --font-title: var(--f-orb), sans-serif;
+  --fs: 17px;
+  --btn-bg: linear-gradient(180deg, #2d0f57, #1a0833);
+  --btn-radius: 3px;
+  --btn-shadow: 0 0 10px rgba(255, 46, 200, 0.35);
+  --btn-bd: #ff2ec8;
+  --accent: #00e5ff;
+  --accent-ink: #06021a;
+  --accent2: #ff2ec8;
+  --wb-r: 3px;
+  --icon: linear-gradient(160deg, #ff2ec8, #7a1fd1 55%, #1fd8ff);
+  --icon-bd: rgba(255, 255, 255, 0.7);
+  --ir: 12px;
+  --gloss: 0.35;
+  --icon-shadow: 0 0 16px rgba(255, 46, 200, 0.65);
+  --lbl-bg: rgba(14, 2, 37, 0.72);
+  --lbl-ink: #ffe9fb;
+  --lbl-bd: rgba(255, 46, 200, 0.8);
+  --lbl-r: 3px;
+  --lbl-sh: 0 0 8px rgba(255, 46, 200, 0.5);
+  --lbl-ts: 0 0 6px rgba(255, 46, 200, 0.9);
+  --task-bg: linear-gradient(180deg, #26094a, #10031f);
+  --task-ink: #ffe9fb;
+  --task-bd: #ff2ec8;
+  --task-bw: 2px 0 0 0;
+  --task-inset: 0px;
+  --task-r: 0px;
+  --task-sh: 0 -4px 20px rgba(255, 46, 200, 0.35);
+  --start-bg: linear-gradient(90deg, #ff2ec8, #8a1fd6);
+  --start-ink: #fff;
+  --tray-bg: rgba(255, 255, 255, 0.06);
+  --blur: none;
+  --felt: radial-gradient(circle at 50% 30%, #3a0a63, #12031f 80%);
+  --felt-ink: #fff;
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l15 9-7 2 4 8-3 1-4-8-5 5z' fill='%2300e5ff' stroke='%23ff2ec8' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto;
+}
+
+/* ============================ FRUTIGER AERO ============================ */
+[data-theme="frutiger"] {
+  --sky: radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 0.85) 0 40px, transparent 42px),
+    linear-gradient(180deg, #6ec6ff 0%, #bfeaff 55%, #8be28b 100%);
+  --win-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(220, 242, 255, 0.86));
+  --pat: none;
+  --ink: #4aa8e0;
+  --bw: 1px;
+  --radius: 10px;
+  --shadow: 0 10px 30px rgba(0, 70, 140, 0.38), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  --title-bg: linear-gradient(180deg, #c9ecff 0%, #78c8f6 46%, #3fa9ee 52%, #8bd6ff 100%);
+  --title-ink: #06324f;
+  --title-h: 32px;
+  --stripe: transparent;
+  --sd: none;
+  --tflex: 1;
+  --close-order: 3;
+  --min-order: 2;
+  --tshadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  --tt: none;
+  --text: #0b3350;
+  --font: var(--f-round), "Segoe UI", sans-serif;
+  --font-title: var(--f-round), "Segoe UI", sans-serif;
+  --fs: 15px;
+  --btn-bg: linear-gradient(180deg, #fff 0%, #dff3ff 48%, #b4e2ff 52%, #e6f8ff 100%);
+  --btn-radius: 16px;
+  --btn-shadow: 0 2px 5px rgba(0, 90, 160, 0.35), inset 0 1px 0 #fff;
+  --btn-bd: #5db6ea;
+  --accent: #34d27b;
+  --accent-ink: #fff;
+  --accent2: #1e9bf0;
+  --wb-r: 8px;
+  --icon: linear-gradient(160deg, #67d6ff, #2f8fe6 60%, #2ad0a0);
+  --icon-bd: rgba(255, 255, 255, 0.95);
+  --ir: 17px;
+  --gloss: 0.7;
+  --icon-shadow: 0 6px 12px rgba(0, 80, 150, 0.4);
+  --lbl-bg: rgba(255, 255, 255, 0.6);
+  --lbl-ink: #06324f;
+  --lbl-bd: rgba(255, 255, 255, 0.9);
+  --lbl-r: 12px;
+  --lbl-sh: 0 2px 6px rgba(0, 80, 150, 0.3);
+  --lbl-ts: none;
+  --task-bg: linear-gradient(180deg, rgba(190, 236, 255, 0.92), rgba(70, 170, 235, 0.92));
+  --task-ink: #06324f;
+  --task-bd: rgba(255, 255, 255, 0.85);
+  --task-bw: 1px 0 0 0;
+  --task-inset: 0px;
+  --task-r: 0px;
+  --task-sh: 0 -4px 16px rgba(0, 80, 150, 0.25);
+  --start-bg: radial-gradient(circle at 30% 25%, #9ff7c0, #27b866 70%);
+  --start-ink: #fff;
+  --tray-bg: rgba(255, 255, 255, 0.6);
+  --blur: blur(10px);
+  --felt: linear-gradient(180deg, #bfeaff, #6ec6ff);
+  --felt-ink: #06324f;
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l15 9-7 2 4 8-3 1-4-8-5 5z' fill='%23fff' stroke='%232f8fe6' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto;
+}
+
+/* ============================ GEN X SOFT CLUB ============================ */
+[data-theme="softclub"] {
+  --sky: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.9), transparent 40%),
+    linear-gradient(160deg, #cfe0ee, #e9eef4 50%, #bcd4e6);
+  --win-bg: rgba(244, 246, 252, 0.93);
+  --pat: radial-gradient(circle at 85% 12%, rgba(255, 160, 90, 0.16), transparent 42%),
+    radial-gradient(circle at 10% 90%, rgba(150, 225, 120, 0.16), transparent 40%);
+  --ink: #8d9ab8;
+  --bw: 1px;
+  --radius: 20px;
+  --shadow: 0 12px 34px rgba(70, 80, 130, 0.28), inset 0 1px 0 #fff;
+  --title-bg: linear-gradient(180deg, #ffffff, #d9dfee);
+  --title-ink: #3b4560;
+  --title-h: 34px;
+  --stripe: transparent;
+  --sd: none;
+  --tflex: 1;
+  --close-order: 3;
+  --min-order: 2;
+  --tshadow: none;
+  --tt: lowercase;
+  --text: #2f3850;
+  --font: var(--f-round), "Trebuchet MS", sans-serif;
+  --font-title: var(--f-round), "Trebuchet MS", sans-serif;
+  --fs: 15px;
+  --btn-bg: linear-gradient(180deg, #fff, #dfe5f2);
+  --btn-radius: 999px;
+  --btn-shadow: 0 2px 6px rgba(70, 80, 130, 0.25), inset 0 1px 0 #fff;
+  --btn-bd: #aeb9d3;
+  --accent: #ff8a3d;
+  --accent-ink: #fff;
+  --accent2: #8bd45a;
+  --wb-r: 50%;
+  --icon: linear-gradient(160deg, #c9d4f5, #8fb0e8 55%, #9be15d);
+  --icon-bd: rgba(255, 255, 255, 0.95);
+  --ir: 24px;
+  --gloss: 0.6;
+  --icon-shadow: 0 8px 16px rgba(70, 90, 150, 0.35);
+  --lbl-bg: rgba(255, 255, 255, 0.72);
+  --lbl-ink: #2f3850;
+  --lbl-bd: rgba(255, 255, 255, 0.9);
+  --lbl-r: 999px;
+  --lbl-sh: 0 2px 6px rgba(60, 70, 120, 0.25);
+  --lbl-ts: none;
+  --task-bg: rgba(246, 248, 253, 0.84);
+  --task-ink: #2f3850;
+  --task-bd: rgba(255, 255, 255, 0.95);
+  --task-bw: 1px;
+  --task-inset: 10px;
+  --task-r: 26px;
+  --task-sh: 0 8px 24px rgba(70, 80, 130, 0.3);
+  --start-bg: linear-gradient(180deg, #ffb36b, #ff8a3d);
+  --start-ink: #fff;
+  --tray-bg: rgba(255, 255, 255, 0.75);
+  --blur: blur(8px);
+  --felt: linear-gradient(180deg, #e9eef7, #c9d4ea);
+  --felt-ink: #2f3850;
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l15 9-7 2 4 8-3 1-4-8-5 5z' fill='%23fff' stroke='%237a86a8' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto;
+}
+
+/* ============================ DESKTOP ============================ */
+.os-desktop {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-image: var(--sky);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs);
+  cursor: var(--cursor, auto);
+}
+.os-desktop ::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.os-desktop :focus-visible {
+  outline: 2px dashed var(--accent2);
+  outline-offset: 2px;
+}
+.os-desktop ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+.os-desktop ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+.os-desktop ::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: 8px;
+}
+
+/* chão em perspectiva (só usado na tela de boot) */
+.os-fx::before {
+  content: "";
+  position: absolute;
+  left: -60%;
+  right: -60%;
+  bottom: 0;
+  height: 120%;
+  z-index: -1;
+  background: linear-gradient(var(--grid) 2px, transparent 2px) 0 0 / 100% 56px,
+    linear-gradient(90deg, var(--grid) 2px, transparent 2px) 0 0 / 72px 100%, var(--floor);
+  transform: perspective(520px) rotateX(62deg);
+  transform-origin: 50% 100%;
+  opacity: var(--fx);
+  animation: grid-scroll 3s linear infinite;
+}
+.os-fx::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: var(--scan);
+  background: repeating-linear-gradient(0deg, #000 0 1px, transparent 1px 3px);
+}
+@keyframes grid-scroll {
+  to { background-position: 0 56px, 0 0, 0 0; }
+}
+
+/* ============================ JANELAS / BOTÕES ============================ */
+.os-window {
+  background: var(--win-bg);
+  color: var(--text);
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: var(--blur);
+  overflow: hidden;
+  font-family: var(--font);
+  font-size: var(--fs);
+}
+.os-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--title-h, 28px);
+  padding: 0 8px;
+  background: var(--title-bg);
+  color: var(--title-ink);
+  border-bottom: var(--bw) solid var(--ink);
+  font-family: var(--font-title, var(--font));
+  font-size: calc(var(--fs) + 1px);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: var(--tt, none);
+  text-shadow: var(--tshadow, none);
+  user-select: none;
+}
+.os-titlebar::before,
+.os-titlebar::after {
+  content: "";
+  display: var(--sd, block);
+  flex: 1;
+  height: 11px;
+  background: repeating-linear-gradient(var(--stripe) 0 1px, transparent 1px 3px);
+}
+.os-titlebar > span {
+  flex: var(--tflex, 0 0 auto);
+}
+.os-body {
+  padding: 14px;
+  background: var(--pat, none);
+}
+.os-btn {
+  background: var(--btn-bg);
+  color: var(--text);
+  border: var(--bw) solid var(--btn-bd);
+  border-radius: var(--btn-radius);
+  box-shadow: var(--btn-shadow);
+  padding: 5px 14px;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.08s, background 0.15s, box-shadow 0.15s;
+}
+.os-btn:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.os-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+.os-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+/* ===== ajustes depois de ver os wallpapers ===== */
+[data-theme="vaporwave"] {
+  --task-bg: #fff;
+  --tray-bg: #ffe0f3;
+  --task-bw: 3px 0 0 0;
+  --task-sh: 0 -4px 0 rgba(17, 17, 17, 0.15);
+}
+
+[data-theme="synthwave"] {
+  --sky: linear-gradient(180deg, #3a35c8 0%, #1b1a8a 55%, #0b0a3a 100%);
+  --win-bg: #0f0c3a;
+  --pat: linear-gradient(rgba(139, 77, 255, 0.14) 1px, transparent 1px) 0 0 / 100% 22px,
+    linear-gradient(90deg, rgba(139, 77, 255, 0.12) 1px, transparent 1px) 0 0 / 22px 100%;
+  --ink: #8b4dff;
+  --shadow: 0 0 0 1px #59d0f0, 0 0 26px rgba(139, 77, 255, 0.5), 6px 8px 0 rgba(0, 0, 0, 0.5);
+  --title-bg: linear-gradient(90deg, #ff4f8b, #7a3df0 55%, #2a2fc0);
+  --btn-bg: linear-gradient(180deg, #221c6e, #120f45);
+  --btn-shadow: 0 0 10px rgba(139, 77, 255, 0.45);
+  --btn-bd: #8b4dff;
+  --accent: #59d0f0;
+  --accent-ink: #07062a;
+  --accent2: #ff4f8b;
+  --icon: linear-gradient(160deg, #ff4f8b, #7a3df0 55%, #59d0f0);
+  --icon-shadow: 0 0 16px rgba(139, 77, 255, 0.7);
+  --lbl-bg: rgba(10, 8, 50, 0.78);
+  --lbl-bd: rgba(139, 77, 255, 0.9);
+  --lbl-sh: 0 0 8px rgba(139, 77, 255, 0.55);
+  --lbl-ts: 0 0 6px rgba(255, 79, 139, 0.9);
+  --task-bg: linear-gradient(180deg, #1b1a8a, #0b0a3a);
+  --task-bd: #8b4dff;
+  --task-sh: 0 -4px 20px rgba(139, 77, 255, 0.4);
+  --start-bg: linear-gradient(90deg, #ff4f8b, #7a3df0);
+  --felt: radial-gradient(circle at 50% 30%, #2a2fc0, #0b0a3a 80%);
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l15 9-7 2 4 8-3 1-4-8-5 5z' fill='%2359d0f0' stroke='%23ff4f8b' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto;
+}
+
+[data-theme="softclub"] {
+  --sky: linear-gradient(160deg, #cfe6ef, #e3f2f7 50%, #9cc8dc);
+  --win-bg: rgba(238, 248, 252, 0.93);
+  --pat: radial-gradient(circle, rgba(60, 140, 170, 0.16) 1px, transparent 1.6px) 0 0 / 10px 10px;
+  --ink: #8fb9cc;
+  --shadow: 0 12px 34px rgba(40, 100, 130, 0.28), inset 0 1px 0 #fff;
+  --title-bg: linear-gradient(180deg, #ffffff, #cfe6ef);
+  --title-ink: #1f4a5c;
+  --tt: uppercase;
+  --text: #1d3f4f;
+  --font-title: var(--f-orb), sans-serif;
+  --btn-bg: linear-gradient(180deg, #fff, #d5ebf3);
+  --btn-shadow: 0 2px 6px rgba(40, 100, 130, 0.25), inset 0 1px 0 #fff;
+  --btn-bd: #9cc4d6;
+  --accent: #2fae5a;
+  --accent-ink: #fff;
+  --icon: linear-gradient(160deg, #8fd3e8, #4d9bc2 55%, #4fc26b);
+  --icon-shadow: 0 8px 16px rgba(40, 100, 130, 0.35);
+  --lbl-bg: rgba(255, 255, 255, 0.78);
+  --lbl-ink: #1d3f4f;
+  --task-bg: rgba(240, 249, 252, 0.86);
+  --task-ink: #1d3f4f;
+  --task-sh: 0 8px 24px rgba(40, 100, 130, 0.3);
+  /* toque de verão (coletâneas de eletrônica dos anos 2000) */
+  --start-bg: linear-gradient(180deg, #ffd23f, #ff8a3d);
+  --accent2: #ff8a3d;
+  --tray-bg: rgba(255, 255, 255, 0.78);
+  --felt: linear-gradient(180deg, #e3f2f7, #b4d7e6);
+  --felt-ink: #1d3f4f;
+  --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 2l15 9-7 2 4 8-3 1-4-8-5 5z' fill='%23fff' stroke='%234d8aa8' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto;
+}
+
+/* ================= GEN X SOFT CLUB: sistema dos anos 2000 =================
+   Barra azul brilhante, botão iniciar verde, janelas de título azul e
+   balões amarelos (inspirado nos computadores da época, sem logos nem marcas). */
+[data-theme="softclub"] {
+  --win-bg: #ece9d8;
+  --pat: none;
+  --ink: #0b3fd0;
+  --bw: 1px;
+  --radius: 8px 8px 4px 4px;
+  --shadow: 0 10px 28px rgba(0, 20, 80, 0.4), inset 0 0 0 3px #0b4be0;
+  --title-bg: linear-gradient(180deg, #0997ff 0%, #0053ee 9%, #0050ee 40%, #0066ff 86%, #005bff 93%, #003dd7 100%);
+  --title-ink: #fff;
+  --title-h: 32px;
+  --tshadow: 1px 1px 0 #0a1a7a;
+  --tt: none;
+  --text: #000;
+  --font: Tahoma, "Segoe UI", var(--f-sans), sans-serif;
+  --font-title: "Trebuchet MS", Tahoma, var(--f-sans), sans-serif;
+  --fs: 14px;
+  --btn-bg: linear-gradient(180deg, #ffffff, #f4f3ee 60%, #dcd8cb);
+  --btn-bd: #003c74;
+  --btn-radius: 3px;
+  --btn-shadow: none;
+  --accent: #316ac5;
+  --accent-ink: #fff;
+  --wb-r: 3px;
+  --lbl-bg: transparent;
+  --lbl-bd: transparent;
+  --lbl-ink: #fff;
+  --lbl-sh: none;
+  --lbl-ts: 1px 1px 2px #000, 0 0 4px rgba(0, 0, 0, 0.6);
+  --task-inset: 0px;
+  --task-r: 0px;
+  --task-bw: 1px 0 0 0;
+  --task-bd: #0b2f9a;
+  --task-bg: linear-gradient(180deg, #3d7ef0 0%, #2a6ae8 6%, #245edb 12%, #2157d7 45%, #2560dd 85%, #1941a5 100%);
+  --task-ink: #fff;
+  --task-sh: none;
+  --start-bg: linear-gradient(180deg, #5cc45c 0%, #3c9c3c 12%, #389a38 50%, #2f8a2f 88%, #256f25 100%);
+  --start-ink: #fff;
+  --tray-bg: linear-gradient(180deg, #16a3f0 0%, #0f8be4 10%, #1290e6 50%, #0e80d6 100%);
+  --blur: none;
+}
+[data-theme="softclub"] .os-titlebar {
+  font-size: 14px;
+  letter-spacing: 0;
+}
+/* botões da janela: azul brilhante, o de fechar vermelho */
+[data-theme="softclub"] .win-btn {
+  width: 22px;
+  height: 22px;
+  color: #fff;
+  font-size: 14px;
+  background: linear-gradient(180deg, #6fa5ff, #2a63e6 55%, #1c4fd0);
+  border: 1px solid #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 30, 120, 0.25);
+}
+[data-theme="softclub"] .win-btn:hover {
+  color: #fff;
+  background: linear-gradient(180deg, #8dbaff, #3d78f2 55%, #2a5fe0);
+}
+[data-theme="softclub"] .win-close,
+[data-theme="softclub"] .win-close:hover {
+  background: linear-gradient(180deg, #f39b7f, #e05a33 55%, #c13a17);
+  border-color: #fff;
+}
+[data-theme="softclub"] .os-btn:hover {
+  color: #000;
+  background: var(--btn-bg);
+  box-shadow: inset 0 0 0 2px #f8b636;
+}
+/* barra de tarefas */
+[data-theme="softclub"] .dk-taskbar {
+  height: 42px;
+  padding: 0;
+  gap: 6px;
+  font-family: Tahoma, var(--f-sans), sans-serif;
+}
+[data-theme="softclub"] .os-btn.dk-start {
+  height: 100%;
+  padding: 0 22px 0 12px;
+  border: 0;
+  border-radius: 0 14px 14px 0;
+  font: italic 700 19px/1 "Trebuchet MS", Tahoma, sans-serif;
+  letter-spacing: 0;
+  text-transform: lowercase;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.55);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.55), 2px 0 4px rgba(0, 0, 0, 0.35);
+}
+[data-theme="softclub"] .os-btn.dk-start:hover {
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.55), 2px 0 4px rgba(0, 0, 0, 0.35);
+}
+[data-theme="softclub"] .dk-start-logo {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0 12%, #ffe066 30%, #ff9a3c 75%, #e0601c);
+  box-shadow: 0 0 6px rgba(255, 200, 80, 0.8);
+}
+[data-theme="softclub"] .dk-task,
+[data-theme="softclub"] .dk-user {
+  height: 30px;
+  color: #fff;
+  font-weight: 400;
+  background: linear-gradient(180deg, #5b9bff, #3c81f3 50%, #2f6ee6);
+  border: 1px solid #1c4fc4;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+[data-theme="softclub"] .dk-task[aria-pressed="true"] {
+  color: #fff;
+  background: linear-gradient(180deg, #1c4fc4, #1e52b7);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.45);
+}
+[data-theme="softclub"] .dk-task:hover,
+[data-theme="softclub"] .dk-user:hover {
+  color: #fff;
+  background: linear-gradient(180deg, #74acff, #4f8ff8 50%, #3c7af0);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+[data-theme="softclub"] .dk-tray {
+  height: 100%;
+  padding: 0 14px;
+  border: 0;
+  border-left: 1px solid #0a5bbd;
+  border-radius: 0;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.35);
+  font-weight: 400;
+}
+[data-theme="softclub"] .dk-clock b {
+  font-weight: 400;
+}
+/* menu iniciar */
+[data-theme="softclub"] .dk-menu {
+  bottom: 46px;
+  left: 0;
+  width: 300px;
+  border: 1px solid #0b3fd0;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.45);
+  background: #fff;
+}
+[data-theme="softclub"] .dk-menu-head {
+  padding: 12px;
+  font-size: 16px;
+  border-bottom: 2px solid #f6a33b;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+[data-theme="softclub"] .dk-menu-item:hover {
+  color: #fff;
+  background: #316ac5;
+}
+
+/* ----- Soft Club: detalhes do estilo Luna (kit de interface do Windows XP) ----- */
+/* menu iniciar em duas colunas */
+[data-theme="softclub"] .dk-menu {
+  width: 400px;
+  padding: 0;
+  overflow: hidden;
+  background: #1c5bd5;
+  border: 1px solid #0b3fd0;
+  border-radius: 8px 8px 0 0;
+}
+[data-theme="softclub"] .dk-menu-head {
+  padding: 8px 10px;
+  border-bottom: 0;
+  background: linear-gradient(180deg, #1868ce 0%, #0e60cb 10%, #0e60cb 70%, #0a4fb5 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+[data-theme="softclub"] .dk-menu-head .dk-menu-av {
+  width: 44px;
+  height: 44px;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+[data-theme="softclub"] .dk-menu-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
+  border-top: 2px solid #f6a33b;
+  background: #fff;
+}
+[data-theme="softclub"] .dk-menu-main {
+  padding: 6px 4px;
+  min-height: 150px;
+  background: #fff;
+}
+[data-theme="softclub"] .dk-menu-side {
+  padding: 6px 4px;
+  background: #d3e5fa;
+  border-left: 1px solid #95bdee;
+}
+[data-theme="softclub"] .dk-menu-item {
+  padding: 5px 6px;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 0;
+}
+[data-theme="softclub"] .dk-menu-side .dk-menu-item {
+  color: #0a246a;
+}
+[data-theme="softclub"] .dk-menu-lbl small {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  color: #6d6d6d;
+}
+[data-theme="softclub"] .dk-menu-item:hover .dk-menu-lbl small {
+  color: #dce8ff;
+}
+[data-theme="softclub"] .dk-menu-main .dk-mini {
+  width: 32px;
+  height: 32px;
+}
+[data-theme="softclub"] .dk-menu-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 6px 8px;
+  border-top: 0;
+  background: linear-gradient(180deg, #4282d6 0%, #3b7ad4 8%, #2f6bd0 50%, #1f5bc7 100%);
+}
+[data-theme="softclub"] .dk-menu-foot form {
+  display: contents;
+}
+[data-theme="softclub"] .dk-menu-foot .dk-menu-item {
+  width: auto;
+  color: #fff;
+  font-weight: 400;
+}
+[data-theme="softclub"] .dk-menu-foot .dk-menu-item:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+[data-theme="softclub"] .dk-menu-off .dk-mini {
+  background: linear-gradient(180deg, #ffc45a, #e8891f);
+  border-color: #fff;
+}
+[data-theme="softclub"] .dk-menu-reboot .dk-mini {
+  background: linear-gradient(180deg, #f0785a, #c8361a);
+  border-color: #fff;
+}
+/* ícones da área de trabalho: nome selecionado em azul */
+[data-theme="softclub"] .dk-icon[aria-pressed="true"] .dk-icon-box {
+  outline: 0;
+  filter: brightness(0.8) saturate(1.4);
+}
+[data-theme="softclub"] .dk-icon[aria-pressed="true"] .dk-icon-label {
+  background: #316ac5;
+  outline: 1px dotted #fff;
+  text-shadow: none;
+}
+/* caixas de seleção, campos e barras de rolagem do Luna */
+[data-theme="softclub"] input[type="checkbox"],
+[data-theme="softclub"] input[type="radio"] {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  margin: 0 4px 0 0;
+  vertical-align: -2px;
+  border: 1px solid #1c5180;
+  background: linear-gradient(135deg, #dcdcd7, #fff);
+  cursor: pointer;
+}
+[data-theme="softclub"] input[type="radio"] {
+  border-radius: 50%;
+}
+[data-theme="softclub"] input[type="checkbox"]:checked {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 13'%3E%3Cpath d='M3 6.5l2.3 2.3L10 4' stroke='%2321a121' stroke-width='2' fill='none'/%3E%3C/svg%3E") center / 11px no-repeat,
+    linear-gradient(135deg, #dcdcd7, #fff);
+}
+[data-theme="softclub"] input[type="radio"]:checked {
+  background: radial-gradient(circle, #21a121 0 3px, transparent 3.5px), linear-gradient(135deg, #dcdcd7, #fff);
+}
+[data-theme="softclub"] input[type="checkbox"]:hover,
+[data-theme="softclub"] input[type="radio"]:hover {
+  box-shadow: inset 0 0 0 2px #f8b636;
+}
+[data-theme="softclub"] input[type="text"],
+[data-theme="softclub"] input[type="email"],
+[data-theme="softclub"] input[type="search"],
+[data-theme="softclub"] select,
+[data-theme="softclub"] textarea {
+  border: 1px solid #7f9db9;
+  border-radius: 0;
+  background: #fff;
+  font-family: Tahoma, var(--f-sans), sans-serif;
+}
+[data-theme="softclub"] fieldset {
+  border: 1px solid #d0d0bf;
+  border-radius: 4px;
+}
+[data-theme="softclub"] legend {
+  color: #0046d5;
+}
+[data-theme="softclub"] ::-webkit-scrollbar {
+  width: 17px;
+  height: 17px;
+}
+[data-theme="softclub"] ::-webkit-scrollbar-track {
+  background: #f4f4f0;
+}
+[data-theme="softclub"] ::-webkit-scrollbar-thumb {
+  border: 1px solid #fff;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #c8d6fb, #b9cbf8 50%, #a9bdf0);
+  box-shadow: inset 0 0 0 1px #9cb0e6;
+}
+[data-theme="softclub"] * {
+  scrollbar-color: #b9cbf8 #f4f4f0;
+}
+[data-theme="softclub"] ::selection {
+  color: #fff;
+  background: #316ac5;
+}

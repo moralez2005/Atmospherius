@@ -1,0 +1,411 @@
+/* ---------- ícones ---------- */
+.dk-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: calc(60px + var(--task-inset, 0px));
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px 6px;
+  padding: 18px 14px;
+  pointer-events: none; /* a área vazia deixa o clique passar (ex.: bolhas do Aero) */
+}
+.dk-icon {
+  pointer-events: auto;
+  width: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 2px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  animation: icon-in 0.45s both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+@keyframes icon-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+.dk-icon-box {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--icon);
+  border: var(--bw) solid var(--icon-bd, var(--ink));
+  border-radius: var(--ir, 14px);
+  box-shadow: var(--icon-shadow, none);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.dk-icon-box::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 52% 0;
+  background: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.05));
+  opacity: var(--gloss, 0);
+  pointer-events: none;
+}
+.dk-icon-box svg {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+.dk-icon-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.dk-icon:hover .dk-icon-box {
+  transform: translateY(-4px) scale(1.05);
+}
+.dk-icon:active .dk-icon-box {
+  transform: scale(0.96);
+}
+.dk-icon-label {
+  max-width: 100%;
+  padding: 1px 8px;
+  font-size: calc(var(--fs) - 2px);
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--lbl-ink);
+  background: var(--lbl-bg);
+  border: 1px solid var(--lbl-bd);
+  border-radius: var(--lbl-r);
+  box-shadow: var(--lbl-sh, none);
+  text-shadow: var(--lbl-ts, none);
+}
+.dk-icon[aria-pressed="true"] .dk-icon-label {
+  color: var(--accent-ink);
+  background: var(--accent);
+  text-shadow: none;
+}
+.dk-icon[aria-pressed="true"] .dk-icon-box {
+  outline: 2px dashed var(--accent2);
+  outline-offset: 3px;
+}
+
+/* ---------- barra de tarefas ---------- */
+.dk-taskbar {
+  position: absolute;
+  left: var(--task-inset, 0px);
+  right: var(--task-inset, 0px);
+  bottom: var(--task-inset, 0px);
+  height: 50px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  color: var(--task-ink);
+  background: var(--task-bg);
+  border: solid var(--task-bd);
+  border-width: var(--task-bw, 2px 0 0 0);
+  border-radius: var(--task-r, 0px);
+  box-shadow: var(--task-sh, none);
+  backdrop-filter: var(--blur);
+  font-weight: 700;
+}
+.os-btn.dk-start {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px 0 10px;
+  color: var(--start-ink);
+  background: var(--start-bg);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.os-btn.dk-start:hover {
+  background: var(--start-bg);
+  color: var(--start-ink);
+  filter: brightness(1.12);
+}
+.dk-start-logo {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: var(--icon);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5);
+}
+.dk-tasks {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+.dk-task {
+  max-width: 150px;
+  height: 34px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dk-task[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.dk-task.is-min {
+  opacity: 0.7;
+}
+.dk-tray {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 12px;
+  color: var(--task-ink);
+  background: var(--tray-bg);
+  border: 1px solid var(--task-bd);
+  border-radius: var(--btn-radius);
+}
+/* botão da rádio na bandeja (equalizador) */
+.dk-radio {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 26px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.dk-radio:hover {
+  border-color: currentColor;
+}
+.dk-radio.is-min {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.dk-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.05;
+}
+.dk-clock small {
+  font-size: calc(var(--fs) - 4px);
+  font-weight: 400;
+  text-transform: capitalize;
+}
+.dk-eq,
+.mp-eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+.dk-eq i,
+.mp-eq i {
+  display: block;
+  width: 3px;
+  height: 4px;
+  border-radius: 1px;
+  background: currentColor;
+}
+.dk-eq.on i,
+.mp-eq.on i {
+  animation: eq 0.9s ease-in-out infinite;
+}
+.dk-eq i:nth-child(2),
+.mp-eq i:nth-child(2) { animation-delay: -0.3s; }
+.dk-eq i:nth-child(3),
+.mp-eq i:nth-child(3) { animation-delay: -0.6s; }
+.mp-eq i:nth-child(4) { animation-delay: -0.15s; }
+.mp-eq i:nth-child(5) { animation-delay: -0.45s; }
+@keyframes eq {
+  0%, 100% { height: 3px; }
+  50% { height: 15px; }
+}
+
+/* ---------- menu iniciar ---------- */
+.dk-menu {
+  position: absolute;
+  left: calc(var(--task-inset, 0px) + 8px);
+  bottom: calc(var(--task-inset, 0px) + 58px);
+  z-index: 40;
+  width: 270px;
+  animation: win-in 0.16s ease-out;
+}
+.dk-menu-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: var(--title-ink);
+  background: var(--title-bg);
+  border-bottom: var(--bw) solid var(--ink);
+  font-family: var(--font-title, var(--font));
+  font-weight: 700;
+}
+.dk-menu-head small {
+  display: block;
+  font-size: calc(var(--fs) - 3px);
+  font-weight: 400;
+  opacity: 0.8;
+}
+.dk-menu-head .dk-menu-av {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+.dk-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px;
+  color: var(--text);
+  background: none;
+  border: 0;
+  border-radius: min(var(--radius), 10px);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.dk-menu-item:hover {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.dk-menu-cols,
+.dk-menu-foot {
+  padding: 4px;
+}
+.dk-menu-foot {
+  border-top: var(--bw) solid color-mix(in srgb, var(--ink) 50%, transparent);
+}
+.dk-menu-lbl small {
+  display: none; /* a descrição só aparece no menu de duas colunas (Soft Club) */
+}
+.dk-menu-sep {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--ink);
+  opacity: 0.5;
+}
+.dk-mini {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  font-size: 14px;
+  color: #fff;
+  background: var(--icon);
+  border: 1px solid var(--icon-bd, var(--ink));
+  border-radius: min(var(--ir, 8px), 8px);
+}
+
+/* ---------- coluna da direita (reprodutor + relógio) ---------- */
+.dk-side {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* widgets arrastáveis */
+.wg-drag {
+  cursor: grab;
+  touch-action: none;
+}
+.wg-drag.wg-free {
+  position: absolute;
+  z-index: 5;
+  width: 280px;
+}
+.wg-drag.is-dragging {
+  z-index: 8;
+  cursor: grabbing;
+  user-select: none;
+  filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.35));
+}
+.wg-drag button,
+.wg-drag input,
+.wg-drag label {
+  cursor: pointer;
+}
+.cw-time {
+  font-family: var(--font-title, var(--font));
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+.cw-date {
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+.cw-hi {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--ink);
+  font-weight: 700;
+}
+@media (max-width: 860px) {
+  .dk-side .cw {
+    display: none;
+  }
+}
+
+/* ---------- notificações ---------- */
+.dk-toasts {
+  position: absolute;
+  right: 14px;
+  bottom: calc(var(--task-inset, 0px) + 62px);
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.dk-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 240px;
+  max-width: 320px;
+  padding: 10px 12px;
+  animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 3.8s forwards;
+}
+.dk-toast b {
+  display: block;
+}
+.dk-toast-ico {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: var(--icon);
+  border: var(--bw) solid var(--icon-bd, var(--ink));
+  border-radius: min(var(--ir, 8px), 10px);
+  color: #fff;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateX(40px); }
+}

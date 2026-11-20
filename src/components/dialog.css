@@ -1,0 +1,55 @@
+.dlg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 5, 30, 0.42);
+  backdrop-filter: blur(3px);
+}
+.dlg {
+  width: 400px;
+  max-width: 92vw;
+  animation: win-in 0.2s ease-out;
+}
+.dlg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.dlg-icon {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-title, var(--font));
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--icon);
+  border: var(--bw) solid var(--icon-bd, var(--ink));
+  border-radius: min(var(--ir, 8px), 14px);
+}
+.dlg-icon.is-erro {
+  background: linear-gradient(160deg, #ff6b81, #d92f4c);
+}
+.dlg-title {
+  margin-bottom: 4px;
+  font-family: var(--font-title, var(--font));
+  font-size: calc(var(--fs) + 2px);
+  font-weight: 700;
+}
+.dlg-text {
+  line-height: 1.4;
+}
+.dlg-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+a.os-btn {
+  display: inline-block;
+  text-decoration: none;
+}

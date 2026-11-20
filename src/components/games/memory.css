@@ -1,0 +1,88 @@
+.mm-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.mm-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-width: 340px;
+  margin: 0 auto 10px;
+}
+.mm-card {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  perspective: 600px;
+}
+.mm-in {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.35s;
+  transform-style: preserve-3d;
+}
+.mm-card.is-up .mm-in {
+  transform: rotateY(180deg);
+}
+.mm-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  border: var(--bw) solid var(--ink);
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+}
+.mm-back {
+  font-size: 22px;
+  color: #fff;
+  background: var(--icon);
+  box-shadow: var(--btn-shadow);
+}
+.mm-front {
+  color: var(--text);
+  background: var(--win-bg);
+  transform: rotateY(180deg);
+}
+.mm-card.is-done .mm-front {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.mm-card:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+.mm-win {
+  margin-bottom: 10px;
+  padding: 10px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: var(--bw) solid var(--ink);
+}
+.mm-actions {
+  display: flex;
+  gap: 8px;
+}
+.mm-back {
+  font-family: var(--font-title, var(--font));
+}
+.mm-back::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: calc(var(--radius) - 1px);
+}
+.mm-win {
+  font-family: var(--font-title, var(--font));
+}

@@ -1,0 +1,215 @@
+/* atalho "Passear no parque" no caminho de terra do Frutiger Aero: uma pílula de vidro */
+.aw-hotspot {
+  position: fixed;
+  left: 50%;
+  bottom: 92px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px 8px 12px;
+  transform: translateX(-50%);
+  font: 700 14px/1 var(--font, "Segoe UI", sans-serif);
+  color: #06324d;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.55) 48%, rgba(170, 235, 255, 0.45) 52%, rgba(120, 220, 255, 0.6) 100%);
+  box-shadow:
+    0 6px 18px rgba(0, 80, 120, 0.3),
+    inset 0 -2px 6px rgba(0, 150, 200, 0.35),
+    inset 0 1px 0 #fff;
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.aw-hotspot-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff 0 18%, #7ff0a8 40%, #1fb06a 100%);
+  box-shadow: 0 0 6px rgba(40, 200, 120, 0.7);
+}
+.aw-hotspot:hover,
+.aw-hotspot:focus-visible {
+  transform: translateX(-50%) translateY(-3px);
+  box-shadow:
+    0 10px 24px rgba(0, 80, 120, 0.35),
+    inset 0 -2px 6px rgba(0, 150, 200, 0.35),
+    inset 0 1px 0 #fff;
+  outline: none;
+}
+.aw-hotspot:focus-visible {
+  outline: 3px solid #1e9bf0;
+  outline-offset: 3px;
+}
+
+/* passeio em tela cheia */
+.aw-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: #bfe6ff;
+  font-family: var(--font, "Segoe UI", sans-serif);
+  user-select: none;
+}
+.aw-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* vidro claro e brilhante, no estilo do tema */
+.aw-bar,
+.aw-panel,
+.aw-prompt,
+.aw-close {
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(225, 245, 255, 0.62));
+  box-shadow:
+    0 8px 26px rgba(0, 60, 100, 0.25),
+    inset 0 1px 0 #fff,
+    inset 0 -8px 18px rgba(120, 210, 255, 0.25);
+  backdrop-filter: blur(8px);
+  color: #0b3350;
+}
+.aw-bar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 8px 6px 16px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+.aw-bar b {
+  font-size: 15px;
+  color: #0a6a9a;
+}
+.aw-bar small {
+  opacity: 0.8;
+}
+.aw-close {
+  margin-left: auto;
+  min-height: 32px;
+  padding: 4px 16px;
+  border-radius: 999px;
+  font: 700 13px var(--font, "Segoe UI", sans-serif);
+  cursor: pointer;
+}
+.aw-close:hover {
+  background: linear-gradient(180deg, #fff, rgba(190, 235, 255, 0.85));
+}
+.aw-close:focus-visible,
+.aw-prompt:focus-visible {
+  outline: 3px solid #1e9bf0;
+  outline-offset: 2px;
+}
+
+.aw-panel {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.aw-help {
+  top: 64px;
+  width: min(560px, calc(100% - 32px));
+  padding: 10px 16px;
+  text-align: center;
+  animation: aw-in 0.4s ease-out;
+}
+.aw-fail {
+  top: 40%;
+  width: min(460px, calc(100% - 32px));
+  padding: 14px 18px;
+  text-align: center;
+}
+kbd {
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 0 6px;
+  border: 1px solid rgba(10, 90, 140, 0.35);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fff, #dff3ff);
+  font: 700 12px/1.6 var(--font, "Segoe UI", sans-serif);
+  text-align: center;
+}
+
+.aw-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  padding: 9px 18px;
+  border-radius: 999px;
+  font: 600 15px var(--font, "Segoe UI", sans-serif);
+  cursor: pointer;
+  animation: aw-in 0.25s ease-out;
+}
+.aw-prompt b {
+  text-shadow: 0 1px 0 rgba(0, 40, 70, 0.35);
+  filter: saturate(1.2) brightness(0.85);
+}
+
+.aw-talk {
+  bottom: 28px;
+  width: min(640px, calc(100% - 32px));
+  padding: 12px 18px 10px;
+  cursor: pointer;
+  animation: aw-in 0.25s ease-out;
+}
+.aw-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.aw-name b {
+  font-size: 16px;
+}
+.aw-name small {
+  opacity: 0.65;
+}
+.aw-chip {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+    0 0 8px rgba(255, 255, 255, 0.8);
+}
+.aw-talk p {
+  margin: 6px 0 4px;
+  font-size: 16px;
+}
+.aw-next {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+@keyframes aw-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aw-hotspot,
+  .aw-help,
+  .aw-prompt,
+  .aw-talk {
+    transition: none;
+    animation: none;
+  }
+}

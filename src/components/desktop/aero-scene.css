@@ -1,0 +1,180 @@
+/* ================= FRUTIGER AERO: céu-aquário ================= */
+.ae {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ae > * {
+  position: absolute;
+}
+
+/* ---------- luz de água ondulando (cáusticas) ---------- */
+.ae-caustic {
+  inset: -20%;
+  opacity: 0.32;
+  mix-blend-mode: soft-light;
+  background:
+    radial-gradient(ellipse 60px 34px at 50% 50%, rgba(255, 255, 255, 0.9), transparent 70%) 0 0 / 150px 110px,
+    radial-gradient(ellipse 48px 26px at 50% 50%, rgba(220, 250, 255, 0.85), transparent 70%) 40px 30px / 190px 130px;
+  animation: ae-caustic 18s linear infinite;
+}
+@keyframes ae-caustic {
+  to { background-position: 150px 110px, -150px 160px; }
+}
+
+/* ---------- reflexo de lente (sai do sol no canto) ---------- */
+.ae-flare {
+  left: 13%;
+  top: 2%;
+  width: 0;
+  height: 0;
+  transform: rotate(38deg);
+  animation: ae-flare 8s ease-in-out infinite alternate;
+}
+.ae-flare i {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5), rgba(150, 230, 255, 0.18) 60%, transparent 72%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.ae-flare i:nth-child(1) { left: 150px; width: 40px; height: 40px; }
+.ae-flare i:nth-child(2) { left: 230px; width: 90px; height: 90px; opacity: 0.6; }
+.ae-flare i:nth-child(3) { left: 360px; width: 26px; height: 26px; }
+.ae-flare i:nth-child(4) { left: 450px; width: 130px; height: 130px; opacity: 0.4; background: radial-gradient(circle, rgba(140, 255, 190, 0.35), transparent 70%); }
+.ae-flare i:nth-child(5) { left: 620px; width: 54px; height: 54px; opacity: 0.55; }
+@keyframes ae-flare {
+  from { opacity: 0.7; transform: rotate(36deg); }
+  to { opacity: 1; transform: rotate(41deg); }
+}
+
+/* ---------- peixes ---------- */
+.ae-fish {
+  left: 0;
+  filter: drop-shadow(0 6px 8px rgba(0, 60, 120, 0.25));
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.ae-fish.to-right {
+  animation-name: ae-swim-right;
+}
+.ae-fish.to-left {
+  animation-name: ae-swim-left;
+}
+@keyframes ae-swim-right {
+  from { transform: translateX(-180px); }
+  to { transform: translateX(calc(100vw + 40px)); }
+}
+@keyframes ae-swim-left {
+  from { transform: translateX(calc(100vw + 40px)) scaleX(-1); }
+  to { transform: translateX(-180px) scaleX(-1); }
+}
+.ae-bob {
+  display: block;
+  width: 100%;
+  animation: ae-bob 3.2s ease-in-out infinite alternate;
+}
+@keyframes ae-bob {
+  from { transform: translateY(-10px) rotate(-3deg); }
+  to { transform: translateY(12px) rotate(3deg); }
+}
+/* nadar: o corpo ondula de leve (a foto não tem cauda separada) */
+.ae-fish-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform-origin: 70% 50%;
+  animation: ae-swim 0.7s ease-in-out infinite alternate;
+  user-select: none;
+}
+@keyframes ae-swim {
+  from { transform: scaleX(1) skewY(0deg); }
+  to { transform: scaleX(0.95) skewY(2.5deg); }
+}
+/* peixe dentro de uma bolha */
+.ae-bob {
+  position: relative;
+}
+.ae-fish.in-bubble .ae-bob::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: -30% -18%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.08) 55%, rgba(110, 200, 255, 0.2));
+}
+
+/* ---------- bolhas (clicáveis) ---------- */
+.ae-bubble {
+  bottom: -90px;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: ae-rise linear infinite;
+}
+@keyframes ae-rise {
+  from { transform: translate(0, 0); }
+  to { transform: translate(var(--dx, 0), -118vh); }
+}
+.ae-bubble i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.95) 0 10%, transparent 11%),
+    radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1) 55%, rgba(100, 200, 255, 0.22));
+  box-shadow: inset -4px -6px 10px rgba(80, 180, 255, 0.25);
+  animation: ae-wobble 2.6s ease-in-out infinite alternate;
+}
+@keyframes ae-wobble {
+  from { transform: scale(1, 0.95); }
+  to { transform: scale(0.95, 1.03); }
+}
+.ae-bubble:hover i {
+  border-color: #fff;
+  box-shadow: inset -4px -6px 10px rgba(80, 180, 255, 0.3), 0 0 12px rgba(255, 255, 255, 0.8);
+}
+.ae-bubble.is-pop {
+  pointer-events: none;
+}
+.ae-bubble.is-pop i {
+  animation: ae-pop 0.4s ease-out forwards;
+}
+@keyframes ae-pop {
+  0% { transform: scale(1); opacity: 1; }
+  40% { transform: scale(1.35); opacity: 0.9; border-width: 3px; background: transparent; }
+  100% { transform: scale(1.7); opacity: 0; border-width: 1px; background: transparent; }
+}
+
+/* ---------- gotas no vidro ---------- */
+.ae-drop {
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95) 0 14%, rgba(255, 255, 255, 0.15) 40%, rgba(60, 140, 220, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 1px 2px 3px rgba(0, 60, 120, 0.25);
+  opacity: 0.85;
+}
+.ae-drop.slides {
+  animation: ae-slide 20s ease-in infinite;
+}
+@keyframes ae-slide {
+  0%, 60% { transform: translateY(0); opacity: 0.85; }
+  95% { transform: translateY(26vh); opacity: 0.6; }
+  100% { transform: translateY(28vh); opacity: 0; }
+}
+
+/* com música: peixes e bolhas animados mais rápido */
+.ae.is-playing .ae-fish-img {
+  animation-duration: 0.45s;
+}
+.ae.is-playing .ae-bob {
+  animation-duration: 2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ae * {
+    animation: none !important;
+  }
+}

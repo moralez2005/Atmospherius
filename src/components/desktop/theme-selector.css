@@ -1,0 +1,108 @@
+.ts-hint {
+  margin: 0 0 10px;
+}
+.ts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.ts-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: var(--bw) solid var(--btn-bd);
+  border-radius: min(var(--radius), 16px);
+  box-shadow: var(--btn-shadow);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.ts-card:hover {
+  transform: translateY(-3px);
+}
+.ts-card[aria-checked="true"] {
+  outline: 3px solid var(--accent2);
+  outline-offset: 2px;
+}
+.ts-card[aria-checked="true"]::after {
+  content: "✓";
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: var(--bw) solid var(--btn-bd);
+  border-radius: 50%;
+  font-size: 13px;
+}
+/* a miniatura redeclara o tema via data-theme */
+.ts-preview {
+  position: relative;
+  display: block;
+  height: 80px;
+  overflow: hidden;
+  background-color: #000;
+  background-size: cover;
+  background-position: center;
+  border: var(--bw) solid var(--ink);
+  border-radius: min(var(--radius), 12px);
+}
+.ts-mini {
+  position: absolute;
+  left: 68%;
+  right: 5%;
+  top: 44px;
+  bottom: -4px;
+  opacity: 0.92;
+  background: var(--win-bg);
+  border: var(--bw) solid var(--ink);
+  border-radius: min(var(--radius), 8px);
+}
+.ts-mini::before {
+  content: "";
+  display: block;
+  height: 7px;
+  background: var(--title-bg);
+  border-bottom: 1px solid var(--ink);
+}
+.ts-chip {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 14px;
+  height: 14px;
+  background: var(--icon);
+  border: 1px solid var(--icon-bd, var(--ink));
+  border-radius: min(var(--ir, 4px), 5px);
+}
+.ts-sfx {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-weight: 700;
+}.ts-sub {
+  margin-top: 16px;
+}
+.ts-widgets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 18px;
+}
+.ts-widgets .ts-sfx {
+  margin-top: 0;
+}
+.ts-reset {
+  margin-left: auto;
+}

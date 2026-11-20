@@ -1,0 +1,50 @@
+.wp {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--sky);
+}
+/* preenche as sobras com a própria imagem borrada */
+.wp-blur {
+  position: absolute;
+  top: -48px;
+  left: -48px;
+  right: -48px;
+  height: calc(100% / (1 - var(--wp-crop, 0)) + 48px);
+  background-size: cover;
+  background-position: center top;
+  filter: blur(26px) saturate(1.1);
+}
+/* a imagem inteira, sem cortes */
+.wp-stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+.wp-frame {
+  position: relative;
+  width: min(100cqw, calc(100cqh * var(--wp-ar)));
+  aspect-ratio: var(--wp-ar);
+  overflow: hidden;
+}
+.wp-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  max-width: none;
+  height: calc(100% / (1 - var(--wp-crop, 0)));
+  user-select: none;
+}
+/* cena desenhada em código (Synthwave) */
+.wp-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}

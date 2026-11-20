@@ -1,0 +1,232 @@
+.gm-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.gm-h {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+.gm-wide {
+  width: 100%;
+}
+.gm-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+.gm-big {
+  padding: 18px 8px;
+  font-size: 16px;
+}
+.gm-big small {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 400;
+}
+.gm-who {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.gm-game {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+  text-align: left;
+}
+.gm-game small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+}
+.gm-tag {
+  flex: none;
+  padding: 0 6px;
+  font-size: 11px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: var(--bw) solid var(--ink);
+}
+.gm-ph {
+  margin-bottom: 10px;
+  padding: 12px;
+  text-align: center;
+  border: var(--bw) dashed var(--ink);
+}
+
+.gm-h {
+  font-family: var(--font-title, var(--font));
+  font-size: calc(var(--fs) + 5px);
+}
+.gm-prov {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 14px;
+}
+.gm-badge {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1;
+}
+.gm-g {
+  color: #4285f4;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+.gm-f {
+  color: #fff;
+  background: #1877f2;
+}
+.gm-big {
+  padding: 22px 10px;
+  font-family: var(--font-title, var(--font));
+  font-size: calc(var(--fs) + 3px);
+}
+.gm-big small,
+.gm-game small,
+.gm-who {
+  font-size: calc(var(--fs) - 2px);
+}
+.gm-game {
+  gap: 12px;
+  padding: 8px 12px;
+}
+.gm-ico {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: #fff;
+  background: var(--icon);
+  border: var(--bw) solid var(--icon-bd, var(--ink));
+  border-radius: min(var(--ir, 8px), 12px);
+}
+.gm-txt {
+  flex: 1;
+}
+/* ----- lista de jogos ----- */
+.gm-who {
+  flex-wrap: wrap;
+}
+.gm-who small {
+  opacity: 0.7;
+}
+.gm-badge-age {
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #fff;
+  border-radius: 999px;
+  background: #e0407f;
+}
+.gm-badge-age.is-adult {
+  background: #2f8a2f;
+}
+.gm-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.gm-list .gm-game {
+  margin: 0;
+  height: 100%;
+}
+.gm-game .gm-txt {
+  flex: 1;
+}
+.gm-game.is-locked {
+  opacity: 0.75;
+}
+.gm-rec {
+  margin-top: 2px;
+  font-weight: 700 !important;
+  color: var(--accent2);
+}
+.gm-ico {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  color: #fff;
+  border-radius: min(var(--ir, 8px), 10px);
+  background: var(--icon);
+}
+/* área comum dos jogos novos */
+.gx {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gx-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 700;
+}
+.gx-stage {
+  position: relative;
+  align-self: center;
+  max-width: 100%;
+}
+.gx-stage canvas {
+  display: block;
+  max-width: 100%;
+}
+.gx-over {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  padding: 16px;
+  text-align: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 2px #000;
+}
+.gx-over b {
+  font-size: 20px;
+}
+.gx-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gx-help {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.75;
+}
+.gm-away {
+  margin-top: 2px;
+  font-style: italic;
+}
+
+/* Plaza 2001 (iframe) */
+.plaza-wrap{display:flex;flex-direction:column;gap:8px;height:100%;min-height:520px}
+.plaza-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.plaza-frame{flex:1;width:100%;min-height:480px;border:0;border-radius:10px;background:#1b1530}
