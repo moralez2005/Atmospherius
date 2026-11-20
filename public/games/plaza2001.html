@@ -67,6 +67,34 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .acts{grid-template-columns:repeat(3,64px)}
 .touch button{font:900 13px Rubik,sans-serif;min-height:54px;border-radius:14px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);touch-action:none}
 @media (pointer:coarse){.touch{display:flex}.keys{display:none}}
+.dm{position:absolute;left:12px;bottom:34px;display:none;align-items:center;gap:10px;padding:6px 14px 6px 6px;background:rgba(27,21,48,.86);border:3px solid var(--ink);border-radius:16px;box-shadow:4px 4px 0 var(--pink);color:#fff;font-style:normal;transform-origin:left bottom;transition:transform .35s}
+.dm.show{display:flex}
+.dm.mini{transform:scale(.62)}
+.dm-dev{position:relative;width:84px;height:84px;flex:none}
+.dm-body{position:absolute;inset:4px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#cfd6e2 45%,#8b94a8);border:3px solid var(--ink)}
+.dm-body::after{content:"";position:absolute;right:-10px;bottom:6px;width:16px;height:22px;border:3px solid #e8242c;border-left:0;border-top:0;border-radius:0 0 12px 0}
+.dm-cd{position:absolute;left:14px;top:14px;width:56px;height:56px;border-radius:50%;border:2px solid rgba(27,21,48,.55);
+ background:radial-gradient(circle,#2b2640 0 4px,#d9dee9 5px 9px,rgba(255,255,255,.7) 9px 10px,transparent 11px),conic-gradient(from 20deg,#eef1f7,#9fe7ff,#ffd1f0,#fff3a8,#c7f7d0,#eef1f7)}
+.dm-lid{position:absolute;inset:4px;border-radius:50%;border:3px solid var(--ink);transform-origin:50% 0;
+ background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.8) 0 10%,rgba(200,235,255,.32) 35%,rgba(110,140,180,.4))}
+.dm-hand{position:absolute;left:62px;top:31px;width:66px;height:22px;background:#a8714a;border:2px solid var(--ink);border-radius:11px;opacity:0}
+.dm-hand::before{content:"";position:absolute;left:-7px;top:3px;width:14px;height:12px;background:#a8714a;border:2px solid var(--ink);border-radius:7px}
+.dm-hand b{position:absolute;left:30px;top:-3px;width:9px;height:24px;background:#e8242c;border:2px solid var(--ink);border-radius:3px}
+.dm-txt{display:flex;flex-direction:column;line-height:1.15;max-width:min(46vw,380px)}
+.dm-txt b{font:400 clamp(13px,1.6vw,18px)/1.1 Bungee,sans-serif;color:var(--yel)}
+.dm-txt span{font-weight:800;font-size:clamp(11px,1.4vw,15px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm.insert .dm-cd{animation:dm-cd 1.05s cubic-bezier(.3,.7,.4,1) both}
+.dm.insert .dm-hand{animation:dm-hand 1.5s ease-in-out both}
+.dm.insert .dm-lid{animation:dm-lid 1.75s ease-in-out both}
+@keyframes dm-cd{0%{transform:translate(78px,-70px) rotate(-35deg)}100%{transform:none}}
+@keyframes dm-hand{0%{opacity:1;transform:translate(78px,-70px)}70%{opacity:1;transform:none}100%{opacity:0;transform:translate(84px,-64px)}}
+@keyframes dm-lid{0%,62%{transform:perspective(220px) rotateX(-78deg)}100%{transform:none}}
+.dm.load .dm-cd{animation:dm-spin .7s linear infinite}
+.dm.play .dm-cd{animation:dm-spin 1.8s linear infinite}
+@keyframes dm-spin{to{transform:rotate(360deg)}}
+.dm.load .dm-txt span::after{content:"";animation:dm-dots 1.2s steps(4) infinite}
+@keyframes dm-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.radiohint{margin:0 0 6px;font-size:14px;font-weight:700}
 .note{font-size:13px;max-width:72ch;text-align:center;opacity:.8}
 html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height:100vh;overflow:hidden}html.embed header,html.embed .note{display:none}html.embed .frame{width:min(100%,calc((100vh - 92px) * 16 / 9));padding:6px;border-radius:12px;box-shadow:none}html.embed .keys{font-size:12px;gap:6px 8px}html.embed .keys span{padding:2px 8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -84,11 +112,13 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="combo ol"><div class="names" id="cnames"></div><div class="pts" id="cpts"></div></div>
     <div class="bal" id="bal"><i id="balI"></i></div>
     <div class="track ol" id="track"></div>
+    <div class="dm" id="dm" role="status" aria-live="polite"><div class="dm-dev" aria-hidden="true"><div class="dm-body"></div><div class="dm-cd"></div><div class="dm-lid"></div><div class="dm-hand"><b></b></div></div><div class="dm-txt"><b id="dmName"></b><span id="dmLine"></span></div></div>
   </div>
   <div class="over" id="over"><div class="card">
     <h2 id="ovT">PLAZA 2001</h2>
     <p id="ovP">Fim de tarde na praça. Encadeie manobras, ache os gaps, pegue latas de spray e grafite os pontos marcados.</p>
     <div class="row" role="group" aria-label="Skatista"><b>Skatista:</b><button class="pick" data-look="kf" aria-pressed="true">K.F.</button><button class="pick" data-look="manu" aria-pressed="false">Manu</button><button class="pick" data-look="kaua" aria-pressed="false">Kauã</button><button class="pick" data-look="nina" aria-pressed="false">Nina</button><button class="pick" data-look="teo" aria-pressed="false">Teo</button></div>
+    <p class="radiohint" id="radioHint"></p>
     <div class="row"><button class="btn" id="goS">Sessão de 2 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
     <b>Metas</b><ul class="goals" id="goals"></ul>
   </div></div>
@@ -2651,6 +2681,191 @@ const MUSIC = (ac, out) => {
   };
 };
 </script>
+<script>// Rádio de cada skatista: toca músicas do YouTube (player escondido, igual à rádio da área de
+// trabalho). Quem não tem rádio continua com a trilha sintetizada do jogo.
+// Os vídeos são, sempre que possível, o áudio oficial da faixa do álbum ("Provided to YouTube"),
+// que começa no segundo zero da música, sem abertura de clipe. s = segundo em que a música começa.
+const RADIO = (() => {
+  const STATIONS = {
+    kf: {
+      name: "Rolê FM",
+      style: "rock BR 2000",
+      tracks: [
+        { id: "EYpo0U5g2wk", t: "Dias de Luta, Dias de Glória", a: "Charlie Brown Jr.", s: 0 },
+        { id: "6bBxGXy5gfg", t: "Só os Loucos Sabem", a: "Charlie Brown Jr.", s: 0 },
+        { id: "r3ijnlHHxbA", t: "Céu Azul", a: "Charlie Brown Jr.", s: 0 },
+        { id: "DRhEueqE7Uw", t: "Lugar ao Sol", a: "Charlie Brown Jr.", s: 0 },
+        { id: "4DA5aGfyd1A", t: "Ela Vai Voltar", a: "Charlie Brown Jr.", s: 0 },
+        { id: "ffiOB0wTFQ0", t: "Só por uma Noite", a: "Charlie Brown Jr.", s: 0 },
+        { id: "7uVcIzrWAUE", t: "Razões e Emoções", a: "NX Zero", s: 0 },
+        { id: "zyXjbsTBO1E", t: "Pela Última Vez", a: "NX Zero", s: 0 },
+        { id: "RHnI9fEiahw", t: "Cedo ou Tarde", a: "NX Zero", s: 0 },
+        { id: "N0CJe34esME", t: "Vou Deixar", a: "Skank", s: 0 },
+        { id: "hFYL73n7Ktg", t: "Ainda Gosto Dela", a: "Skank", s: 0 },
+        { id: "jGjFRQ8afLY", t: "Dois Rios", a: "Skank", s: 0 },
+        { id: "ZMvfLBMqL88", t: "Acima do Sol", a: "Skank", s: 0 },
+        { id: "2Z8Fyuj-gxo", t: "Um Minuto Para o Fim do Mundo", a: "CPM 22", s: 0 },
+        { id: "iXoxjko_Rng", t: "Admirável Chip Novo", a: "Pitty", s: 0 },
+        { id: "HwQ_NghGouc", t: "Outro Lugar", a: "Detonautas", s: 0 },
+        { id: "UMuGUlh-Kkk", t: "Natasha", a: "Capital Inicial", s: 0 },
+        { id: "PChZWswp004", t: "Dias Melhores", a: "Jota Quest", s: 0 },
+        { id: "bu1qsGSfUmc", t: "Desde Quando Você Se Foi", a: "Fresno", s: 0 },
+        { id: "ffcgo0owH9w", t: "Tropa de Elite", a: "Tihuana", s: 0 },
+      ],
+    },
+  };
+  const VOLUME = 45;
+  let apiP = null, player = null, readyP = null;
+  let st = null, order = [], idx = 0, errors = 0, on = false, paused = false, muted = false;
+  let emit = () => {};
+
+  function loadApi() {
+    if (apiP) return apiP;
+    apiP = new Promise((res, rej) => {
+      if (window.YT && window.YT.Player) return res(window.YT);
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (prev) prev();
+        res(window.YT);
+      };
+      const s = document.createElement("script");
+      s.src = "https://www.youtube.com/iframe_api";
+      s.onerror = () => rej(new Error("sem YouTube"));
+      document.head.appendChild(s);
+    });
+    return apiP;
+  }
+  function ensurePlayer() {
+    if (readyP) return readyP;
+    readyP = loadApi().then(
+      (YT) =>
+        new Promise((res) => {
+          const host = document.createElement("div");
+          host.style.cssText = "position:fixed;left:0;top:0;width:200px;height:200px;opacity:0;pointer-events:none;z-index:-1";
+          host.setAttribute("aria-hidden", "true");
+          const el = document.createElement("div");
+          host.appendChild(el);
+          document.body.appendChild(host);
+          player = new YT.Player(el, {
+            width: "100%",
+            height: "100%",
+            playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, playsinline: 1, rel: 0, origin: location.origin },
+            events: {
+              onReady: () => {
+                player.setVolume(VOLUME);
+                res(player);
+              },
+              onStateChange: (e) => onState(e.data),
+              onError: () => onError(),
+            },
+          });
+        }),
+    );
+    return readyP;
+  }
+  const track = () => (st ? st.tracks[order[idx]] : null);
+  function onState(s) {
+    if (!on) return;
+    if (s === 1) {
+      errors = 0;
+      emit("playing", track(), st);
+    } else if (s === 0) next();
+  }
+  // vídeo fora do ar ou que não deixa tocar fora do YouTube: pula
+  function onError() {
+    if (!on) return;
+    errors++;
+    if (errors >= st.tracks.length) {
+      on = false;
+      emit("failed", null, st);
+      return;
+    }
+    next();
+  }
+  function play() {
+    const t = track();
+    emit("loading", t, st);
+    player.loadVideoById({ videoId: t.id, startSeconds: t.s || 0 });
+    if (paused || muted) player.pauseVideo();
+  }
+  function shuffle(n) {
+    const a = Array.from({ length: n }, (_, i) => i);
+    for (let i = n - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function next() {
+    if (!st) return;
+    idx = (idx + 1) % order.length;
+    if (player) play();
+  }
+  return {
+    has: (look) => !!STATIONS[look],
+    station: (look) => STATIONS[look] || null,
+    get active() {
+      return on;
+    },
+    get muted() {
+      return muted;
+    },
+    get current() {
+      return on ? st : null;
+    },
+    onEvent(f) {
+      emit = f;
+    },
+    // começa a rádio do skatista (se já está tocando a mesma, só continua)
+    start(look) {
+      const s = STATIONS[look];
+      if (!s) return false;
+      paused = false;
+      if (on && st === s) {
+        if (player && !muted) player.playVideo();
+        return true;
+      }
+      st = s;
+      order = shuffle(s.tracks.length);
+      idx = 0;
+      errors = 0;
+      on = true;
+      emit("insert", null, s);
+      ensurePlayer()
+        .then(() => on && st === s && play())
+        .catch(() => {
+          on = false;
+          emit("failed", null, s);
+        });
+      return true;
+    },
+    next() {
+      if (on) next();
+    },
+    pause(v) {
+      paused = v;
+      if (!player || !on) return;
+      if (v) player.pauseVideo();
+      else if (!muted) player.playVideo();
+    },
+    toggleMute() {
+      muted = !muted;
+      if (player && on) {
+        if (muted) player.pauseVideo();
+        else if (!paused) player.playVideo();
+      }
+      emit(muted ? "muted" : "unmuted", track(), st);
+      return muted;
+    },
+    stop() {
+      on = false;
+      st = null;
+      if (player) player.stopVideo();
+      emit("stopped", null, null);
+    },
+  };
+})();
+</script>
 <script>// Jogabilidade: física arcade de skate (ollie carregado, vert com 180 automático, flips e
 // grabs por direção, grinds com equilíbrio, manual, revert, especial, gaps e combos com
 // multiplicador) + coleta de latas e grafite nos pontos marcados.
@@ -3726,12 +3941,16 @@ const STREET = (() => {
     }
     return {
       S, press, setLook, goals: () => GOALS.map((g) => ({ ...g, done: !!goals[g.id] })),
-      start(run) {
+      // o = { radio: true } quando o skatista tem rádio própria (aí a trilha sintetizada fica quieta)
+      start(run, o) {
         initAudio();
         if (ac && ac.state === "suspended") ac.resume();
-        if (music && !music.playing && !opt.noMusic) music.start();
+        if (o && o.radio) {
+          if (music && music.playing) music.stop();
+        } else if (music && !music.playing && !opt.noMusic) music.start();
         reset(run || "session");
       },
+      synthOn() { initAudio(); if (music && !music.playing && !opt.noMusic) music.start(); },
       pause(v) { S.running = !v; },
       cycleCam() { camMode = (camMode + 1) % 3; say(CAMS[camMode], 1.2); return camMode; },
       nextTrack() { initAudio(); if (music) { if (!music.playing) music.start(); return music.nextTrack(); } return ""; },
@@ -3763,8 +3982,8 @@ const ui={
     set($('cpts'),'textContent',I.comboPts>0||I.mult>0?`${I.comboPts.toLocaleString('pt-BR')} × ${Math.max(1,I.mult)}`:'');
     const b=$('bal');if(I.bal){b.style.display='block';b.classList.toggle('v',I.bal.kind==='v');const p=50+Math.max(-1,Math.min(1,I.bal.v))*50;
       if(I.bal.kind==='v'){$('balI').style.top=(100-p)+'%';$('balI').style.left=''}else{$('balI').style.left=p+'%';$('balI').style.top=''}}else b.style.display='none';
-    if(I.track&&I.track!==lastTrack){lastTrack=I.track;trackT=performance.now();set($('track'),'textContent','♪ '+I.track+' — trilha original')}
-    $('track').classList.toggle('on',performance.now()-trackT<4000);
+    if(!RADIO.active&&I.track&&I.track!==lastTrack){lastTrack=I.track;trackT=performance.now();set($('track'),'textContent','♪ '+I.track+' — trilha original')}
+    $('track').classList.toggle('on',!RADIO.active&&performance.now()-trackT<4000);
     if(toastT&&performance.now()>toastT){$('toast').style.display='none';toastT=0}
   },
   goal(t){$('toast').textContent='META CUMPRIDA: '+t;$('toast').style.display='block';toastT=performance.now()+3200},
@@ -3772,20 +3991,37 @@ const ui={
 };
 const game=STREET.Game($('cv'),ui,{lowH:window.__lowH||400,keep:!!window.__keep,noMusic:!!window.__noMusic});
 window.__game=game;
+
+// ---------- rádio do skatista (YouTube) ----------
+let insertEnd=0,dmQ=0,dmMini=0;
+function dmSet(cls,line){const dm=$('dm');clearTimeout(dmQ);
+  dmQ=setTimeout(()=>{dm.className='dm show '+cls;$('dmLine').textContent=line;clearTimeout(dmMini);
+    if(cls==='play')dmMini=setTimeout(()=>dm.classList.add('mini'),5000)},Math.max(0,insertEnd-performance.now()))}
+RADIO.onEvent((ev,t,st)=>{const dm=$('dm');
+  if(ev==='insert'){clearTimeout(dmQ);clearTimeout(dmMini);$('dmName').textContent=st.name.toUpperCase();$('dmLine').textContent=st.style;
+    dm.className='dm';void dm.offsetWidth;dm.className='dm show insert';insertEnd=performance.now()+1750}
+  else if(ev==='loading')dmSet('load','carregando');
+  else if(ev==='playing')dmSet('play','♪ '+t.t+' — '+t.a);
+  else if(ev==='muted')dmSet('mini','mudo · M liga de novo');
+  else if(ev==='unmuted')dmSet('play','♪ '+t.t+' — '+t.a);
+  else if(ev==='failed'){dmSet('mini','rádio fora do ar · tocando a trilha do jogo');setTimeout(()=>{$('dm').className='dm'},4000);game.synthOn()}
+  else if(ev==='stopped'){clearTimeout(dmQ);clearTimeout(dmMini);dm.className='dm'}});
+function radioHint(){const s=RADIO.station(look);$('radioHint').textContent=s?`🎧 Rádio do skatista: ${s.name} (${s.style}) · N pula · M mudo`:''}
 function drawGoals(){$('goals').innerHTML=game.goals().map(g=>`<li class="${g.done?'done':''}">${g.t}</li>`).join('')}
 drawGoals();
-for(const b of document.querySelectorAll('.pick'))b.addEventListener('click',()=>{look=b.dataset.look;for(const x of document.querySelectorAll('.pick'))x.setAttribute('aria-pressed',x===b);game.setLook(look);legend()});
-const go=(run)=>{$('over').style.display='none';paused=false;game.start(run);$('cv').focus()};
+for(const b of document.querySelectorAll('.pick'))b.addEventListener('click',()=>{look=b.dataset.look;for(const x of document.querySelectorAll('.pick'))x.setAttribute('aria-pressed',x===b);game.setLook(look);if(RADIO.active&&RADIO.station(look)!==RADIO.current)RADIO.stop();legend();radioHint()});
+radioHint();
+const go=(run)=>{$('over').style.display='none';paused=false;const radio=RADIO.start(look);game.start(run,{radio});$('cv').focus()};
 $('goS').addEventListener('click',()=>go('session'));$('goF').addEventListener('click',()=>go('free'));
-$('mus').addEventListener('click',()=>{const n=game.nextTrack();$('mus').textContent='♪ '+n});
-function pause(v){paused=v;game.pause(v);if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();$('over').style.display='grid'}else $('over').style.display='none'}
+$('mus').addEventListener('click',()=>{if(RADIO.active){RADIO.next();$('mus').textContent='♪ Próxima música';return}const n=game.nextTrack();$('mus').textContent='♪ '+n});
+function pause(v){paused=v;game.pause(v);RADIO.pause(v);if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();$('over').style.display='grid'}else $('over').style.display='none'}
 const map={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right',j:'flip',k:'grind',l:'grab',' ':'jump'};
 function legend(){const sk=look==='manu';$('kJ').textContent=sk?'mortal (na rampa: mortal de costas)':'kickflip';$('kL').textContent=sk?'pegada no patins (segure)':'grab (segure)';$('kK').textContent=sk?'soul grind no corrimão':'grind no corrimão';}
 legend();
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
   if(k==='escape'||k==='p'){if(game.S.running||paused){pause(!paused)}e.preventDefault();return}
-  if(k==='n'){game.nextTrack();return}
-  if(k==='m'){game.toggleMusic();return}
+  if(k==='n'){if(RADIO.active)RADIO.next();else game.nextTrack();return}
+  if(k==='m'){if(RADIO.active)RADIO.toggleMute();else game.toggleMusic();return}
   if(k==='c'){game.cycleCam();return}
   if(map[k]){e.preventDefault();if(!e.repeat)game.press(map[k],true)}});
 addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(map[k])game.press(map[k],false)});
