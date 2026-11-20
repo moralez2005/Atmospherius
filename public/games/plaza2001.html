@@ -2715,7 +2715,7 @@ const RADIO = (() => {
     },
   };
   const VOLUME = 45;
-  let apiP = null, player = null, readyP = null;
+  let apiP = null, player = null, readyP = null; // player só fica preenchido depois de pronto (onReady)
   let st = null, order = [], idx = 0, errors = 0, on = false, paused = false, muted = false;
   let emit = () => {};
 
@@ -2746,12 +2746,13 @@ const RADIO = (() => {
           const el = document.createElement("div");
           host.appendChild(el);
           document.body.appendChild(host);
-          player = new YT.Player(el, {
+          const p = new YT.Player(el, {
             width: "100%",
             height: "100%",
             playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, playsinline: 1, rel: 0, origin: location.origin },
             events: {
               onReady: () => {
+                player = p;
                 player.setVolume(VOLUME);
                 res(player);
               },
@@ -4014,7 +4015,7 @@ radioHint();
 const go=(run)=>{$('over').style.display='none';paused=false;const radio=RADIO.start(look);game.start(run,{radio});$('cv').focus()};
 $('goS').addEventListener('click',()=>go('session'));$('goF').addEventListener('click',()=>go('free'));
 $('mus').addEventListener('click',()=>{if(RADIO.active){RADIO.next();$('mus').textContent='♪ Próxima música';return}const n=game.nextTrack();$('mus').textContent='♪ '+n});
-function pause(v){paused=v;game.pause(v);RADIO.pause(v);if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();$('over').style.display='grid'}else $('over').style.display='none'}
+function pause(v){paused=v;game.pause(v);try{RADIO.pause(v)}catch(e){}if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();$('over').style.display='grid'}else $('over').style.display='none'}
 const map={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right',j:'flip',k:'grind',l:'grab',' ':'jump'};
 function legend(){const sk=look==='manu';$('kJ').textContent=sk?'mortal (na rampa: mortal de costas)':'kickflip';$('kL').textContent=sk?'pegada no patins (segure)':'grab (segure)';$('kK').textContent=sk?'soul grind no corrimão':'grind no corrimão';}
 legend();
