@@ -95,6 +95,10 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .dm.load .dm-txt span::after{content:"";animation:dm-dots 1.2s steps(4) infinite}
 @keyframes dm-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 .radiohint{margin:0 0 6px;font-size:14px;font-weight:700}
+#dm3d{position:absolute;left:-8px;top:-70px;width:170px;height:160px;pointer-events:none;display:none}
+.dm3d #dm3d{display:block}.dm3d .dm-body,.dm3d .dm-cd,.dm3d .dm-lid,.dm3d .dm-hand{display:none}
+.mm{position:absolute;right:12px;bottom:34px;width:clamp(110px,15vw,160px);aspect-ratio:212/200;border:3px solid var(--ink);border-radius:12px;background:rgba(27,21,48,.5);box-shadow:3px 3px 0 var(--pink);overflow:hidden;display:none}
+.mm.on{display:block}.mm canvas{width:100%;height:100%;display:block}
 .note{font-size:13px;max-width:72ch;text-align:center;opacity:.8}
 html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height:100vh;overflow:hidden}html.embed header,html.embed .note{display:none}html.embed .frame{width:min(100%,calc((100vh - 92px) * 16 / 9));padding:6px;border-radius:12px;box-shadow:none}html.embed .keys{font-size:12px;gap:6px 8px}html.embed .keys span{padding:2px 8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -112,14 +116,15 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="combo ol"><div class="names" id="cnames"></div><div class="pts" id="cpts"></div></div>
     <div class="bal" id="bal"><i id="balI"></i></div>
     <div class="track ol" id="track"></div>
-    <div class="dm" id="dm" role="status" aria-live="polite"><div class="dm-dev" aria-hidden="true"><div class="dm-body"></div><div class="dm-cd"></div><div class="dm-lid"></div><div class="dm-hand"><b></b></div></div><div class="dm-txt"><b id="dmName"></b><span id="dmLine"></span></div></div>
+    <div class="mm" id="mmBox" aria-hidden="true"><canvas id="mm" width="318" height="300"></canvas></div>
+    <div class="dm" id="dm" role="status" aria-live="polite"><div class="dm-dev" aria-hidden="true"><div class="dm-body"></div><div class="dm-cd"></div><div class="dm-lid"></div><div class="dm-hand"><b></b></div><canvas id="dm3d"></canvas></div><div class="dm-txt"><b id="dmName"></b><span id="dmLine"></span></div></div>
   </div>
   <div class="over" id="over"><div class="card">
     <h2 id="ovT">PLAZA 2001</h2>
-    <p id="ovP">Fim de tarde na praça. Encadeie manobras, ache os gaps, pegue latas de spray e grafite os pontos marcados.</p>
+    <p id="ovP">Fim de tarde na praça e na cidade em volta. Encadeie manobras, ache os gaps, pegue latas de spray e grafite os pontos marcados (o mapinha mostra onde).</p>
     <div class="row" role="group" aria-label="Skatista"><b>Skatista:</b><button class="pick" data-look="kf" aria-pressed="true">K.F.</button><button class="pick" data-look="manu" aria-pressed="false">Manu</button><button class="pick" data-look="kaua" aria-pressed="false">Kauã</button></div>
     <p class="radiohint" id="radioHint"></p>
-    <div class="row"><button class="btn" id="goS">Sessão de 2 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
+    <div class="row"><button class="btn" id="goS">Sessão de 3 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
     <b>Metas</b><ul class="goals" id="goals"></ul>
   </div></div>
 </div></div>
@@ -368,11 +373,13 @@ void main(){vec4 a=IVP*vec4(uv,1.,1.);vec3 d=normalize(a.xyz/a.w-EYE);float y=d.
  gl_FragColor=vec4(c,1.);}`;
   const BLITVS = `attribute vec2 Q;varying vec2 uv;void main(){uv=Q*.5+.5;gl_Position=vec4(Q,0.,1.);}`;
   const BLITFS = `precision mediump float;varying vec2 uv;uniform sampler2D T;
-void main(){vec3 c=texture2D(T,uv).rgb;float l=dot(c,vec3(.299,.587,.114));c=mix(vec3(l),c,1.12);
- vec2 q=uv-.5;c*=1.-.22*pow(length(q)*1.35,2.6);gl_FragColor=vec4(c,1.);}`;
+uniform float AL;
+void main(){vec4 t=texture2D(T,uv);vec3 c=t.rgb;float l=dot(c,vec3(.299,.587,.114));c=mix(vec3(l),c,1.12);
+ vec2 q=uv-.5;if(AL<.5)c*=1.-.22*pow(length(q)*1.35,2.6);gl_FragColor=vec4(c,AL>.5?t.a:1.);}`;
 
   function Renderer(canvas, opt = {}) {
-    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, preserveDrawingBuffer: !!opt.keep, powerPreference: "low-power" });
+    const TR = !!opt.transparent;
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: TR, premultipliedAlpha: false, preserveDrawingBuffer: !!opt.keep, powerPreference: "low-power" });
     if (!gl) throw new Error("sem WebGL");
     const sh = (t, s) => {
       const x = gl.createShader(t);
@@ -489,9 +496,11 @@ void main(){vec3 c=texture2D(T,uv).rgb;float l=dot(c,vec3(.299,.587,.114));c=mix
       const VP = M.mul(PR, VW);
       gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
       gl.viewport(0, 0, lw, lh);
-      gl.clear(gl.DEPTH_BUFFER_BIT);
+      if (TR) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); }
+      else gl.clear(gl.DEPTH_BUFFER_BIT);
       // céu
       gl.disable(gl.DEPTH_TEST);
+      if (!TR) {
       gl.useProgram(ps.p);
       gl.uniformMatrix4fv(ps.u.IVP, false, M.inv(VP));
       gl.uniform3fv(ps.u.EYE, cam.eye);
@@ -505,6 +514,7 @@ void main(){vec3 c=texture2D(T,uv).rgb;float l=dot(c,vec3(.299,.587,.114));c=mix
       gl.vertexAttribPointer(ps.at.Q, 2, gl.FLOAT, false, 0, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.disableVertexAttribArray(ps.at.Q);
+      }
       gl.enable(gl.DEPTH_TEST);
       gl.depthFunc(gl.LEQUAL);
       gl.disable(gl.CULL_FACE);
@@ -572,6 +582,8 @@ void main(){vec3 c=texture2D(T,uv).rgb;float l=dot(c,vec3(.299,.587,.114));c=mix
       gl.useProgram(pb.p);
       gl.bindTexture(gl.TEXTURE_2D, tex);
       gl.uniform1i(pb.u.T, 0);
+      gl.uniform1f(pb.u.AL, TR ? 1 : 0);
+      if (TR) { gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); }
       gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
       gl.enableVertexAttribArray(pb.at.Q);
       gl.vertexAttribPointer(pb.at.Q, 2, gl.FLOAT, false, 0, 0);
@@ -622,9 +634,11 @@ const ART = (() => {
     bill: [R(0, 1280, 512, 256), R(512, 1280, 512, 256)],
     poster: [0, 1, 2, 3].map((i) => R(i * 256, 1536, 256, 384)),
     // Itaberá: letreiros de loja, placas de rua, placa verde e porta de aço
-    shop: [0, 1, 2, 3, 4, 5, 6, 7].map((i) => R(1024 + (i % 2) * 512, 1024 + Math.floor(i / 2) * 112, 512, 104)),
+    shop: [...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => R(1024 + (i % 2) * 512, 1024 + Math.floor(i / 2) * 112, 512, 104)), R(1536, 1792, 512, 104), R(1024, 1920, 512, 104), R(1536, 1920, 512, 104)],
     plate: [0, 1, 2, 3].map((i) => R(1024 + (i % 2) * 512, 1472 + Math.floor(i / 2) * 96, 512, 88)),
     road: R(1024, 1664, 512, 256),
+    pav: R(1666, 1666, 124, 124),
+    petit: R(1794, 1666, 124, 124),
     door: R(1536, 1664, 128, 128),
     face: { eye: R(0, 1920, 128, 128), wink: R(128, 1920, 128, 128), grin: R(256, 1944, 128, 80), smile: R(384, 1944, 128, 80), nerd: R(512, 1920, 128, 128), sun: R(640, 1920, 128, 128) },
   };
@@ -982,7 +996,7 @@ const ART = (() => {
     }
     // ---------- Itaberá ----------
     {
-      g.clearRect(1024, 1024, 1024, 960);
+      g.clearRect(1024, 1024, 1024, 1024);
       const fit = (t, maxW, px) => { let f = px; g.font = FONT(f); while (g.measureText(t).width > maxW && f > 10) { f -= 2; g.font = FONT(f); } return f; };
       const rr = (x, y, w, h, r) => { g.beginPath(); g.roundRect ? g.roundRect(x, y, w, h, r) : g.rect(x, y, w, h); };
       // letreiros pintados (nomes genéricos, de cidade pequena)
@@ -1010,6 +1024,40 @@ const ART = (() => {
       shop(5, "AUTO PEÇAS", "#ff8a1f", "#ffffff", "#5a2a00");
       shop(6, "SORVETERIA", "#ff8dc0", "#ffffff", "#8a1a52", "estrela");
       shop(7, "MERCADINHO", "#1fae5a", "#ffffff", "#0b4a22");
+      // letreiros grandes da cidade (escola, mercado, banco) em outra parte do atlas
+      const big = (x, y, t, bg, fg, ln) => {
+        rr(x + 4, y + 4, 504, 96, 10); g.fillStyle = bg; g.fill(); g.lineWidth = 6; g.strokeStyle = ln; g.stroke();
+        g.textAlign = "center"; g.textBaseline = "middle"; fit(t, 460, 60);
+        g.lineWidth = 8; g.strokeStyle = ln; g.strokeText(t, x + 256, y + 56); g.fillStyle = fg; g.fillText(t, x + 256, y + 56);
+      };
+      big(1536, 1792, "ESCOLA ESTADUAL", "#ffffff", "#2457c8", "#123a7a");
+      big(1024, 1920, "SUPERMERCADO", "#e0302b", "#ffffff", "#5a0f0a");
+      big(1536, 1920, "BANCO", "#123a7a", "#ffd23f", "#0a1f4a");
+      // bloquete (calçada) e petit-pavê (praça), 128 px = um ladrilho
+      {
+        const x = 1664, y = 1664;
+        g.fillStyle = "#d9cdbb"; g.fillRect(x, y, 128, 128);
+        g.strokeStyle = "#b8aa95"; g.lineWidth = 3;
+        for (let j = 0; j < 8; j++) for (let i = -1; i < 4; i++) {
+          const ox = (j % 2) * 16;
+          g.fillStyle = (i + j) % 3 ? "#d9cdbb" : "#cdbfaa";
+          g.fillRect(x + i * 32 + ox + 1.5, y + j * 16 + 1.5, 29, 13);
+        }
+        g.globalCompositeOperation = "destination-over"; g.fillStyle = "#b8aa95"; g.fillRect(x, y, 128, 128); g.globalCompositeOperation = "source-over";
+      }
+      {
+        const x = 1792, y = 1664;
+        g.save(); g.beginPath(); g.rect(x, y, 128, 128); g.clip();
+        g.fillStyle = "#f1ece3"; g.fillRect(x, y, 128, 128);
+        g.fillStyle = "#6f6a86";
+        for (const oy of [-64, 0, 64]) {
+          g.beginPath();
+          for (let k = 0; k <= 32; k++) { const xx = x + k * 4, yy = y + 22 + oy + Math.sin((k / 32) * Math.PI * 2) * 14; k ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+          for (let k = 32; k >= 0; k--) { const xx = x + k * 4, yy = y + 46 + oy + Math.sin((k / 32) * Math.PI * 2) * 14; g.lineTo(xx, yy); }
+          g.closePath(); g.fill();
+        }
+        g.restore();
+      }
       // placas azuis de nome de rua
       const plate = (i, t) => {
         const x = 1024 + (i % 2) * 512, y = 1472 + Math.floor(i / 2) * 96;
@@ -2081,6 +2129,640 @@ const CHARS = (() => {
 ART.makeRig = CHARS.makeRig;
 ART.LOOKS = CHARS.LOOKS;
 </script>
+<script>// A cidade em volta da praça (inspirada em Itaberá-SP): ruas de asfalto, calçadas de bloquete com
+// guia amarela (dá grind), quarteirões com lojas e casinhas e um pico de skate em cada um:
+// Praça da Matriz (igreja, escadaria, coreto), escola (escada e rampas com corrimão), avenida que sobe
+// até o mirante, mercado com estacionamento, banco com escadaria e quadra com arquibancada.
+// Tudo alinhado aos eixos, no mesmo esquema do resto do mapa (mapa de altura + trilhos de grind).
+"use strict";
+const CITY = (() => {
+  const BOUNDS = { x0: -100, x1: 112, z0: -100, z1: 100 };
+  function build(X) {
+    const { solid, flat, deco, feats, fbox, framp, rail, building, poste, fio, palm, tree, withY, C, CASA, TELHA, RECT, V, hex, billboard } = X;
+    const OB = [], TAGS = [], CANS = [], GAPS = [], MAP = [];
+    const SW = 0.14; // altura da calçada
+    const ASF = hex(0x8a8698), ASF2 = hex(0x817d90), LINE = hex(0xf2f0ea), YEL = hex(0xffd23f);
+    const R = ART.rng(77);
+
+    // ---------- ajudantes ----------
+    // chão texturizado em ladrilhos (bloquete, petit-pavê...), com altura opcional variando em x
+    function pave(x0, z0, x1, z1, y, rect, t = 2, yfn = null, col = [1, 1, 1]) {
+      const [u0, v0, u1, v1] = rect;
+      for (let x = x0; x < x1 - 1e-6; x += t) {
+        const xb = Math.min(x1, x + t);
+        for (let z = z0; z < z1 - 1e-6; z += t) {
+          const zb = Math.min(z1, z + t);
+          const uu = u0 + (u1 - u0) * ((xb - x) / t), vv = v0 + (v1 - v0) * ((zb - z) / t);
+          const Y = (xx) => (yfn ? yfn(xx) : y);
+          flat.quad([x, Y(x), z], [x, Y(x), zb], [xb, Y(xb), zb], [xb, Y(xb), z], col, 4, [[u0, v0], [u0, vv], [uu, vv], [uu, v0]]);
+        }
+      }
+    }
+    // chão liso (asfalto, cimento) em placas
+    function plain(x0, z0, x1, z1, y, col, t = 8, col2 = null, yfn = null) {
+      for (let x = x0, i = 0; x < x1 - 1e-6; x += t, i++) {
+        const xb = Math.min(x1, x + t);
+        for (let z = z0, j = 0; z < z1 - 1e-6; z += t, j++) {
+          const zb = Math.min(z1, z + t);
+          const Y = (xx) => (yfn ? yfn(xx) : y);
+          flat.quad([x, Y(x), z], [x, Y(x), zb], [xb, Y(xb), zb], [xb, Y(xb), z], col2 && (i + j) % 2 ? col2 : col);
+        }
+      }
+    }
+    const stripe = (x0, z0, x1, z1, y, c) => deco.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], c);
+    // prisma inclinado (rampa / canteiro na avenida): altura h0 em a0 até h1 em a1 ao longo do eixo
+    function wedge(x0, z0, x1, z1, h0, h1, ax, top, side, base = 0) {
+      const H = (x, z) => (ax === "x" ? h0 + ((h1 - h0) * (x - x0)) / (x1 - x0) : h0 + ((h1 - h0) * (z - z0)) / (z1 - z0));
+      const st = solid.v.length;
+      const p = (x, z, top_) => [x, top_ ? H(x, z) : base, z];
+      solid.quad(p(x0, z0, 1), p(x0, z1, 1), p(x1, z1, 1), p(x1, z0, 1), top);
+      solid.quad(p(x0, z0, 0), p(x1, z0, 0), p(x1, z0, 1), p(x0, z0, 1), side);
+      solid.quad(p(x0, z1, 0), p(x0, z1, 1), p(x1, z1, 1), p(x1, z1, 0), side);
+      solid.quad(p(x0, z0, 0), p(x0, z0, 1), p(x0, z1, 1), p(x0, z1, 0), side);
+      solid.quad(p(x1, z0, 0), p(x1, z1, 0), p(x1, z1, 1), p(x1, z0, 1), side);
+      solid.orient([(x0 + x1) / 2, base - 1, (z0 + z1) / 2], st);
+      solid.orient([(x0 + x1) / 2, (H((x0 + x1) / 2, (z0 + z1) / 2) + base) / 2, (z0 + z1) / 2], st);
+    }
+    // escada: degraus do topo (borda a0) até embaixo (a1) ao longo do eixo; b0..b1 é a largura
+    function stairs(ax, a0, a1, b0, b1, hTop, hBot, n, name) {
+      const dir = Math.sign(a1 - a0), tread = Math.abs(a1 - a0) / n, rise = (hTop - hBot) / n;
+      for (let i = 0; i < n; i++) {
+        const sa = a0 + dir * i * tread, sb = sa + dir * tread, h = hTop - (i + 1) * rise;
+        if (h <= 0.001) continue;
+        const [lo, hi] = [Math.min(sa, sb), Math.max(sa, sb)];
+        if (ax === "z") {
+          solid.box(b0, 0, lo, b1, h, hi, C.stair, { top: C.stair, noBottom: true });
+          const e = dir > 0 ? hi : lo;
+          deco.quad([b0, h + 0.008, e - dir * 0.12], [b1, h + 0.008, e - dir * 0.12], [b1, h + 0.008, e], [b0, h + 0.008, e], C.nose);
+        } else {
+          solid.box(lo, 0, b0, hi, h, b1, C.stair, { top: C.stair, noBottom: true });
+          const e = dir > 0 ? hi : lo;
+          deco.quad([e - dir * 0.12, h + 0.008, b0], [e, h + 0.008, b0], [e, h + 0.008, b1], [e - dir * 0.12, h + 0.008, b1], C.nose);
+        }
+      }
+      const lo = Math.min(a0, a1), hi = Math.max(a0, a1);
+      const f = (x, z) => {
+        const t = Math.abs((ax === "z" ? z : x) - a0);
+        return Math.max(hBot, hTop - (Math.floor(t / tread) + 1) * rise);
+      };
+      if (ax === "z") feats.push({ x0: b0, z0: lo, x1: b1, z1: hi, f });
+      else feats.push({ x0: lo, z0: b0, x1: hi, z1: b1, f });
+    }
+    // corrimão inclinado ou reto, com postes até o chão
+    function handrail(a, b, name, groundAt, col = C.rail) {
+      solid.tube(a, b, 0.05, 0.05, 7, col, 1);
+      for (const t of [0.06, 0.5, 0.94]) {
+        const p = V.lerp(a, b, t);
+        solid.tube([p[0], groundAt(p[0], p[2]), p[2]], p, 0.04, 0.04, 5, col, 1);
+      }
+      rail(a, b, "rail", name, { stair: Math.abs(a[1] - b[1]) > 0.2 });
+    }
+    // caixa com contorno + mapa de altura + trilhos nas bordas de cima (ledge)
+    function ledgeBox(x0, z0, x1, z1, y0, h, col, top, name, edges = "nsew") {
+      solid.box(x0, y0, z0, x1, h, z1, col, { top, noBottom: true });
+      fbox(x0, z0, x1, z1, h);
+      const m = 0.12;
+      if (edges.includes("n")) rail([x0 + m, h, z0], [x1 - m, h, z0], "ledge", name);
+      if (edges.includes("s")) rail([x0 + m, h, z1], [x1 - m, h, z1], "ledge", name);
+      if (edges.includes("w")) rail([x0, h, z0 + m], [x0, h, z1 - m], "ledge", name);
+      if (edges.includes("e")) rail([x1, h, z0 + m], [x1, h, z1 - m], "ledge", name);
+    }
+    // quarteirão: base de calçada (0,14), bloquete na faixa de 3 m e guia amarela nos lados de rua
+    function block(x0, z0, x1, z1, sides, name, mapCol) {
+      fbox(x0, z0, x1, z1, SW);
+      const y = SW + 0.006, w = 3;
+      if (sides.includes("n")) pave(x0, z0, x1, z0 + w, y, RECT.pav);
+      if (sides.includes("s")) pave(x0, z1 - w, x1, z1, y, RECT.pav);
+      const za = sides.includes("n") ? z0 + w : z0, zb = sides.includes("s") ? z1 - w : z1;
+      if (sides.includes("w")) pave(x0, za, x0 + w, zb, y, RECT.pav);
+      if (sides.includes("e")) pave(x1 - w, za, x1, zb, y, RECT.pav);
+      const cw = 0.3, m = 0.4;
+      if (sides.includes("n")) { solid.box(x0, 0, z0, x1, SW, z0 + cw, C.curbS, { top: C.curb, noBottom: true }); rail([x0 + m, SW, z0], [x1 - m, SW, z0], "ledge", "guia amarela"); }
+      if (sides.includes("s")) { solid.box(x0, 0, z1 - cw, x1, SW, z1, C.curbS, { top: C.curb, noBottom: true }); rail([x0 + m, SW, z1], [x1 - m, SW, z1], "ledge", "guia amarela"); }
+      if (sides.includes("w")) { solid.box(x0, 0, z0, x0 + cw, SW, z1, C.curbS, { top: C.curb, noBottom: true }); rail([x0, SW, z0 + m], [x0, SW, z1 - m], "ledge", "guia amarela"); }
+      if (sides.includes("e")) { solid.box(x1 - cw, 0, z0, x1, SW, z1, C.curbS, { top: C.curb, noBottom: true }); rail([x1, SW, z0 + m], [x1, SW, z1 - m], "ledge", "guia amarela"); }
+      MAP.push({ x0, z0, x1, z1, c: mapCol || "#d8cbbb", name });
+    }
+    // fileira de prédios: facade em `fixed`, ao longo do eixo de a0 até a1, com profundidade
+    function row(face, fixed, a0, a1, depth, items, yAt) {
+      let a = a0;
+      for (let i = 0; i < items.length && a < a1 - 0.5; i++) {
+        const it = items[i];
+        let w = Math.min(it.w, a1 - a);
+        if (i === items.length - 1) w = a1 - a;
+        const b = a + w;
+        if (!it.gap) {
+          let x0, z0, x1, z1;
+          if (face === "z") { x0 = a; x1 = b; z0 = fixed - depth; z1 = fixed; }
+          if (face === "-z") { x0 = a; x1 = b; z0 = fixed; z1 = fixed + depth; }
+          if (face === "x") { z0 = a; z1 = b; x0 = fixed - depth; x1 = fixed; }
+          if (face === "-x") { z0 = a; z1 = b; x0 = fixed; x1 = fixed + depth; }
+          const dy = yAt ? yAt(a, b) : SW;
+          withY(dy, () => building(x0, z0, x1, z1, it.h || 7.4, face, { style: it.style, shop: it.shop, col: it.col }));
+        }
+        a = b;
+      }
+    }
+    // mistura de casinhas e lojas pra preencher uma fileira
+    function mix(span, seed, lojas = 0.45) {
+      const r = ART.rng(seed), out = [];
+      let s = 0;
+      while (s < span - 0.5) {
+        const k = r();
+        let it;
+        if (k < lojas) it = { w: 9 + Math.floor(r() * 4), style: "loja", h: 7.2 + r() * 0.8, shop: r() < 0.5 ? Math.floor(r() * 8) : null };
+        else if (k < lojas + 0.12) it = { w: 10 + Math.floor(r() * 4), h: 9.5 + r() * 1.5 };
+        else it = { w: 13 + Math.floor(r() * 7), style: "casas" };
+        out.push(it);
+        s += it.w;
+      }
+      return out;
+    }
+    // miolo do quarteirão (ninguém entra; só não deixa buraco visível)
+    function fill(x0, z0, x1, z1, h = 4.6) {
+      solid.box(x0, 0, z0, x1, h, z1, hex(0xd9c6b4), { top: hex(0xb96a48), noBottom: true });
+      fbox(x0, z0, x1, z1, 60);
+    }
+    const ob = (x, z, r, y1) => OB.push({ x, z, r, y1 });
+    // placa azul de rua num poste
+    function plate(x, z, i, ry = 0) {
+      solid.tube([x, 0, z], [x, 2.9, z], 0.05, 0.05, 5, C.metal, 1);
+      const r = [Math.cos(ry), 0, Math.sin(ry)];
+      deco.decal([x + Math.sin(ry) * 0.06, 2.75, z - Math.cos(ry) * 0.06], r, [0, 1, 0], 1.9, 0.33, RECT.plate[i]);
+      deco.decal([x - Math.sin(ry) * 0.06, 2.75, z + Math.cos(ry) * 0.06], V.mul(r, -1), [0, 1, 0], 1.9, 0.33, RECT.plate[i]);
+      ob(x, z, 0.07, 2.9);
+    }
+    // carro estacionado (dá pra subir no capô e no teto)
+    function car(x, z, along, col, y = SW) {
+      col = hex(col);
+      const L = 3.9, W = 1.76, hx = along === "x" ? L / 2 : W / 2, hz = along === "x" ? W / 2 : L / 2;
+      solid.box(x - hx, y + 0.3, z - hz, x + hx, y + 0.95, z + hz, col, { top: V.mul(col, 1.04) });
+      const cx = along === "x" ? 0.62 : 0.42 * W, cz = along === "x" ? 0.42 * W : 0.62;
+      const ox = along === "x" ? -0.25 : 0, oz = along === "x" ? 0 : -0.25;
+      solid.box(x + ox - cx, y + 0.95, z + oz - cz, x + ox + cx, y + 1.5, z + oz + cz, hex(0x3a4a7a), { top: col });
+      for (const s1 of [-1, 1])
+        for (const s2 of [-1, 1]) {
+          const wx = along === "x" ? x + s1 * (hx - 0.75) : x + s2 * hx, wz = along === "x" ? z + s2 * hz : z + s1 * (hz - 0.75);
+          const a = along === "x" ? [wx, y + 0.33, wz - s2 * 0.02] : [wx - s2 * 0.02, y + 0.33, wz];
+          const b = along === "x" ? [wx, y + 0.33, wz + s2 * 0.12] : [wx + s2 * 0.12, y + 0.33, wz];
+          solid.tube(a, b, 0.33, 0.33, 8, C.dark);
+        }
+      const fr = along === "x" ? [x + hx + 0.01, z] : [x, z + hz + 0.01];
+      for (const s of [-0.55, 0.55]) {
+        if (along === "x") { deco.quad([fr[0], y + 0.62, fr[1] + s - 0.18], [fr[0], y + 0.62, fr[1] + s + 0.18], [fr[0], y + 0.8, fr[1] + s + 0.18], [fr[0], y + 0.8, fr[1] + s - 0.18], C.winL, 2); }
+        else { deco.quad([fr[0] + s - 0.18, y + 0.62, fr[1]], [fr[0] + s + 0.18, y + 0.62, fr[1]], [fr[0] + s + 0.18, y + 0.8, fr[1]], [fr[0] + s - 0.18, y + 0.8, fr[1]], C.winL, 2); }
+      }
+      fbox(x - hx, z - hz, x + hx, z + hz, y + 0.95);
+      fbox(x + ox - cx, z + oz - cz, x + ox + cx, z + oz + cz, y + 1.5);
+    }
+    // ipê florido (árvore de rua)
+    function ipe(x, z, y = SW, col = 0xff8fc8) {
+      solid.tube([x, y, z], [x, y + 2.4, z], 0.16, 0.11, 6, C.trunk);
+      const c = hex(col), c2 = V.mul(c, 0.85);
+      solid.ball([x, y + 3.1, z], 1.25, c, 0, 7, 5);
+      solid.ball([x + 0.7, y + 2.7, z + 0.4], 0.8, c2, 0, 6, 4);
+      solid.ball([x - 0.6, y + 3.5, z - 0.3], 0.75, c, 0, 6, 4);
+      deco.decal([x, y + 0.02, z], [1, 0, 0], [0, 0, -1], 3 * 1, 3 * 1, RECT.shadow, [1, 1, 1], 5);
+      ob(x, z, 0.18, y + 2.4);
+    }
+    // poste de praça (ferro verde com globo)
+    function lampPraca(x, z, y = SW) {
+      solid.tube([x, y, z], [x, y + 3.3, z], 0.09, 0.06, 6, hex(0x2f5a46));
+      solid.ball([x, y + 3.55, z], 0.28, hex(0xfff6d8), 2, 8, 5);
+      ob(x, z, 0.1, y + 3.3);
+    }
+    // lata de lixo laranja
+    function lixeira(x, z, y = SW) {
+      solid.tube([x, y, z], [x, y + 0.95, z], 0.05, 0.05, 5, C.metal, 1);
+      solid.tube([x, y + 0.55, z + 0.18], [x, y + 1.05, z + 0.18], 0.22, 0.2, 8, hex(0xff8a1f));
+      ob(x, z, 0.12, y + 1.05);
+    }
+    // linha de postes com fiação ao longo de x ou z
+    function posteLine(ax, fixed, a0, a1, step, armDir, yAt = () => SW) {
+      const pts = [];
+      for (let a = a0; a <= a1 + 0.01; a += step) {
+        const x = ax === "x" ? a : fixed, z = ax === "x" ? fixed : a;
+        const y = yAt(x, z);
+        pts.push(poste(x, z, y, { ax: ax === "x" ? "z" : "x", arm: armDir, trafo: R() < 0.25 }));
+        ob(x, z, 0.17, y + 8.6);
+      }
+      for (let i = 0; i < pts.length - 1; i++) for (let k = 0; k < 3; k++) fio(pts[i][k], pts[i + 1][k], 0.5 + k * 0.08);
+      return pts;
+    }
+
+    // ---------- ruas ----------
+    const roads = [
+      [BOUNDS.x0, -41, BOUNDS.x1, -32, "Rua Cel. Amantino"],
+      [BOUNDS.x0, 32, BOUNDS.x1, 41, "Rua Eltore Rossi"],
+      [-47, BOUNDS.z0, -38, BOUNDS.z1, "Rua São Pedro"],
+      [36, BOUNDS.z0, 45, BOUNDS.z1, "R. Cel. José Pedro de Lima"],
+    ];
+    for (const [x0, z0, x1, z1] of roads) { plain(x0, z0, x1, z1, 0, ASF, 8, ASF2); MAP.push({ x0, z0, x1, z1, c: "#8a8698" }); }
+    // faixas: amarela dupla no meio, tracejada branca nas avenidas, faixas de pedestre perto da praça
+    const dash = (ax, fixed, a0, a1) => {
+      for (let a = a0; a < a1; a += 4) {
+        const b = Math.min(a1, a + 2);
+        if (ax === "x") stripe(a, fixed - 0.07, b, fixed + 0.07, 0.012, YEL);
+        else stripe(fixed - 0.07, a, fixed + 0.07, b, 0.012, YEL);
+      }
+    };
+    dash("x", -36.5, BOUNDS.x0, -47); dash("x", -36.5, -38, 36); dash("x", -36.5, 45, BOUNDS.x1);
+    dash("x", 36.5, BOUNDS.x0, -47); dash("x", 36.5, -38, 36); dash("x", 36.5, 45, BOUNDS.x1);
+    dash("z", -42.5, BOUNDS.z0, -41); dash("z", -42.5, -32, 32); dash("z", -42.5, 41, BOUNDS.z1);
+    dash("z", 40.5, BOUNDS.z0, -41); dash("z", 40.5, -32, 32); dash("z", 40.5, 41, BOUNDS.z1);
+    const zebra = (ax, x0, z0, x1, z1) => {
+      if (ax === "x") for (let x = x0; x < x1; x += 1.2) stripe(x, z0, x + 0.6, z1, 0.013, LINE);
+      else for (let z = z0; z < z1; z += 1.2) stripe(x0, z, x1, z + 0.6, 0.013, LINE);
+    };
+    zebra("z", 36.3, -30, 44.7, -27.6); zebra("z", 36.3, 27.6, 44.7, 30);
+    zebra("x", 47.6, -40.7, 50, -32.3); zebra("x", 47.6, 32.3, 50, 40.7);
+    zebra("x", -36, -40.7, -33.6, -32.3); zebra("x", -36, 32.3, -33.6, 40.7);
+    for (const [x, z] of [[40, -15], [-42, 20], [70, -36.5], [-70, 36.5], [12, 36.5], [40, 70]]) deco.decal([x, 0.012, z], [1, 0, 0], [0, 0, -1], 1.3, 1.3, RECT.manhole);
+    // muros no fim das ruas (borda da cidade)
+    const fim = (x0, z0, x1, z1, n, piece) => {
+      solid.box(x0, 0, z0, x1, 3.2, z1, hex(0xf1e3c2), { top: C.white, noBottom: true });
+      const c = [n[0] > 0 ? x1 + 0.02 : n[0] < 0 ? x0 - 0.02 : (x0 + x1) / 2, 1.6, n[2] > 0 ? z1 + 0.02 : n[2] < 0 ? z0 - 0.02 : (z0 + z1) / 2];
+      const r = n[0] > 0 ? [0, 0, -1] : n[0] < 0 ? [0, 0, 1] : n[2] > 0 ? [1, 0, 0] : [-1, 0, 0];
+      deco.decal(c, r, [0, 1, 0], 6.5, 2.9, RECT.piece[piece]);
+    };
+    fim(BOUNDS.x0 - 0.6, -41, BOUNDS.x0, -32, [1, 0, 0], 2);
+    fim(BOUNDS.x0 - 0.6, 32, BOUNDS.x0, 41, [1, 0, 0], 5);
+    fim(BOUNDS.x1, -41, BOUNDS.x1 + 0.6, -32, [-1, 0, 0], 7);
+    fim(BOUNDS.x1, 32, BOUNDS.x1 + 0.6, 41, [-1, 0, 0], 0);
+    fim(-47, BOUNDS.z0 - 0.6, -38, BOUNDS.z0, [0, 0, 1], 3);
+    fim(36, BOUNDS.z0 - 0.6, 45, BOUNDS.z0, [0, 0, 1], 6);
+    fim(-47, BOUNDS.z1, -38, BOUNDS.z1 + 0.6, [0, 0, -1], 1);
+    fim(36, BOUNDS.z1, 45, BOUNDS.z1 + 0.6, [0, 0, -1], 4);
+
+    // ---------- NO: casinhas ----------
+    block(BOUNDS.x0, BOUNDS.z0, -47, -41, "se", "casas");
+    row("z", -44, BOUNDS.x0, -50, 11, mix(50, 11, 0.3));
+    row("x", -50, BOUNDS.z0, -55, 11, mix(45, 12, 0.3));
+    fill(BOUNDS.x0, BOUNDS.z0, -61, -55);
+
+    // ---------- SO: casinhas e uma lanchonete de esquina ----------
+    block(BOUNDS.x0, 41, -47, BOUNDS.z1, "ne", "casas");
+    row("-z", 44, BOUNDS.x0, -50, 11, [...mix(38, 21, 0.3), { w: 12, style: "loja", shop: 2, col: 0xe0483e }]);
+    row("x", -50, 55, BOUNDS.z1, 11, mix(45, 22, 0.3));
+    fill(BOUNDS.x0, 55, -61, BOUNDS.z1);
+    for (const [x, z] of [[-55.5, 42.3], [-52, 42.3]]) {
+      solid.tube([x, SW, z], [x, SW + 0.72, z], 0.05, 0.05, 5, hex(0xe0302b));
+      solid.tube([x, SW + 0.72, z], [x, SW + 0.76, z], 0.45, 0.45, 10, hex(0xe0302b));
+      ob(x, z, 0.45, SW + 0.76);
+    }
+
+    // ---------- O: supermercado + estacionamento ----------
+    block(BOUNDS.x0, -32, -47, 32, "nse", "mercado", "#d8cbbb");
+    row("-z", -29, BOUNDS.x0, -50, 10, mix(50, 31, 0.5));
+    row("z", 29, BOUNDS.x0, -50, 10, mix(50, 32, 0.5));
+    withY(SW, () => building(-100, -19, -80, 19, 8.5, "x", { col: 0xf5f1e6, shop: 9 }));
+    MAP.push({ x0: -80, z0: -19, x1: -50, z1: 19, c: "#c9c3d6", name: "estacionamento" });
+    plain(-80, -19, -50, 19, SW + 0.005, hex(0xb9b4c6), 6);
+    // vagas
+    for (let z = -18; z <= 18; z += 3) {
+      stripe(-74.5, z - 0.06, -68.5, z + 0.06, SW + 0.012, LINE);
+      stripe(-61.5, z - 0.06, -55.5, z + 0.06, SW + 0.012, LINE);
+    }
+    // batentes (dá grind) na cabeceira das vagas
+    for (let z = -16.5; z <= 16.5; z += 3) {
+      for (const x of [-74.2, -55.8]) {
+        solid.box(x - 0.15, SW, z - 0.8, x + 0.15, SW + 0.15, z + 0.8, hex(0xf2c14e), { top: hex(0xffd23f) });
+        fbox(x - 0.15, z - 0.8, x + 0.15, z + 0.8, SW + 0.15);
+        rail([x, SW + 0.15, z - 0.7], [x, SW + 0.15, z + 0.7], "ledge", "batente");
+      }
+    }
+    car(-71.5, -15, "x", 0xe0302b);
+    car(-71.5, -6, "x", 0xf5f1e6);
+    car(-71.5, 9, "x", 0x3f63c8);
+    car(-58.5, -3, "x", 0x1fae5a);
+    car(-58.5, 12, "x", 0xffd166);
+    // doca de carga do mercado (ledge alto)
+    ledgeBox(-80, -17, -77, -7, 0, SW + 1.0, hex(0xb3b0a8), hex(0xd6d2c6), "doca do mercado", "e");
+    solid.box(-80, SW + 1.0, -17, -77, SW + 1.06, -7, hex(0xffd23f));
+    stairs("z", -7, -4.6, -79.6, -77.4, SW + 1.0, SW, 3, "escada da doca");
+    // carrinhos de supermercado
+    for (const [x, z] of [[-66, 3.5], [-64.8, 3.5]]) {
+      solid.box(x - 0.35, SW + 0.45, z - 0.5, x + 0.35, SW + 1.0, z + 0.5, hex(0xd5dbe8), { top: hex(0xd5dbe8) });
+      for (const [a, b] of [[-0.3, -0.42], [0.3, -0.42], [-0.3, 0.42], [0.3, 0.42]]) solid.tube([x + a, SW, z + b], [x + a, SW + 0.45, z + b], 0.03, 0.03, 4, C.metal);
+      ob(x, z, 0.5, SW + 1.0);
+    }
+    for (const z of [-12, 12]) lampPraca(-65, z);
+
+    // ---------- N: escola estadual ----------
+    block(-38, BOUNDS.z0, 36, -41, "wse", "escola", "#d8cbbb");
+    row("z", -44, -35, -24, 12, [{ w: 11, style: "loja", shop: 1 }]);
+    row("z", -44, 24, 33, 12, [{ w: 9, style: "loja", shop: 6 }]);
+    row("-x", -35, BOUNDS.z0, -70, 11, mix(30, 41, 0.4));
+    row("x", 33, BOUNDS.z0, -70, 11, mix(30, 42, 0.4));
+    withY(SW, () => building(-24, BOUNDS.z0 + 12, 22, -66, 9.2, "z", { col: 0xf1e3c2, shop: 8 }));
+    fill(-24, BOUNDS.z0, 22, BOUNDS.z0 + 12, 6);
+    MAP.push({ x0: -35, z0: -70, x1: 33, z1: -44, c: "#ece6d8", name: "escola" });
+    plain(-35, -70, 33, -44, SW + 0.005, hex(0xe7e1d3), 4, hex(0xdfd8c8));
+    // varanda, escada e rampas com corrimão
+    const PY = SW + 0.9;
+    solid.box(-10, 0, -66, 10, PY, -62, C.ledge, { top: C.deck, noBottom: true });
+    fbox(-10, -66, 10, -62, PY);
+    rail([-9.9, PY, -62], [-3.1, PY, -62], "ledge", "varanda da escola");
+    rail([3.1, PY, -62], [9.9, PY, -62], "ledge", "varanda da escola");
+    stairs("z", -62, -58, -3, 3, PY, SW, 4, "escada da escola");
+    handrail([-1.6, PY + 0.85, -62.3], [-1.6, SW + 0.85, -57.7], "corrimão da escola", () => SW);
+    handrail([1.6, PY + 0.85, -62.3], [1.6, SW + 0.85, -57.7], "corrimão da escola", () => SW);
+    for (const s of [-1, 1]) {
+      const xa = s * 10, xb = s * 22;
+      wedge(Math.min(xa, xb), -66, Math.max(xa, xb), -62, s > 0 ? PY : SW, s > 0 ? SW : PY, "x", C.ramp, C.ledge);
+      framp(Math.min(xa, xb), -66, Math.max(xa, xb), -62, s > 0 ? PY : SW, s > 0 ? SW : PY, "x");
+      const g = (x) => PY + ((SW - PY) * (Math.abs(x) - 10)) / 12;
+      handrail([s * 10.3, g(10.3) + 0.85, -61.85], [s * 21.7, g(21.7) + 0.85, -61.85], "corrimão da rampa", (x) => g(x));
+    }
+    // mastro e bancos do pátio
+    solid.tube([-16, SW, -50], [-16, SW + 7, -50], 0.07, 0.05, 6, C.metal, 1);
+    deco.quad([-16, SW + 6.9, -50], [-14.4, SW + 6.9, -50], [-14.4, SW + 5.9, -50], [-16, SW + 5.9, -50], hex(0x1fae5a));
+    ob(-16, -50, 0.1, SW + 7);
+    for (const s of [-1, 1]) ledgeBox(s * 20 - 0.45, -57, s * 20 + 0.45, -48, SW, SW + 0.46, C.ledge, C.deck, "banco do pátio");
+
+    // ---------- NE: Praça da Matriz ----------
+    block(45, BOUNDS.z0, BOUNDS.x1, -41, "ws", "praça da matriz", "#e2d6c2");
+    MAP.push({ x0: 48, z0: -70, x1: 104, z1: -44, c: "#cfe3c4", name: "praça" });
+    pave(48, -77, 104, -44, SW + 0.006, RECT.petit, 2.4);
+    // igreja: nave com frontão e torre na frente (forma genérica)
+    {
+      const cr = hex(0xf4ecd8), tr = hex(0xffffff), tl = hex(0xc8643c);
+      const X = 78, Y0 = SW + 1.0;
+      solid.box(69, 0, BOUNDS.z0, 87, 11, -82, cr, { noBottom: true });
+      solid.quad([68.4, 11, BOUNDS.z0], [68.4, 11, -82], [X, 16, -82], [X, 16, BOUNDS.z0], tl);
+      solid.quad([87.6, 11, BOUNDS.z0], [X, 16, BOUNDS.z0], [X, 16, -82], [87.6, 11, -82], tl);
+      solid.tri([69, 11, -81.99], [87, 11, -81.99], [X, 16, -81.99], cr);
+      solid.box(X - 3.5, 0, -84, X + 3.5, 26, -77, cr, { noBottom: true });
+      for (const y of [11, 18.5, 26]) solid.box(X - 3.85, y, -84.35, X + 3.85, y + 0.7, -76.65, tr);
+      deco.quad([X - 1.3, 20, -76.97], [X + 1.3, 20, -76.97], [X + 1.3, 25.4, -76.97], [X - 1.3, 25.4, -76.97], hex(0x5a6a8a));
+      deco.quad([X - 1.5, Y0, -76.97], [X + 1.5, Y0, -76.97], [X + 1.5, Y0 + 4.6, -76.97], [X - 1.5, Y0 + 4.6, -76.97], hex(0x7a4a2c));
+      solid.ball([X, 14.6, -76.9], 1.15, tr, 0, 10, 4, { sz: 0.15 });
+      solid.tube([X, 14.6, -76.75], [X + 0.6, 15.2, -76.75], 0.05, 0.05, 4, C.dark);
+      const T = [X, 34, -80.5], b = 26.7;
+      const st = solid.v.length;
+      for (const [p, q] of [[[X - 3.7, b, -84.2], [X + 3.7, b, -84.2]], [[X + 3.7, b, -84.2], [X + 3.7, b, -76.8]], [[X + 3.7, b, -76.8], [X - 3.7, b, -76.8]], [[X - 3.7, b, -76.8], [X - 3.7, b, -84.2]]]) solid.tri(p, q, T, hex(0x6f8fb8));
+      solid.orient([X, b, -80.5], st);
+      solid.box(X - 0.16, 34, -80.66, X + 0.16, 38, -80.34, tr);
+      solid.box(X - 1.2, 36.1, -80.66, X + 1.2, 36.5, -80.34, tr);
+      fbox(69, BOUNDS.z0, 87, -82, 60);
+      fbox(X - 3.5, -84, X + 3.5, -77, 60);
+      // adro + escadaria com corrimão no meio + muretas
+      solid.box(60, 0, -77, 96, Y0, -70, hex(0xe6dccb), { top: hex(0xefe7d8), noBottom: true });
+      fbox(60, -77, 96, -70, Y0);
+      rail([60.2, Y0, -70], [71.8, Y0, -70], "ledge", "mureta do adro");
+      rail([84.2, Y0, -70], [95.8, Y0, -70], "ledge", "mureta do adro");
+      stairs("z", -70, -66, 72, 84, Y0, SW, 5, "escadaria da igreja");
+      handrail([78, Y0 + 0.85, -70.35], [78, SW + 0.85, -65.65], "corrimão da igreja", () => SW);
+      for (const x of [62, 94]) { solid.tube([x, Y0, -71], [x, Y0 + 1.2, -71], 0.25, 0.22, 8, C.white); ob(x, -71, 0.25, Y0 + 1.2); }
+      MAP.push({ x0: 69, z0: -100, x1: 87, z1: -77, c: "#f4ecd8", name: "igreja" });
+    }
+    row("z", -77, 48, 60, 23, [{ w: 12, style: "casas" }]);
+    row("z", -77, 96, BOUNDS.x1, 23, [{ w: 16, style: "casas" }]);
+    fill(60, BOUNDS.z0, 69, -77); fill(87, BOUNDS.z0, 96, -77); fill(104, -77, BOUNDS.x1, -70);
+    row("-x", 104, -70, -44, 8, [{ w: 13, style: "loja", shop: 3, col: 0xf2c14e }, { w: 13, style: "loja", shop: 0, col: 0x7cc8ff }]);
+    // coreto octogonal
+    {
+      const CX = 76, CZ = -57, Rr = 4.2, H = SW + 0.7;
+      const ang = (i) => (i * Math.PI) / 4 + Math.PI / 8;
+      const P = (i, r = Rr, y = H) => [CX + Math.cos(ang(i)) * r, y, CZ + Math.sin(ang(i)) * r];
+      let st = solid.v.length;
+      for (let i = 0; i < 8; i++) {
+        solid.tri([CX, H, CZ], P(i + 1), P(i), hex(0xefe7d8));
+        solid.quad(P(i, Rr, 0), P(i + 1, Rr, 0), P(i + 1), P(i), hex(0xc9b9a6));
+      }
+      solid.orient([CX, H * 0.4, CZ], st);
+      for (let i = 0; i < 8; i++) rail(P(i, Rr - 0.02), P(i + 1, Rr - 0.02), "ledge", "beirada do coreto");
+      const inR = Rr * Math.cos(Math.PI / 8);
+      feats.push({
+        x0: CX - Rr, z0: CZ - Rr, x1: CX + Rr, z1: CZ + Rr,
+        f: (x, z) => {
+          for (let i = 0; i < 8; i++) {
+            const a = (i * Math.PI) / 4 + Math.PI / 4;
+            if ((x - CX) * Math.cos(a) + (z - CZ) * Math.sin(a) > inR) return -9;
+          }
+          return H;
+        },
+      });
+      for (let i = 0; i < 8; i++) {
+        const p = P(i, 3.55, H);
+        solid.tube(p, V.add(p, [0, 2.9, 0]), 0.09, 0.09, 6, C.white);
+        ob(p[0], p[2], 0.1, H + 2.9);
+      }
+      st = solid.v.length;
+      for (let i = 0; i < 8; i++) solid.tri(P(i, 4.7, H + 2.9), P(i + 1, 4.7, H + 2.9), [CX, H + 4.7, CZ], i % 2 ? hex(0x3fae9a) : hex(0x2f9488));
+      solid.orient([CX, H + 2.5, CZ], st);
+      st = solid.v.length;
+      for (let i = 0; i < 8; i++) solid.quad(P(i, 4.7, H + 2.9), P(i + 1, 4.7, H + 2.9), P(i + 1, 4.7, H + 2.6), P(i, 4.7, H + 2.6), C.white);
+      solid.orient([CX, H + 2.75, CZ], st);
+      solid.ball([CX, H + 4.85, CZ], 0.22, YEL, 0, 6, 4);
+      // rampinha pra subir no coreto (leste)
+      wedge(CX + inR - 0.2, CZ - 1.4, CX + inR + 3.6, CZ + 1.4, H, SW, "x", C.ramp, hex(0xc9b9a6));
+      framp(CX + inR - 0.2, CZ - 1.4, CX + inR + 3.6, CZ + 1.4, H, SW, "x");
+      MAP.push({ x0: CX - Rr, z0: CZ - Rr, x1: CX + Rr, z1: CZ + Rr, c: "#3fae9a", name: "coreto" });
+    }
+    // canteiros com palmeira, bancos e postes da praça
+    for (const [x, z] of [[58, -50], [94, -50], [58, -63], [94, -63]]) {
+      ledgeBox(x - 3, z - 2, x + 3, z + 2, 0, SW + 0.5, C.brick, hex(0x6b4a3a), "canteiro da praça");
+      for (let i = 0; i < 4; i++) solid.ball([x - 2 + i * 1.33, SW + 0.75, z + (i % 2 ? 1 : -1)], 0.5, i % 2 ? C.leaf : C.leaf2, 0, 6, 4);
+      palm(x, SW + 0.5, z, 0.95, 0.3, 0.1);
+      ob(x, z, 0.2, SW + 5);
+    }
+    for (const [x0, x1, z] of [[66, 71, -46.2], [81, 86, -46.2], [66, 71, -67.8], [81, 86, -67.8]]) ledgeBox(x0, z - 0.4, x1, z + 0.4, SW, SW + 0.46, C.ledge, C.deck, "banco da praça");
+    for (const [x, z] of [[68, -51], [84, -51], [68, -63], [84, -63], [50, -46], [102, -46]]) lampPraca(x, z);
+
+    // ---------- avenida que sobe até o mirante (Av. Serviliano Silva) ----------
+    const AX0 = 45, AX1 = 100, AH = 5;
+    const yr = (x) => (x <= AX0 ? 0 : x >= AX1 ? AH : (AH * (x - AX0)) / (AX1 - AX0));
+    plain(AX0, -5, AX1, -1, 0, ASF, 55, null, yr);
+    plain(AX0, 1, AX1, 5, 0, ASF, 55, null, yr);
+    framp(AX0, -5, AX1, 5, 0, AH, "x");
+    for (let x = AX0 + 2; x < AX1 - 2; x += 4) {
+      deco.quad([x, yr(x) + 0.012, -3.07], [x, yr(x) + 0.012, -2.93], [x + 2, yr(x + 2) + 0.012, -2.93], [x + 2, yr(x + 2) + 0.012, -3.07], LINE);
+      deco.quad([x, yr(x) + 0.012, 2.93], [x, yr(x) + 0.012, 3.07], [x + 2, yr(x + 2) + 0.012, 3.07], [x + 2, yr(x + 2) + 0.012, 2.93], LINE);
+    }
+    // calçadas inclinadas com guia
+    for (const [z0, z1, zc] of [[-7, -5, -5], [5, 7, 5]]) {
+      pave(AX0, z0, AX1, z1, 0, RECT.pav, 2, (x) => yr(x) + SW + 0.006);
+      framp(AX0, z0, AX1, z1, SW, AH + SW, "x");
+      const zz = zc < 0 ? [zc - 0.3, zc] : [zc, zc + 0.3];
+      wedge(AX0, zz[0], AX1, zz[1], SW, AH + SW, "x", C.curb, C.curbS, 0);
+      rail([AX0 + 0.5, yr(AX0 + 0.5) + SW, zc], [AX1 - 0.5, yr(AX1 - 0.5) + SW, zc], "ledge", "guia da avenida");
+    }
+    // canteiro central com grama e palmeiras (ledge inclinado dos dois lados)
+    {
+      const m0 = AX0 + 3, m1 = AX1 - 3, mh = 0.45;
+      wedge(m0, -1, m1, 1, yr(m0) + mh, yr(m1) + mh, "x", hex(0x6fbf5c), hex(0xd6d2c6), 0);
+      framp(m0, -1, m1, 1, yr(m0) + mh, yr(m1) + mh, "x");
+      rail([m0 + 0.3, yr(m0 + 0.3) + mh, -1], [m1 - 0.3, yr(m1 - 0.3) + mh, -1], "ledge", "canteiro da avenida");
+      rail([m0 + 0.3, yr(m0 + 0.3) + mh, 1], [m1 - 0.3, yr(m1 - 0.3) + mh, 1], "ledge", "canteiro da avenida");
+      for (let x = m0 + 6; x < m1 - 3; x += 12) { palm(x, yr(x) + mh, 0, 0.9, 0.2, 0.1); ob(x, 0, 0.2, yr(x) + mh + 4.5); }
+      MAP.push({ x0: AX0, z0: -7, x1: BOUNDS.x1, z1: 7, c: "#9b97ab", name: "avenida" });
+      MAP.push({ x0: m0, z0: -1, x1: m1, z1: 1, c: "#6fbf5c" });
+    }
+    // mirante no alto: guarda-corpo de ferro com X (grind), banco e a luneta
+    {
+      const MY = AH + SW;
+      fbox(AX1, -7, BOUNDS.x1, 7, MY);
+      solid.box(AX1, 0, -7, BOUNDS.x1, MY, 7, hex(0xd6d2c6), { noBottom: true, top: hex(0xe2dccf) });
+      pave(AX1, -7, BOUNDS.x1, 7, MY + 0.006, RECT.pav);
+      const GX = BOUNDS.x1 - 0.7, n = 7, z0 = -6.8, z1 = 6.8, sl = (z1 - z0) / n;
+      for (let i = 0; i <= n; i++) solid.tube([GX, MY, z0 + i * sl], [GX, MY + 1, z0 + i * sl], 0.05, 0.05, 4, C.gradil, 1);
+      solid.tube([GX, MY + 1, z0 - 0.05], [GX, MY + 1, z1 + 0.05], 0.055, 0.055, 6, C.gradil, 1);
+      solid.tube([GX, MY + 0.14, z0], [GX, MY + 0.14, z1], 0.035, 0.035, 4, C.gradil, 1);
+      for (let i = 0; i < n; i++) {
+        const a = z0 + i * sl, b = a + sl;
+        solid.tube([GX, MY + 0.14, a], [GX, MY + 1, b], 0.03, 0.03, 4, C.gradil, 1);
+        solid.tube([GX, MY + 1, a], [GX, MY + 0.14, b], 0.03, 0.03, 4, C.gradil, 1);
+      }
+      rail([GX, MY + 1, z0 + 0.1], [GX, MY + 1, z1 - 0.1], "rail", "guarda-corpo do mirante");
+      OB.push({ x0: GX - 0.06, x1: GX + 0.06, z0, z1, y1: MY + 0.95 });
+      ledgeBox(105, -6.2, 108.5, -5.4, MY, MY + 0.48, hex(0xdcd6ca), hex(0xe8e3d8), "banco do mirante");
+      ledgeBox(105, 5.4, 108.5, 6.2, MY, MY + 0.48, hex(0xdcd6ca), hex(0xe8e3d8), "banco do mirante");
+      solid.tube([109.6, MY, 0], [109.6, MY + 1.1, 0], 0.06, 0.06, 6, C.dark);
+      solid.tube([109.3, MY + 1.25, 0], [110, MY + 1.4, 0], 0.16, 0.12, 8, hex(0x2f9488));
+      ob(109.6, 0, 0.18, MY + 1.4);
+      for (const z of [-5.6, 5.6]) palm(102, MY, z, 0.9, 0.2, z > 0 ? -0.2 : 0.2);
+      ob(102, -5.6, 0.2, MY + 4.5); ob(102, 5.6, 0.2, MY + 4.5);
+    }
+    // quarteirões da avenida (os prédios acompanham a subida)
+    block(45, -32, BOUNDS.x1, -7, "nw", "avenida norte", "#d8cbbb");
+    block(45, 7, BOUNDS.x1, 32, "sw", "avenida sul", "#d8cbbb");
+    const yAv = (a) => yr(a) + SW;
+    row("-z", -29, 48, BOUNDS.x1, 11, mix(64, 51, 0.5));
+    row("z", 29, 48, BOUNDS.x1, 11, mix(64, 52, 0.5));
+    row("z", -7, 48, AX1, 11, [{ w: 8, style: "loja", shop: 4 }, { w: 8, style: "casas" }, { w: 7, style: "loja", shop: 7 }, { w: 8, style: "casas" }, { w: 9, style: "loja", shop: 5 }, { w: 6, style: "casas" }, { w: 6, style: "casas" }], (a) => yAv(a));
+    row("-z", 7, 48, AX1, 11, [{ w: 7, style: "casas" }, { w: 9, style: "loja", shop: 2 }, { w: 8, style: "casas" }, { w: 8, style: "loja", shop: 1 }, { w: 7, style: "casas" }, { w: 7, style: "loja", shop: 6 }, { w: 6, style: "casas" }], (a) => yAv(a));
+    withY(AH + SW, () => { building(AX1, -18, BOUNDS.x1, -7, 7.4, "z", { style: "casas" }); building(AX1, 7, BOUNDS.x1, 18, 7.4, "-z", { style: "casas" }); });
+
+    // ---------- S: comércio + banco com escadaria ----------
+    block(-38, 41, 36, BOUNDS.z1, "wne", "comércio", "#d8cbbb");
+    row("-z", 44, -35, -6, 12, [{ w: 10, style: "loja", shop: 0, col: 0xf5f1e6 }, { w: 9, style: "loja", shop: 3 }, { w: 10, h: 10, col: 0xffd166 }]);
+    row("-z", 44, 10, 33, 12, [{ w: 11, h: 10.5, col: 0x9b7bff }, { w: 12, style: "loja", shop: 7 }]);
+    row("x", 33, 56, BOUNDS.z1, 11, mix(44, 61, 0.5));
+    row("-x", -35, 56, BOUNDS.z1, 11, mix(44, 62, 0.5));
+    withY(SW, () => building(-6, 52, 10, 66, 9.6, "-z", { col: 0xeef3ff, shop: 10 }));
+    fill(-24, 56, 22, BOUNDS.z1);
+    {
+      const BY = SW + 0.8;
+      solid.box(-4, 0, 48, 8, BY, 52, C.ledge, { top: C.deck, noBottom: true });
+      fbox(-4, 48, 8, 52, BY);
+      stairs("z", 48, 44, -4, 8, BY, SW, 4, "escada do banco");
+      handrail([2, BY + 0.85, 48.3], [2, SW + 0.85, 43.7], "corrimão do banco", () => SW);
+      for (const [x0, x1] of [[-6, -4], [8, 10]]) {
+        ledgeBox(x0, 44, x1, 52, 0, BY + 0.45, C.brick, hex(0x6b4a3a), "floreira do banco");
+        for (let i = 0; i < 4; i++) solid.ball([(x0 + x1) / 2, BY + 0.65, 45 + i * 2], 0.55, i % 2 ? C.leaf : C.leaf2, 0, 6, 4);
+      }
+      MAP.push({ x0: -6, z0: 44, x1: 10, z1: 52, c: "#cfc6e6", name: "banco" });
+    }
+    // ponto de ônibus
+    {
+      const x = 22, z = 42.4;
+      solid.box(x - 2, SW + 2.4, z - 0.6, x + 2, SW + 2.55, z + 1.0, hex(0x2f6fdc));
+      for (const dx of [-1.9, 1.9]) { solid.tube([x + dx, SW, z + 0.9], [x + dx, SW + 2.4, z + 0.9], 0.05, 0.05, 5, C.metal, 1); ob(x + dx, z + 0.9, 0.06, SW + 2.4); }
+      deco.quad([x - 1.9, SW + 0.5, z + 0.95], [x + 1.9, SW + 0.5, z + 0.95], [x + 1.9, SW + 2.3, z + 0.95], [x - 1.9, SW + 2.3, z + 0.95], C.glass, 3);
+      ledgeBox(x - 1.7, z + 0.3, x + 1.7, z + 0.8, SW, SW + 0.46, hex(0x2f6fdc), hex(0x7cc8ff), "banco do ponto");
+    }
+
+    // ---------- SE: quadra, arquibancada e parquinho ----------
+    block(45, 41, BOUNDS.x1, BOUNDS.z1, "wn", "quadra", "#d8cbbb");
+    row("-x", 104, 44, BOUNDS.z1, 8, [{ w: 14, style: "casas" }, { w: 12, style: "loja", shop: 5 }, { w: 33, style: "casas" }]);
+    withY(SW, () => building(48, 82, 104, BOUNDS.z1, 9, "-z", { col: 0xeae4d6 }));
+    plain(48, 44, 104, 82, SW + 0.005, hex(0xe7e1d3), 4);
+    MAP.push({ x0: 58, z0: 50, x1: 96, z1: 72, c: "#4fb59a", name: "quadra" });
+    plain(58, 50, 96, 72, SW + 0.01, hex(0x4fb59a), 38);
+    {
+      const y = SW + 0.016, L2 = (x0, z0, x1, z1) => stripe(x0, z0, x1, z1, y, LINE);
+      L2(58.2, 50.2, 95.8, 50.4); L2(58.2, 71.6, 95.8, 71.8); L2(58.2, 50.2, 58.4, 71.8); L2(95.6, 50.2, 95.8, 71.8); L2(76.9, 50.2, 77.1, 71.8);
+      for (let i = 0; i < 24; i++) { const a = (i / 24) * Math.PI * 2, b = ((i + 1) / 24) * Math.PI * 2; deco.quad([77 + Math.cos(a) * 3, y, 61 + Math.sin(a) * 3], [77 + Math.cos(a) * 3.2, y, 61 + Math.sin(a) * 3.2], [77 + Math.cos(b) * 3.2, y, 61 + Math.sin(b) * 3.2], [77 + Math.cos(b) * 3, y, 61 + Math.sin(b) * 3], LINE); }
+      for (const x of [58.6, 95.4]) {
+        const s = x < 77 ? -1 : 1;
+        for (const z of [59.5, 62.5]) { solid.tube([x, SW, z], [x, SW + 2, z], 0.06, 0.06, 5, C.white); ob(x, z, 0.08, SW + 2); }
+        solid.tube([x, SW + 2, 59.5], [x, SW + 2, 62.5], 0.06, 0.06, 5, C.white);
+        solid.tube([x, SW + 2, 59.5], [x + s * 1.1, SW, 59.5], 0.03, 0.03, 4, C.white);
+        solid.tube([x, SW + 2, 62.5], [x + s * 1.1, SW, 62.5], 0.03, 0.03, 4, C.white);
+      }
+      // arquibancada: 4 degraus altos (cada beirada dá grind)
+      for (let i = 0; i < 4; i++) {
+        const z0 = 74 + i * 2, h = SW + 0.45 * (i + 1);
+        solid.box(60, 0, z0, 94, h, z0 + 2, i % 2 ? hex(0xd8d2c4) : hex(0xccc5b6), { top: i % 2 ? hex(0x7cc8ff) : hex(0xff8dc0), noBottom: true });
+        fbox(60, z0, 94, z0 + 2, h);
+        rail([60.2, h, z0], [93.8, h, z0], "ledge", "arquibancada");
+      }
+      MAP.push({ x0: 60, z0: 74, x1: 94, z1: 82, c: "#ff8dc0", name: "arquibancada" });
+      // parquinho
+      const px = 100, pz = 49;
+      solid.box(px - 0.8, SW, pz - 0.8, px + 0.8, SW + 1.6, pz + 0.8, hex(0xff8a1f), { top: hex(0xffd23f) });
+      fbox(px - 0.8, pz - 0.8, px + 0.8, pz + 0.8, SW + 1.6);
+      solid.box(px - 0.7, SW + 1.6, pz - 0.7, px + 0.7, SW + 2.6, pz + 0.7, hex(0x2f6fdc), { top: hex(0xe0302b) });
+      wedge(px - 0.5, pz + 0.8, px + 0.5, pz + 4.4, SW + 1.6, SW + 0.2, "z", hex(0x3fd0ff), hex(0x2f6fdc));
+      framp(px - 0.5, pz + 0.8, px + 0.5, pz + 4.4, SW + 1.6, SW + 0.2, "z");
+      for (const dz of [0, 1.5]) { solid.tube([px - 3, SW, pz + 6 + dz], [px - 3, SW + 2.2, pz + 6 + dz], 0.06, 0.06, 5, hex(0xe0302b)); }
+      solid.tube([px - 3, SW + 2.2, pz + 6], [px - 3, SW + 2.2, pz + 7.5], 0.06, 0.06, 5, hex(0xe0302b));
+      ob(px - 3, pz + 6, 0.08, SW + 2.2); ob(px - 3, pz + 7.5, 0.08, SW + 2.2);
+    }
+
+    // ---------- árvores, postes e placas ao longo das ruas ----------
+    posteLine("x", -43.2, -96, -52, 16, [0, 1]);
+    posteLine("x", 43.2, -96, -52, 16, [0, -1]);
+    posteLine("x", -43.2, -34, 32, 22, [0, 1]);
+    posteLine("x", 43.2, -34, 32, 22, [0, -1]);
+    posteLine("x", -30.6, 50, 108, 14.5, [0, -1]);
+    posteLine("x", 30.6, 50, 108, 14.5, [0, 1]);
+    posteLine("z", -48.8, -96, -46, 16, [1, 0]);
+    posteLine("z", -48.8, 46, 96, 16, [1, 0]);
+    posteLine("z", 46.4, 46, 96, 16, [-1, 0]);
+    posteLine("x", -6.4, 50, 94, 11, [0, 1], (x) => yr(x) + SW);
+    posteLine("x", 6.4, 50, 94, 11, [0, -1], (x) => yr(x) + SW);
+    for (const [x, z, c] of [[-60, -42.6, 0xff8fc8], [-86, -42.6, 0xffd23f], [-80, 42.6, 0xff8fc8], [-25, 42.6, 0xffd23f], [-20, -42.6, 0xff8fc8], [66, -30.4, 0xffd23f], [92, 30.4, 0xff8fc8], [-48.6, 70, 0xffd23f], [46.6, -60, 0xff8fc8], [46.6, 64, 0xffd23f]])
+      ipe(x, z, SW, c);
+    for (const [x, z] of [[-36.5, -50], [46.6, -20], [-48.5, 20], [-36.5, 50], [46.6, 50], [30, -42.8]]) lixeira(x, z);
+    plate(46.4, -42.6, 0, Math.PI / 2);
+    plate(46.6, 8.2, 1, 0);
+    plate(-48.6, -42.6, 2, 0);
+    plate(-48.6, 42.6, 3, 0);
+    // placa verde na entrada da avenida
+    solid.tube([46.2, SW, -9], [46.2, SW + 4.3, -9], 0.06, 0.06, 6, C.metal, 1);
+    solid.tube([46.2, SW, -12.4], [46.2, SW + 4.3, -12.4], 0.06, 0.06, 6, C.metal, 1);
+    deco.decal([46.12, SW + 3.4, -10.7], [0, 0, 1], [0, 1, 0], 3.3, 1.65, RECT.road);
+    ob(46.2, -9, 0.08, SW + 4.3); ob(46.2, -12.4, 0.08, SW + 4.3);
+    // carros parados na rua
+    car(41.6, -60, "z", 0xf5f1e6, 0);
+    car(41.6, 66, "z", 0x7cc8ff, 0);
+    car(-75, -34.6, "x", 0xffd166, 0);
+    car(86, 38.4, "x", 0xe0302b, 0);
+    car(-20, 38.4, "x", 0x1fae5a, 0);
+    // outdoors em cima de prédios
+    billboard([8, SW + 9.2 + 3.2, -84], [1, 0, 0], RECT.bill[0]);
+    billboard([-11, SW + 10 + 3.2, 50], [-1, 0, 0], RECT.bill[1]);
+
+    // ---------- grafites, latas e gaps da cidade ----------
+    TAGS.push(
+      { c: [47.95, 2.6, -12.5], r: [0, 0, 1], n: [-1, 0, 0], w: 4.4, h: 2.2, piece: 3 },
+      { c: [66, SW + 0.5, -69.96], r: [1, 0, 0], n: [0, 0, 1], w: 3.2, h: 0.9, piece: 4 },
+      { c: [-23.96, 2.4, -50], r: [0, 0, -1], n: [1, 0, 0], w: 4.2, h: 2.1, piece: 0 },
+      { c: [-79.96, 2.8, 11], r: [0, 0, -1], n: [1, 0, 0], w: 4.4, h: 2.2, piece: 1 },
+      { c: [66, 3.2, 81.96], r: [-1, 0, 0], n: [0, 0, -1], w: 4.6, h: 2.0, piece: 5 },
+    );
+    CANS.push(
+      [78, 2.4, -68], [76, SW + 1.8, -57], [0, 2.1, -60], [16, 1.8, -61.8], [-71.5, SW + 2.3, 9], [-78.5, SW + 2.1, -12],
+      [72, yr(72) + 1.6, 0], [97, yr(97) + 1.6, -6], [108, AH + 1.4, 0], [2, SW + 1.8, 46], [22, SW + 3.3, 42.6], [77, SW + 2.8, 81],
+      [-46, 1.2, 0], [40, 1.2, -80], [-60, 1.2, 36.5],
+    );
+    GAPS.push(
+      { name: "ESCADARIA DA IGREJA", pts: 500, from: (s) => s.z < -69.8 && s.y > SW + 0.8 && s.x > 70 && s.x < 86, to: (s) => s.z > -65.6 && s.y < SW + 0.3 },
+      { name: "ESCADA DA ESCOLA", pts: 400, from: (s) => s.z < -61.8 && s.y > SW + 0.7 && Math.abs(s.x) < 4, to: (s) => s.z > -57.6 && s.y < SW + 0.3 },
+      { name: "ESCADA DO BANCO", pts: 400, from: (s) => s.z > 47.8 && s.y > SW + 0.6 && s.x > -4 && s.x < 8, to: (s) => s.z < 43.8 && s.y < SW + 0.3 },
+      { name: "SOBRE O CORETO", pts: 450, from: (s) => Math.hypot(s.x - 76, s.z + 57) > 4.4 && s.z < -60, to: (s) => Math.hypot(s.x - 76, s.z + 57) > 4.4 && s.z > -54, cond: (s) => Math.abs(s.x - 76) < 3.5 },
+      { name: "PULA O CARRO", pts: 300, from: (s) => s.x < -73.6, to: (s) => s.x > -69.4, cond: (s) => Math.abs(s.z - 9) < 0.9 || Math.abs(s.z + 15) < 0.9 || Math.abs(s.z + 6) < 0.9 },
+      { name: "DOCA → CHÃO", pts: 250, from: (s) => s.x < -77 && s.y > SW + 0.9 && s.z < -7, to: (s) => s.x > -75 && s.y < SW + 0.3 },
+      { name: "ARQUIBANCADA ABAIXO", pts: 450, from: (s) => s.z > 79.9 && s.y > SW + 1.7, to: (s) => s.z < 73.6 && s.y < SW + 0.3 },
+      { name: "TERRAÇO → RUA", pts: 350, from: (s) => s.x > -38 && s.x < -36 && s.y > 1.3, to: (s) => s.x < -40.5 && s.y < 0.3 },
+    );
+    return { obstacles: OB, tags: TAGS, cans: CANS, gaps: GAPS, map: MAP };
+  }
+  return { build, BOUNDS };
+})();
+</script>
 <script>// A praça: geometria visual + mapa de altura + corrimãos/bordas pra grind + pontos de grafite,
 // latas, letras e gaps. Tudo alinhado aos eixos pra física simples e previsível.
 "use strict";
@@ -2127,11 +2809,11 @@ const LEVEL = (() => {
     const qps = [];
 
     // ---------- chão ----------
-    const G = 40;
-    for (let x = -G; x < G; x += 4)
-      for (let z = -36; z < 36; z += 4) {
-        const c = (((x + z) / 4) % 2 + 2) % 2 === 0 ? C.floor : C.floor2;
-        flat.quad([x, 0, z], [x, 0, z + 4], [x + 4, 0, z + 4], [x + 4, 0, z], c);
+    for (let x = -38; x < 36; x += 4)
+      for (let z = -32; z < 32; z += 4) {
+        const c = (((x + 2 + z) / 4) % 2 + 2) % 2 === 0 ? C.floor : C.floor2;
+        const xb = Math.min(36, x + 4);
+        flat.quad([x, 0, z], [x, 0, z + 4], [xb, 0, z + 4], [xb, 0, z], c);
       }
     // faixas pintadas e setas
     const stripe = (x0, z0, x1, z1, c) => deco.quad([x0, 0.01, z0], [x0, 0.01, z1], [x1, 0.01, z1], [x1, 0.01, z0], c);
@@ -2265,6 +2947,11 @@ const LEVEL = (() => {
     // rampa (bank) pra subir no terraço
     solid.merge(swapXZ(new Mesh().prof([[-20, TH], [-14, 0]], 7, 13, C.ramp, C.wall)));
     framp(-20, 7, -14, 13, TH, 0, "x");
+    rail([-38, TH, -13.8], [-38, TH, -4.2], "ledge", "borda do terraço (rua)");
+    rail([-38, TH, 4.2], [-38, TH, 13.8], "ledge", "borda do terraço (rua)");
+    solid.tube([-38, TH - 0.02, -14], [-38, TH - 0.02, 14], 0.045, 0.045, 6, C.metal, 1);
+    solid.merge(swapXZ(new Mesh().prof([[-44, 0], [-38, TH]], -4, 4, C.ramp, C.wall)));
+    framp(-44, -4, -38, 4, 0, TH, "x");
     // bancos (ledges) no terraço
     for (const [z0, z1] of [[-12, -5], [6, 12]]) {
       solid.box(-30, TH, z0, -28.6, TH + 0.46, z1, C.ledge, { top: C.deck });
@@ -2495,26 +3182,6 @@ const LEVEL = (() => {
       fbox(x0, z0, x1, z1, 60);
       return { o, r, n };
     }
-    // norte (atrás do deck)
-    building(-40, -46, -24, -31.5, 10.5, "z", { col: 0x3f63c8 }); // o prédio azul da esquina
-    building(-24, -44, -8, -31.5, 7.6, "z", { style: "loja", shop: 1, col: 0xffd166 });
-    building(-8, -44, 9, -31.5, 10.5, "z", { col: 0xf1e3c2, shop: 3 });
-    building(9, -46, 24, -31.5, 7.2, "z", { style: "loja", shop: 2, col: 0xe0483e });
-    building(24, -46, 40, -31.5, 11, "z", { col: 0xf08a6a, shop: 4 });
-    // sul
-    building(-40, 31.5, -22, 46, 0, "-z", { style: "casas" });
-    building(-22, 31.5, -6, 44, 8, "-z", { style: "loja", shop: 5, col: 0x6be3d9 });
-    building(-6, 31.5, 10, 44, 10, "-z", { col: 0xf5f1e6, shop: 6 });
-    building(10, 31.5, 26, 46, 7.4, "-z", { style: "loja", shop: 7, col: 0xffd166 });
-    building(26, 31.5, 40, 46, 0, "-z", { style: "casas" });
-    // leste
-    building(36, -31.5, 50, -14, 7.4, "-x", { style: "loja", shop: 0, col: 0x7cc8ff });
-    building(36, -14, 48, 4, 10, "-x", { col: 0xe0483e });
-    building(36, 4, 50, 31.5, 0, "-x", { style: "casas" });
-    // oeste (atrás do terraço)
-    building(-52, -31.5, -38, -12, 0, "x", { style: "casas" });
-    building(-50, -12, -38, 12, 9.5, "x", { col: 0x8fd3a8 });
-    building(-52, 12, -38, 31.5, 0, "x", { style: "casas" });
     // outdoors
     const billboard = (p, r, rect, h) => {
       const n = V.cross(r, [0, 1, 0]);
@@ -2522,17 +3189,10 @@ const LEVEL = (() => {
       solid.box(p[0] - Math.abs(r[0]) * 4.2 - Math.abs(n[0]) * 0.15, p[1] - 1.4, p[2] - Math.abs(r[2]) * 4.2 - Math.abs(n[2]) * 0.15, p[0] + Math.abs(r[0]) * 4.2 + Math.abs(n[0]) * 0.15, p[1] + 2.6, p[2] + Math.abs(r[2]) * 4.2 + Math.abs(n[2]) * 0.15, C.white);
       deco.decal(V.add(p, V.add([0, 0.6, 0], V.mul(n, 0.17))), r, [0, 1, 0], 7.8, 3.7, rect);
     };
-    billboard([0.5, 13.7, -38], [1, 0, 0], RECT.bill[0]);
-    billboard([-14, 11.2, 38], [-1, 0, 0], RECT.bill[1]);
-    billboard([42, 13.2, -5], [0, 0, 1], RECT.bill[0]);
     // cartazes nas fachadas e muretas
     const poster = (p, r, i) => deco.decal(p, r, [0, 1, 0], 0.9, 1.8, RECT.poster[i]);
-    poster([-35.97, 2.6, -4], [0, 0, -1], 0);
-    poster([-35.97, 2.6, -2.9], [0, 0, -1], 1);
-    poster([35.97, 1.6, 20], [0, 0, 1], 2);
-    poster([35.97, 1.6, 21.1], [0, 0, 1], 3);
-    poster([18, 1.5, -31.47], [1, 0, 0], 1);
-    poster([19.1, 1.5, -31.47], [1, 0, 0], 2);
+    poster([14.18, 1.5, -29], [0, 0, 1], 1);
+    poster([14.18, 1.5, -27.9], [0, 0, 1], 2);
     poster([-19.97, 0.75, -12], [0, 0, -1], 3);
     // muros/fechamento entre terraço e sul/norte (pra não vazar)
     fbox(-38, -31.5, -14, -14, 60);
@@ -2597,7 +3257,7 @@ const LEVEL = (() => {
       poste(x, z, 0, { arm: i > 0 && i < 4 ? [-1, 0] : null, trafo: i === 2 }));
     for (let i = 0; i < pE.length - 1; i++) for (let k = 0; k < 3; k++) fio(pE[i][k], pE[i + 1][k], 0.55 + k * 0.08);
     // ramais pras casas e lojas do lado leste
-    for (const [i, z, y] of [[1, -16.5, 4.6], [2, -3, 4.6], [3, 9, 3.0], [3, 16, 3.0], [1, -9, 4.6]]) fio(pE[i][2], [35.98, y, z], 0.25);
+    for (const [i, z, y] of [[1, -20, 5.2], [3, 20, 5.2]]) fio(pE[i][2], [47.98, y, z], 0.7);
     // semáforo pendurado no poste da esquina
     {
       const y = 5.5;
@@ -2620,14 +3280,16 @@ const LEVEL = (() => {
     fio(pW[1][1], pS[0][0], 0.8);
 
     // ---------- guia amarela + calçada de bloquete no leste ----------
-    solid.box(29.6, 0, -22, 29.92, 0.14, 22, C.curbS, { top: C.curb, noBottom: true });
-    fbox(29.6, -22, 29.92, 22, 0.14);
-    rail([29.6, 0.14, -21.8], [29.6, 0.14, 21.8], "ledge", "guia amarela");
+    solid.box(29.6, 0, -26, 29.92, 0.14, 26, C.curbS, { top: C.curb, noBottom: true });
+    solid.box(35.7, 0, -26, 36, 0.14, 26, C.curbS, { top: C.curb, noBottom: true });
+    fbox(29.6, -26, 36, 26, 0.14);
+    rail([29.6, 0.14, -25.6], [29.6, 0.14, 25.6], "ledge", "guia amarela");
+    rail([36, 0.14, -25.6], [36, 0.14, 25.6], "ledge", "guia amarela");
     for (let z = -26; z < 26; z += 0.5)
-      for (let x = 29.92, j = 0; x < 36; j++) {
+      for (let x = 29.92, j = 0; x < 35.7; j++) {
         const w = j === 0 && (Math.round(z * 2) % 2) ? 0.5 : 1;
-        const xb = Math.min(36, x + w);
-        flat.quad([x, 0.006, z], [x, 0.006, z + 0.5], [xb, 0.006, z + 0.5], [xb, 0.006, z], (Math.round(z * 2) + j) % 2 ? C.pav : C.pav2);
+        const xb = Math.min(35.7, x + w);
+        flat.quad([x, 0.146, z], [x, 0.146, z + 0.5], [xb, 0.146, z + 0.5], [xb, 0.146, z], (Math.round(z * 2) + j) % 2 ? C.pav : C.pav2);
         x = xb;
       }
 
@@ -2637,10 +3299,18 @@ const LEVEL = (() => {
     solid.box(34.92, 2.6, -15.7, 35.0, 4.2, -12.3, hex(0x0e5a34));
     deco.decal([34.9, 3.4, -14], [0, 0, 1], [0, 1, 0], 3.3, 1.65, RECT.road);
     // placas azuis de nome de rua nas esquinas
-    deco.decal([35.955, 4.2, -15.0], [0, 0, 1], [0, 1, 0], 1.9, 0.33, RECT.plate[0]);
-    deco.decal([24.8, 4.3, 31.455], [-1, 0, 0], [0, 1, 0], 1.9, 0.33, RECT.plate[1]);
-    deco.decal([-25.4, 3.6, -31.455], [1, 0, 0], [0, 1, 0], 1.9, 0.33, RECT.plate[2]);
-    deco.decal([-14.165, 2.3, 15.6], [0, 0, -1], [0, 1, 0], 1.9, 0.33, RECT.plate[3]);
+    // a cidade em volta (city.js): ruas, quarteirões e picos
+    const withY = (dy, fn) => {
+      const s0 = solid.v.length, d0 = deco.v.length;
+      const r = fn();
+      if (dy) {
+        for (let i = s0; i < solid.v.length; i += 12) solid.v[i + 1] += dy;
+        for (let i = d0; i < deco.v.length; i += 12) deco.v[i + 1] += dy;
+      }
+      return r;
+    };
+    const CT = CITY.build({ solid, flat, deco, feats, fbox, framp, rail, building, poste, fio, palm, tree, withY, C, CASA, TELHA, RECT, V, hex, billboard });
+    const B = CITY.BOUNDS;
     for (const [x, z] of [[30, -24], [30.8, -23.2], [-10, 12.5]]) {
       solid.tube([x, 0, z], [x, 0.7, z], 0.2, 0.03, 7, hex(0xff7a1a));
       solid.tube([x, 0.25, z], [x, 0.4, z], 0.15, 0.12, 7, C.white, 0, { cap: false });
@@ -2654,20 +3324,18 @@ const LEVEL = (() => {
     solid.box(34.6, 0, 2, 35.6, 2.1, 3.3, hex(0xff4fa3));
     deco.quad([34.58, 0.9, 2.1], [34.58, 0.9, 3.2], [34.58, 2.0, 3.2], [34.58, 2.0, 2.1], hex(0xbdfcff), 2);
 
-    // ---------- paisagem de Itaberá: pasto, morros com casinhas, a igreja e a lona do Complexo Esportivo ----------
+    // ---------- paisagem: pasto, morros com casinhas, a lona do Complexo Esportivo, ginásio e antenas ----------
     const far = new Mesh();
     const fr = ART.rng(5);
+    const inCity = (x, z, m = 6) => x > B.x0 - m && x < B.x1 + m && z > B.z0 - m && z < B.z1 + m;
     {
-      const NA = 48;
-      for (let i = 0; i < NA; i++) {
-        const a0 = (i / NA) * Math.PI * 2, a1 = ((i + 1) / NA) * Math.PI * 2;
-        for (const [r0, r1, c] of [[44, 110, C.pasto], [110, 240, V.mul(C.pasto, 0.93)]])
-          far.quad([Math.cos(a0) * r0, -0.03, Math.sin(a0) * r0], [Math.cos(a0) * r1, -0.03, Math.sin(a0) * r1], [Math.cos(a1) * r1, -0.03, Math.sin(a1) * r1], [Math.cos(a1) * r0, -0.03, Math.sin(a1) * r0], c);
-      }
+      // pasto só em volta da cidade (embaixo dela brigaria com o asfalto na profundidade)
+      const E = 430, y = -0.02, g = (x0, z0, x1, z1, c) => far.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], c);
+      g(-E, -E, E, B.z0, C.pasto); g(-E, B.z1, E, E, C.pasto); g(-E, B.z0, B.x0, B.z1, C.pasto); g(B.x1, B.z0, E, B.z1, C.pasto);
     }
     const hills = [];
-    for (let i = 0; i < 22; i++) {
-      const a = (i / 22) * Math.PI * 2 + fr() * 0.2, d = 135 + fr() * 55, r = 34 + fr() * 26, top = 12 + fr() * 20;
+    for (let i = 0; i < 26; i++) {
+      const a = (i / 26) * Math.PI * 2 + fr() * 0.2, d = 265 + fr() * 80, r = 55 + fr() * 35, top = 20 + fr() * 30;
       const c = [Math.cos(a) * d, -r * 0.12, Math.sin(a) * d], sy = (top + r * 0.12) / r;
       far.ball(c, r, V.lerp(hex(0x8cc06c), hex(0x6fae5e), fr()), 0, 14, 6, { sy });
       hills.push({ c, r, sy });
@@ -2684,53 +3352,37 @@ const LEVEL = (() => {
       const y = groundAt(x, z) - 0.2, w = (2.6 + fr() * 2) * s, dpt = (2.4 + fr() * 1.6) * s, hh = (2.2 + fr() * 0.8) * s;
       far.box(x - w / 2, y, z - dpt / 2, x + w / 2, y + hh, z + dpt / 2, CASA[Math.floor(fr() * CASA.length)], { noBottom: true });
       const rc = TELHA[Math.floor(fr() * 3)], rh = 1.1 * s, ov = 0.3 * s;
-      const A = [x - w / 2 - ov, y + hh, z - dpt / 2 - ov], B = [x + w / 2 + ov, y + hh, z - dpt / 2 - ov], Cc = [x + w / 2 + ov, y + hh, z + dpt / 2 + ov], D = [x - w / 2 - ov, y + hh, z + dpt / 2 + ov], T = [x, y + hh + rh, z];
+      const A = [x - w / 2 - ov, y + hh, z - dpt / 2 - ov], Bq = [x + w / 2 + ov, y + hh, z - dpt / 2 - ov], Cc = [x + w / 2 + ov, y + hh, z + dpt / 2 + ov], D = [x - w / 2 - ov, y + hh, z + dpt / 2 + ov], T = [x, y + hh + rh, z];
       const st = far.v.length;
-      far.tri(A, B, T, rc); far.tri(B, Cc, T, V.mul(rc, 0.9)); far.tri(Cc, D, T, rc); far.tri(D, A, T, V.mul(rc, 0.9));
+      far.tri(A, Bq, T, rc); far.tri(Bq, Cc, T, V.mul(rc, 0.9)); far.tri(Cc, D, T, rc); far.tri(D, A, T, V.mul(rc, 0.9));
       far.orient([x, y, z], st);
     };
-    for (let i = 0; i < 150; i++) {
-      const a = fr() * Math.PI * 2, d = 66 + fr() * 95;
+    const CXc = 168, CZc = 24;
+    for (let i = 0; i < 190; i++) {
+      const a = fr() * Math.PI * 2, d = 120 + fr() * 190;
       const x = Math.cos(a) * d, z = Math.sin(a) * d;
-      if (Math.hypot(x + 48, z - 88) < 22 || Math.hypot(x - 72, z - 48) < 26) continue;
-      casinha(x, z, 1 + d / 160);
+      if (inCity(x, z) || Math.hypot(x - CXc, z - CZc) < 40) continue;
+      casinha(x, z, 1.2 + d / 200);
     }
-    for (let i = 0; i < 60; i++) {
-      const a = fr() * Math.PI * 2, d = 62 + fr() * 110, x = Math.cos(a) * d, z = Math.sin(a) * d, y = groundAt(x, z);
-      if (Math.hypot(x + 48, z - 88) < 20 || Math.hypot(x - 72, z - 48) < 24) continue;
-      const r = 2 + fr() * 2.5;
+    for (let i = 0; i < 80; i++) {
+      const a = fr() * Math.PI * 2, d = 118 + fr() * 180, x = Math.cos(a) * d, z = Math.sin(a) * d, y = groundAt(x, z);
+      if (inCity(x, z) || Math.hypot(x - CXc, z - CZc) < 38) continue;
+      const r = 2.5 + fr() * 3;
       far.ball([x, y + r * 0.9, z], r, V.lerp(hex(0x3f9a55), hex(0x5cb562), fr()), 0, 7, 4);
     }
-    // a igreja matriz (forma genérica: nave com frontão e torre central com cruz)
+    // a lona de circo do Complexo Esportivo (vista lá de cima do mirante), o ginásio e as antenas
     {
-      const X = -48, Z = 88, cr = hex(0xf4ecd8), tr = hex(0xffffff), tl = hex(0xc8643c);
-      far.box(X - 7, 0, Z, X + 7, 11, Z + 26, cr, { noBottom: true });
-      far.quad([X - 7.6, 11, Z], [X - 7.6, 11, Z + 26], [X, 16, Z + 26], [X, 16, Z], tl);
-      far.quad([X + 7.6, 11, Z], [X, 16, Z], [X, 16, Z + 26], [X + 7.6, 11, Z + 26], tl);
-      far.tri([X - 7, 11, Z - 0.01], [X + 7, 11, Z - 0.01], [X, 16, Z - 0.01], cr);
-      far.box(X - 3.2, 0, Z - 3.2, X + 3.2, 28, Z + 3.2, cr, { noBottom: true });
-      for (const y of [11, 19, 28]) far.box(X - 3.6, y, Z - 3.6, X + 3.6, y + 0.7, Z + 3.6, tr);
-      far.box(X - 1.4, 21, Z - 3.25, X + 1.4, 26.5, Z - 3.2, hex(0x5a6a8a));
-      far.box(X - 1.6, 0, Z - 3.3, X + 1.6, 6.5, Z - 3.25, hex(0x7a4a2c));
-      const T = [X, 37, Z], b = 28.7;
-      for (const [p, q] of [[[X - 3.4, b, Z - 3.4], [X + 3.4, b, Z - 3.4]], [[X + 3.4, b, Z - 3.4], [X + 3.4, b, Z + 3.4]], [[X + 3.4, b, Z + 3.4], [X - 3.4, b, Z + 3.4]], [[X - 3.4, b, Z + 3.4], [X - 3.4, b, Z - 3.4]]]) far.tri(p, q, T, hex(0x6f8fb8));
-      far.box(X - 0.18, 37, Z - 0.18, X + 0.18, 41, Z + 0.18, tr);
-      far.box(X - 1.3, 39.2, Z - 0.18, X + 1.3, 39.6, Z + 0.18, tr);
-    }
-    // a lona de circo do Complexo Esportivo, o ginásio e as torres de antena
-    {
-      const X = 72, Z = 48, R = 12, Hw = 5.5, Ht = 17, N = 20;
+      const X = CXc, Z = CZc, Rr = 13, Hw = 6, Ht = 19, N = 20;
       for (let i = 0; i < N; i++) {
         const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2, c = i % 2 ? hex(0xe0302b) : hex(0xfafafa);
-        const p0 = [X + Math.cos(a0) * R, 0, Z + Math.sin(a0) * R], p1 = [X + Math.cos(a1) * R, 0, Z + Math.sin(a1) * R];
+        const p0 = [X + Math.cos(a0) * Rr, 0, Z + Math.sin(a0) * Rr], p1 = [X + Math.cos(a1) * Rr, 0, Z + Math.sin(a1) * Rr];
         far.quad(p0, p1, V.add(p1, [0, Hw, 0]), V.add(p0, [0, Hw, 0]), c);
-        const q0 = [X + Math.cos(a0) * (R + 0.6), Hw, Z + Math.sin(a0) * (R + 0.6)], q1 = [X + Math.cos(a1) * (R + 0.6), Hw, Z + Math.sin(a1) * (R + 0.6)];
+        const q0 = [X + Math.cos(a0) * (Rr + 0.6), Hw, Z + Math.sin(a0) * (Rr + 0.6)], q1 = [X + Math.cos(a1) * (Rr + 0.6), Hw, Z + Math.sin(a1) * (Rr + 0.6)];
         far.tri(q0, q1, [X, Ht, Z], c);
       }
       far.tube([X, Ht - 0.5, Z], [X, Ht + 3, Z], 0.12, 0.08, 5, hex(0x8a8a8a));
       far.quad([X, Ht + 3, Z], [X + 2, Ht + 2.6, Z], [X + 2, Ht + 1.8, Z], [X, Ht + 2, Z], hex(0xffd23f));
-      // ginásio de telhado em arco
-      const gx0 = 86, gx1 = 108, gz0 = 26, gz1 = 42, gh = 6;
+      const gx0 = 150, gx1 = 174, gz0 = -30, gz1 = -12, gh = 7;
       far.box(gx0, 0, gz0, gx1, gh, gz1, hex(0xeae4d6), { noBottom: true });
       const NR = 10;
       for (let i = 0; i < NR; i++) {
@@ -2738,7 +3390,7 @@ const LEVEL = (() => {
         const z0 = zc - Math.cos(t0) * rr, y0 = gh + Math.sin(t0) * rr * 0.55, z1 = zc - Math.cos(t1) * rr, y1 = gh + Math.sin(t1) * rr * 0.55;
         far.quad([gx0, y0, z0], [gx1, y0, z0], [gx1, y1, z1], [gx0, y1, z1], hex(0x7d8aa3));
       }
-      for (const [x, z, hgt] of [[96, 64, 46], [104, 54, 40]]) {
+      for (const [x, z, hgt] of [[192, 52, 48], [200, 36, 42]]) {
         const NS = 8;
         for (let i = 0; i < NS; i++) far.tube([x, (i / NS) * hgt, z], [x, ((i + 1) / NS) * hgt, z], 0.5 - i * 0.04, 0.5 - (i + 1) * 0.04, 4, i % 2 ? hex(0xe0302b) : hex(0xfafafa));
       }
@@ -2752,12 +3404,8 @@ const LEVEL = (() => {
 
     // ---------- pontos de grafite (meta), latas, letras, gaps ----------
     const tags = [
-      { c: [-6, 5.2, -31.45], r: [1, 0, 0], n: [0, 0, 1], w: 5.2, h: 2.6, piece: 0 },
-      { c: [7, 5.2, -31.45], r: [1, 0, 0], n: [0, 0, 1], w: 5.2, h: 2.6, piece: 1 },
       { c: [-19.95, 0.78, -9], r: [0, 0, -1], n: [1, 0, 0], w: 3.2, h: 1.45, piece: 2 },
-      { c: [35.95, 2.3, -8], r: [0, 0, 1], n: [-1, 0, 0], w: 5, h: 2.5, piece: 3 },
-      { c: [-3, 5.2, 31.45], r: [-1, 0, 0], n: [0, 0, -1], w: 5.2, h: 2.6, piece: 4 },
-      { c: [-35.95, 3.4, 0], r: [0, 0, -1], n: [1, 0, 0], w: 5, h: 2.5, piece: 5 },
+      ...CT.tags,
     ];
     for (const t of tags) {
       const ghost = new Mesh().decal(V.add(t.c, V.mul(t.n, 0.02)), t.r, [0, 1, 0], t.w * 0.9, t.h * 0.9, RECT.ghost);
@@ -2770,6 +3418,7 @@ const LEVEL = (() => {
       [0, 1.95, 0], [-17.6, 2.3, 0], [-17.9, 2.25, 2.2], [17, 2.6, 0], [8, 1.3, -9.5], [26.6, 1.3, 0],
       [-6, 6.3, -27.95], [6, 6.0, 27.95], [-29.3, TH + 1.25, -8], [-17, 2.4, 10], [-3.5, 1.3, 8.6], [21.3, 1.0, 12],
       [0, 6.45, -28.2], [16, 1.35, 10.5],
+      ...CT.cans,
     ];
     const letters = [
       { ch: "P", p: [0, 2.7, -3.2] },
@@ -2786,11 +3435,12 @@ const LEVEL = (() => {
       { name: "TERRAÇO → PRAÇA", pts: 250, from: (s) => s.x < -20 && s.y > 1.3, to: (s) => s.x > -14 && s.y < 0.2 },
       { name: "PULA O LEDGE", pts: 200, from: (s) => s.x < 25.6, to: (s) => s.x > 27.6, cond: (s) => Math.abs(s.z) < 14 },
       { name: "PULA O LEDGE", pts: 200, from: (s) => s.x > 27.6, to: (s) => s.x < 25.6, cond: (s) => Math.abs(s.z) < 14 },
+      ...CT.gaps,
     ];
 
     // ---------- mapa de altura ----------
     function heightAt(x, z) {
-      if (x < -38 || x > 36 || z < -31.5 || z > 31.5) return 60;
+      if (x < B.x0 || x > B.x1 || z < B.z0 || z > B.z1) return 60;
       let h = 0;
       for (const f of feats) {
         if (x < f.x0 || x > f.x1 || z < f.z0 || z > f.z1) continue;
@@ -2823,8 +3473,10 @@ const LEVEL = (() => {
       { x0: 7.95, x1: 8.05, z0: -14, z1: -4, y1: 0.5 },
       { x0: 12, x1: 20, z0: 10.45, z1: 10.55, y1: 0.55 },
       { x0: -0.05, x1: 0.05, z0: -1.9, z1: 1.9, y1: 1.13 },
+      ...CT.obstacles,
     ];
-    return { solid, flat, deco, far, clouds, rails, tags, cans, letters, gaps, heightAt, qpAt, RAD, TH, obstacles };
+    const map = { ...B, rects: [{ x0: -38, z0: -32, x1: 36, z1: 32, c: "#d3ccdf", name: "praça" }, { x0: -38, z0: -14, x1: -20, z1: 14, c: "#e9dfcf" }, { x0: -14, z0: -31.5, x1: 14, z1: -24.8, c: "#3ec9d6" }, { x0: -14, z0: 24.8, x1: 14, z1: 31.5, c: "#3ec9d6" }, ...CT.map] };
+    return { solid, flat, deco, far, clouds, rails, tags, cans, letters, gaps, heightAt, qpAt, RAD, TH, obstacles, map };
   }
   return { build };
 })();
@@ -3302,7 +3954,7 @@ const STREET = (() => {
   const SK_GRAB = { none: "Pegada no Patins", left: "Pernas Abertas", right: "Patins na Mão", up: "Joelho no Peito", down: "Pegada de Trás" };
   const SK_GRIND = { none: "Soul", up: "Royale", down: "Unity", left: "Makio", right: "Frontside" };
   const GOALS = [
-    { id: "score", t: "Fazer 20.000 pontos numa sessão de 2 min" },
+    { id: "score", t: "Fazer 30.000 pontos numa sessão de 3 min" },
     { id: "combo5", t: "Fechar um combo de 5.000" },
     { id: "plaza", t: "Pegar as letras P · L · A · Z · A" },
     { id: "tags", t: "Grafitar os 6 pontos marcados (gasta lata)" },
@@ -3362,7 +4014,7 @@ const STREET = (() => {
     const grName = (k) => (look.skates ? SK_GRIND[k] : GRINDN[k]);
     const scene = {
       sun: V.norm([-0.45, 0.78, 0.42]), top: hex(0x1f78ff), mid: hex(0x6cc4ff), hz: hex(0xffe2b0),
-      fog: hex(0xf3e2cf), fogd: 0.0062, shade: hex(0x8f7fd6), ink: hex(0x1b1530), ink_w: 1.5, objects: objs,
+      fog: hex(0xf3e2cf), fogd: 0.0046, shade: hex(0x8f7fd6), ink: hex(0x1b1530), ink_w: 1.5, objects: objs,
     };
 
     // ---------- estado ----------
@@ -3500,7 +4152,7 @@ const STREET = (() => {
       }
       if (tot >= 5000) goal("combo5");
       if (tot >= 15000) goal("combo15");
-      if (S.run === "session" && S.score >= 20000) goal("score");
+      if (S.run === "session" && S.score >= 30000) goal("score");
       S.combo = [];
       S.grace = 0;
     }
@@ -4344,7 +4996,7 @@ const STREET = (() => {
     function reset(run) {
       Object.assign(S, {
         mode: "ground", x: 0, y: 0, z: 14, head: Math.PI, camYaw: Math.PI, speed: 0, vy: 0, fakie: false, air: null, grind: null, man: null, hop: null,
-        combo: [], grace: 0, score: 0, time: 120, run, running: true, over: false, endWait: 0, cans: 2, tags: 0, letters: [], gapsFound: {},
+        combo: [], grace: 0, score: 0, time: 180, run, running: true, over: false, endWait: 0, cans: 2, tags: 0, letters: [], gapsFound: {},
         special: 0, specialOn: false, bestCombo: 0, charge: 0, charging: false,
       });
       cans.forEach((c) => { c.got = false; c.o.hidden = false; });
@@ -4377,6 +5029,186 @@ const STREET = (() => {
   return { Game, GOALS };
 })();
 </script>
+<script>// Discman 3D do card da rádio: mão low poly (cor de pele e munhequeira de cada skatista) colocando
+// o CD no discman, com o mesmo contorno e sombreado dos personagens. Desenha num canvas pequeno
+// transparente com um segundo Renderer; se WebGL falhar, o card continua com a versão em CSS.
+"use strict";
+const DISC = (() => {
+  const { V, M, hex, Mesh, Renderer } = E;
+  let R = null, cv = null, objs = null, raf = 0, t0 = 0, state = "", spin = 0, lastT = 0, skin = "#a8714a", band = "#e8242c", handMesh = null;
+  const INK = hex(0x1b1530);
+  const sc = {
+    sun: V.norm([0.35, 0.9, 0.45]), top: [0, 0, 0], mid: hex(0xc9d6ff), hz: [0, 0, 0], fog: [0, 0, 0], fogd: 0,
+    shade: hex(0x8f7fd6), ink: INK, ink_w: 1.35, objects: [],
+  };
+  const cam = { eye: [0.15, 3.3, 2.75], at: [0.55, 0.1, -0.15], fov: 0.86 };
+  const css = (h) => hex(parseInt(h.replace("#", ""), 16));
+
+  // ---------- modelos ----------
+  function bodyMesh() {
+    const m = new Mesh();
+    const N = 22, Rr = 1, H = 0.3, silver = hex(0xd3d9e4), side = hex(0x9aa3b6);
+    // corpo: cilindro achatado
+    m.tube([0, 0, 0], [0, H, 0], Rr, Rr, N, side, 0, { capCol: silver });
+    // bandeja onde o CD encaixa (anel escuro + pino)
+    m.tube([0, H, 0], [0, H + 0.004, 0], 0.84, 0.84, N, hex(0x2b2640), 0, { capCol: hex(0x3a3452) });
+    m.tube([0, H, 0], [0, H + 0.09, 0], 0.09, 0.07, 8, hex(0xe6e9f0));
+    // botões coloridos na frente e o visor
+    const bt = [hex(0xff4fa3), hex(0x3fd0ff), hex(0xffd23f), hex(0x5be36a)];
+    for (let i = 0; i < 4; i++) {
+      const a = Math.PI * 0.32 + i * 0.16;
+      const x = Math.cos(a) * 0.97, z = Math.sin(a) * 0.97;
+      m.box(x - 0.06, 0.1, z - 0.06, x + 0.06, 0.2, z + 0.06, bt[i]);
+    }
+    m.box(-0.42, 0.08, 0.9, 0.0, 0.22, 0.98, hex(0x9cf2c8), { m: 2 });
+    // dobradiça atrás
+    m.box(-0.3, H - 0.04, -1.04, 0.3, H + 0.06, -0.94, side);
+    // cabo vermelho do fone saindo pela direita
+    let p = [0.98, 0.16, 0.2];
+    const pts = [[1.25, 0.12, 0.35], [1.45, 0.05, 0.7], [1.5, 0.02, 1.2], [1.4, 0.02, 1.7]];
+    for (const q of pts) { m.tube(p, q, 0.035, 0.035, 5, hex(0xe8242c)); p = q; }
+    m.box(0.92, 0.11, 0.14, 1.04, 0.21, 0.26, hex(0x2b2640));
+    return m;
+  }
+  function lidMesh() {
+    // tampa: anel prateado + janela de acrílico (vidro); dobradiça em z = -0.98 (origem da malha)
+    const m = new Mesh(), N = 22, Rr = 0.99, th = 0.06;
+    const ring = [];
+    for (let i = 0; i < N; i++) {
+      const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
+      const P = (a, r, y) => [Math.cos(a) * r, y, Math.sin(a) * r + 0.98];
+      m.quad(P(a0, 0.62, th), P(a1, 0.62, th), P(a1, Rr, th), P(a0, Rr, th), hex(0xe9edf4));
+      m.quad(P(a0, Rr, 0), P(a1, Rr, 0), P(a1, Rr, th), P(a0, Rr, th), hex(0xb7bfcf));
+      m.quad(P(a0, 0.62, 0), P(a0, Rr, 0), P(a1, Rr, 0), P(a1, 0.62, 0), hex(0xb7bfcf));
+      ring.push(P(a0, 0.62, th * 0.5));
+    }
+    m.orient([0, -1, 0.98]);
+    const glass = new Mesh();
+    for (let i = 0; i < N; i++) glass.tri([0, th * 0.5, 0.98], ring[i], ring[(i + 1) % N], hex(0xbfe8ff), 3);
+    // logo pequeno
+    m.box(0.25, th, 0.98 + 0.68, 0.55, th + 0.01, 0.98 + 0.76, hex(0xff4fa3));
+    return { m, glass };
+  }
+  function cdMesh() {
+    // CD low poly: setores com cores furta-cor, miolo transparente e furo
+    const m = new Mesh(), N = 24, Ro = 0.78, Ri = 0.24, th = 0.028;
+    const iri = [0xeef1f7, 0x9fe7ff, 0xffd1f0, 0xfff3a8, 0xc7f7d0, 0xd9c8ff].map(hex);
+    for (let i = 0; i < N; i++) {
+      const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
+      const P = (a, r, y) => [Math.cos(a) * r, y, Math.sin(a) * r];
+      const c = iri[i % iri.length];
+      m.quad(P(a0, Ri, th), P(a1, Ri, th), P(a1, Ro, th), P(a0, Ro, th), c);
+      m.quad(P(a0, Ri, 0), P(a0, Ro, 0), P(a1, Ro, 0), P(a1, Ri, 0), hex(0xc9d0de));
+      m.quad(P(a0, Ro, 0), P(a1, Ro, 0), P(a1, Ro, th), P(a0, Ro, th), hex(0xe9edf4));
+      m.quad(P(a0, 0.1, th + 0.002), P(a1, 0.1, th + 0.002), P(a1, Ri, th + 0.002), P(a0, Ri, th + 0.002), hex(0xf6f8fc));
+      m.quad(P(a0, 0.1, 0), P(a1, 0.1, 0), P(a1, 0.1, th), P(a0, 0.1, th), hex(0x2b2640));
+    }
+    // risquinho de brilho
+    m.quad([0.3, th + 0.004, -0.1], [0.62, th + 0.004, -0.36], [0.66, th + 0.004, -0.3], [0.34, th + 0.004, -0.04], hex(0xffffff), 2);
+    m.orient([0, th / 2, 0]);
+    return m;
+  }
+  function handMeshFor(sk, bd) {
+    // mão segurando o CD pela borda (+x), dedos por cima, polegar por baixo; antebraço vindo de +x
+    const m = new Mesh(), s = css(sk), b = css(bd), dk = V.mul(s, 0.86);
+    const ex = 0.78;
+    m.tube([ex + 1.55, 0.25, -0.25], [ex + 0.55, 0.08, -0.05], 0.2, 0.17, 8, s);
+    m.tube([ex + 1.2, 0.2, -0.18], [ex + 0.95, 0.15, -0.13], 0.215, 0.205, 8, b);
+    m.ball([ex + 0.33, 0.07, 0.0], 0.27, s, 0, 8, 5, { sx: 1.05, sy: 0.55, sz: 0.95 });
+    // quatro dedos por cima do CD (dobrados pra frente)
+    for (let i = 0; i < 4; i++) {
+      const z = -0.27 + i * 0.18, a = [ex + 0.18, 0.13, z], k = [ex - 0.08, 0.12, z * 0.92], tip = [ex - 0.2, 0.06, z * 0.85];
+      m.tube(a, k, 0.065, 0.06, 6, s);
+      m.tube(k, tip, 0.06, 0.05, 6, dk);
+      m.ball(tip, 0.05, dk, 0, 6, 3);
+    }
+    // polegar por baixo
+    m.tube([ex + 0.2, -0.04, 0.2], [ex - 0.1, -0.05, 0.16], 0.075, 0.065, 6, s);
+    m.ball([ex - 0.12, -0.05, 0.16], 0.065, dk, 0, 6, 3);
+    return m;
+  }
+
+  // ---------- animação ----------
+  const ease = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+  const seg = (t, a, b) => ease((t - a) / (b - a));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    if (now - lastT < 33) return;
+    const dt = Math.min(0.1, (now - (lastT || now)) / 1000);
+    lastT = now;
+    const t = (now - t0) / 1000;
+    const ins = state === "insert";
+    // tampa: abre logo no começo e fecha depois que o CD encaixa
+    const open = ins ? Math.min(seg(t, 0, 0.25), 1 - seg(t, 1.15, 1.55)) : 0;
+    const lidA = -1.85 * open;
+    // CD: desce da mão até a bandeja girando de leve
+    let cdM;
+    if (ins && t < 1.0) {
+      const k = seg(t, 0.12, 0.95);
+      const p = [lerp(1.75, 0, k), lerp(1.55, 0.31, k), lerp(-0.55, 0, k)];
+      cdM = M.mul(M.T(p[0], p[1], p[2]), M.mul(M.RZ(lerp(0.55, 0, k)), M.mul(M.RX(lerp(-0.35, 0, k)), M.RY(lerp(-0.8, 0, k)))));
+      spin = 0;
+    } else {
+      const sp = state === "load" ? 9 : state === "play" || state === "mini" ? 4.2 : ins ? (t > 1.55 ? 3 : 0) : 0;
+      spin += sp * dt;
+      cdM = M.mul(M.T(0, 0.31, 0), M.RY(spin));
+    }
+    // mão: acompanha o CD e depois sai pra cima e pra direita
+    let handM = null;
+    if (ins && t < 1.6) {
+      if (t < 1.0) handM = cdM;
+      else {
+        const k = seg(t, 1.0, 1.45);
+        handM = M.mul(M.T(lerp(0, 2.3, k), lerp(0.31, 1.3, k), lerp(0, -0.9, k)), M.RZ(lerp(0, 0.5, k)));
+      }
+    }
+    const bob = state === "play" || state === "mini" ? Math.sin(now / 1000 * 4.4) * 0.02 : 0;
+    const base = M.T(0, bob, 0);
+    objs.body.mo = base;
+    objs.lid.mo = objs.glass.mo = M.mul(base, M.mul(M.T(0, 0.3, -0.98), M.RX(lidA)));
+    objs.cd.mo = M.mul(base, cdM);
+    objs.hand.hidden = !handM;
+    if (handM) objs.hand.mo = M.mul(base, handM);
+    R.draw(sc, cam);
+  }
+  function init(canvas) {
+    try {
+      cv = canvas;
+      R = Renderer(cv, { transparent: true, lowH: 150 });
+      const add = (mesh, o = {}) => { const ob = Object.assign({ g: R.upload(mesh, o), mo: M.I() }, o.extra || {}); sc.objects.push(ob); return ob; };
+      const lid = lidMesh();
+      objs = {
+        body: add(bodyMesh()),
+        cd: add(cdMesh()),
+        lid: add(lid.m),
+        glass: add(lid.glass, { outline: false }),
+        hand: add(handMeshFor(skin, band)),
+      };
+      handMesh = { skin, band };
+      return true;
+    } catch (e) {
+      R = null;
+      return false;
+    }
+  }
+  function setHand(sk, bd) {
+    if (!R || (handMesh && handMesh.skin === sk && handMesh.band === bd)) return;
+    objs.hand.g = R.upload(handMeshFor(sk, bd));
+    handMesh = { skin: sk, band: bd };
+  }
+  // estados: "insert" (anima a mão), "load", "play", "mini", "" (escondido: para de desenhar)
+  function set(st) {
+    if (!R) return;
+    if (st === "insert") t0 = performance.now();
+    state = st;
+    if (st && !raf) { lastT = 0; raf = requestAnimationFrame(frame); }
+    if (!st && raf) { cancelAnimationFrame(raf); raf = 0; }
+  }
+  function resize() { if (R) R.size(); }
+  return { init, set, setHand, resize, get ok() { return !!R; } };
+})();
+</script>
 <script>
 {
 if(new URLSearchParams(location.search).has('embed'))document.documentElement.classList.add('embed');
@@ -4399,6 +5231,7 @@ const ui={
     if(!RADIO.active&&I.track&&I.track!==lastTrack){lastTrack=I.track;trackT=performance.now();set($('track'),'textContent','♪ '+I.track+' — trilha original')}
     $('track').classList.toggle('on',!RADIO.active&&performance.now()-trackT<4000);
     if(toastT&&performance.now()>toastT){$('toast').style.display='none';toastT=0}
+    mmDraw(S);
   },
   goal(t){$('toast').textContent='META CUMPRIDA: '+t;$('toast').style.display='block';toastT=performance.now()+3200},
   end(S){try{parent.postMessage({type:'plaza2001-score',score:S.score},'*')}catch(e){}$('ovT').textContent='FIM DA SESSÃO';$('ovP').textContent=`${S.score.toLocaleString('pt-BR')} pontos · melhor combo ${S.bestCombo.toLocaleString('pt-BR')} · ${S.tags}/6 grafites · ${S.letters.length}/5 letras`;$('goS').textContent='Jogar de novo';drawGoals();$('over').style.display='grid'},
@@ -4406,26 +5239,42 @@ const ui={
 const game=STREET.Game($('cv'),ui,{lowH:window.__lowH||400,keep:!!window.__keep,noMusic:!!window.__noMusic});
 window.__game=game;
 
+// ---------- mapinha da cidade (norte pra cima): ruas, quarteirões, picos, grafites que faltam e você ----------
+const mmC=$('mm'),mmG=mmC.getContext('2d');let mmBg=null,mmT=0;
+function mmDraw(S){const now=performance.now();if(now-mmT<90)return;mmT=now;const M=game.L.map;if(!M)return;
+  const W=mmC.width,H=mmC.height,sx=W/(M.x1-M.x0),sz=H/(M.z1-M.z0),X=(x)=>(x-M.x0)*sx,Z=(z)=>(z-M.z0)*sz;
+  if(!mmBg){mmBg=document.createElement('canvas');mmBg.width=W;mmBg.height=H;const g=mmBg.getContext('2d');g.fillStyle='#8a8698';g.fillRect(0,0,W,H);
+    for(const r of M.rects){g.fillStyle=r.c;g.fillRect(X(r.x0),Z(r.z0),(r.x1-r.x0)*sx,(r.z1-r.z0)*sz)}
+    g.fillStyle='rgba(27,21,48,.7)';g.font='900 20px Rubik,sans-serif';g.fillText('N',W-22,24)}
+  mmG.clearRect(0,0,W,H);mmG.drawImage(mmBg,0,0);
+  for(const t of game.L.tags){if(t.done)continue;mmG.fillStyle='#ff4fa3';mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();mmG.arc(X(t.c[0]),Z(t.c[2]),7,0,7);mmG.fill();mmG.stroke()}
+  const px=X(S.x),pz=Z(S.z),dx=Math.sin(S.head),dz=Math.cos(S.head);
+  mmG.fillStyle='#ffd23f';mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();
+  mmG.moveTo(px+dx*13,pz+dz*13);mmG.lineTo(px-dx*8+dz*8,pz-dz*8-dx*8);mmG.lineTo(px-dx*4,pz-dz*4);mmG.lineTo(px-dx*8-dz*8,pz-dz*8+dx*8);mmG.closePath();mmG.fill();mmG.stroke()}
+
+// ---------- discman 3D no card da rádio ----------
+if(DISC.init($('dm3d')))$('screen').classList.add('dm3d');
+
 // ---------- rádio do skatista (YouTube) ----------
 let insertEnd=0,dmQ=0,dmMini=0;
 function dmSet(cls,line){const dm=$('dm');clearTimeout(dmQ);
-  dmQ=setTimeout(()=>{dm.className='dm show '+cls;$('dmLine').textContent=line;clearTimeout(dmMini);
+  dmQ=setTimeout(()=>{dm.className='dm show '+cls;DISC.set(cls);$('dmLine').textContent=line;clearTimeout(dmMini);
     if(cls==='play')dmMini=setTimeout(()=>dm.classList.add('mini'),5000)},Math.max(0,insertEnd-performance.now()))}
 RADIO.onEvent((ev,t,st)=>{const dm=$('dm');
   if(ev==='insert'){clearTimeout(dmQ);clearTimeout(dmMini);dm.style.setProperty('--dmSkin',st.hand||'#a8714a');dm.style.setProperty('--dmBand',st.band||'#e8242c');$('dmName').textContent=st.name.toUpperCase();$('dmLine').textContent=st.style;
-    dm.className='dm';void dm.offsetWidth;dm.className='dm show insert';insertEnd=performance.now()+1750}
+    dm.className='dm';void dm.offsetWidth;dm.className='dm show insert';insertEnd=performance.now()+1750;DISC.setHand(st.hand||'#a8714a',st.band||'#e8242c');DISC.resize();DISC.set('insert')}
   else if(ev==='loading')dmSet('load','carregando');
   else if(ev==='playing')dmSet('play','♪ '+t.t+' — '+t.a);
   else if(ev==='muted')dmSet('mini','mudo · M liga de novo');
   else if(ev==='unmuted')dmSet('play','♪ '+t.t+' — '+t.a);
-  else if(ev==='failed'){dmSet('mini','rádio fora do ar · tocando a trilha do jogo');setTimeout(()=>{$('dm').className='dm'},4000);game.synthOn()}
-  else if(ev==='stopped'){clearTimeout(dmQ);clearTimeout(dmMini);dm.className='dm'}});
+  else if(ev==='failed'){dmSet('mini','rádio fora do ar · tocando a trilha do jogo');setTimeout(()=>{$('dm').className='dm';DISC.set('')},4000);game.synthOn()}
+  else if(ev==='stopped'){clearTimeout(dmQ);clearTimeout(dmMini);dm.className='dm';DISC.set('')}});
 function radioHint(){const s=RADIO.station(look);$('radioHint').textContent=s?`🎧 Rádio do skatista: ${s.name} (${s.style}) · N pula · M mudo`:''}
 function drawGoals(){$('goals').innerHTML=game.goals().map(g=>`<li class="${g.done?'done':''}">${g.t}</li>`).join('')}
 drawGoals();
 for(const b of document.querySelectorAll('.pick'))b.addEventListener('click',()=>{look=b.dataset.look;for(const x of document.querySelectorAll('.pick'))x.setAttribute('aria-pressed',x===b);game.setLook(look);if(RADIO.active&&RADIO.station(look)!==RADIO.current)RADIO.stop();legend();radioHint()});
 radioHint();
-const go=(run)=>{$('over').style.display='none';paused=false;const radio=RADIO.start(look);game.start(run,{radio});$('cv').focus()};
+const go=(run)=>{$('over').style.display='none';$('mmBox').classList.add('on');paused=false;const radio=RADIO.start(look);game.start(run,{radio});$('cv').focus()};
 $('goS').addEventListener('click',()=>go('session'));$('goF').addEventListener('click',()=>go('free'));
 $('mus').addEventListener('click',()=>{if(RADIO.active){RADIO.next();$('mus').textContent='♪ Próxima música';return}const n=game.nextTrack();$('mus').textContent='♪ '+n});
 function pause(v){paused=v;game.pause(v);try{RADIO.pause(v)}catch(e){}if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();$('over').style.display='grid'}else $('over').style.display='none'}
