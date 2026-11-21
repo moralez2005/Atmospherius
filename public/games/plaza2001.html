@@ -77,9 +77,9 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
  background:radial-gradient(circle,#2b2640 0 4px,#d9dee9 5px 9px,rgba(255,255,255,.7) 9px 10px,transparent 11px),conic-gradient(from 20deg,#eef1f7,#9fe7ff,#ffd1f0,#fff3a8,#c7f7d0,#eef1f7)}
 .dm-lid{position:absolute;inset:4px;border-radius:50%;border:3px solid var(--ink);transform-origin:50% 0;
  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.8) 0 10%,rgba(200,235,255,.32) 35%,rgba(110,140,180,.4))}
-.dm-hand{position:absolute;left:62px;top:31px;width:66px;height:22px;background:#a8714a;border:2px solid var(--ink);border-radius:11px;opacity:0}
-.dm-hand::before{content:"";position:absolute;left:-7px;top:3px;width:14px;height:12px;background:#a8714a;border:2px solid var(--ink);border-radius:7px}
-.dm-hand b{position:absolute;left:30px;top:-3px;width:9px;height:24px;background:#e8242c;border:2px solid var(--ink);border-radius:3px}
+.dm-hand{position:absolute;left:62px;top:31px;width:66px;height:22px;background:var(--dmSkin,#a8714a);border:2px solid var(--ink);border-radius:11px;opacity:0}
+.dm-hand::before{content:"";position:absolute;left:-7px;top:3px;width:14px;height:12px;background:var(--dmSkin,#a8714a);border:2px solid var(--ink);border-radius:7px}
+.dm-hand b{position:absolute;left:30px;top:-3px;width:9px;height:24px;background:var(--dmBand,#e8242c);border:2px solid var(--ink);border-radius:3px}
 .dm-txt{display:flex;flex-direction:column;line-height:1.15;max-width:min(46vw,380px)}
 .dm-txt b{font:400 clamp(13px,1.6vw,18px)/1.1 Bungee,sans-serif;color:var(--yel)}
 .dm-txt span{font-weight:800;font-size:clamp(11px,1.4vw,15px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -117,7 +117,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
   <div class="over" id="over"><div class="card">
     <h2 id="ovT">PLAZA 2001</h2>
     <p id="ovP">Fim de tarde na praça. Encadeie manobras, ache os gaps, pegue latas de spray e grafite os pontos marcados.</p>
-    <div class="row" role="group" aria-label="Skatista"><b>Skatista:</b><button class="pick" data-look="kf" aria-pressed="true">K.F.</button><button class="pick" data-look="manu" aria-pressed="false">Manu</button><button class="pick" data-look="kaua" aria-pressed="false">Kauã</button><button class="pick" data-look="nina" aria-pressed="false">Nina</button><button class="pick" data-look="teo" aria-pressed="false">Teo</button></div>
+    <div class="row" role="group" aria-label="Skatista"><b>Skatista:</b><button class="pick" data-look="kf" aria-pressed="true">K.F.</button><button class="pick" data-look="manu" aria-pressed="false">Manu</button><button class="pick" data-look="kaua" aria-pressed="false">Kauã</button></div>
     <p class="radiohint" id="radioHint"></p>
     <div class="row"><button class="btn" id="goS">Sessão de 2 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
     <b>Metas</b><ul class="goals" id="goals"></ul>
@@ -3053,6 +3053,7 @@ const RADIO = (() => {
     kf: {
       name: "Rolê FM",
       style: "rock BR 2000",
+      hand: "#a8714a", band: "#e8242c",
       tracks: [
         { id: "EYpo0U5g2wk", t: "Dias de Luta, Dias de Glória", a: "Charlie Brown Jr.", s: 0 },
         { id: "6bBxGXy5gfg", t: "Só os Loucos Sabem", a: "Charlie Brown Jr.", s: 0 },
@@ -3074,6 +3075,55 @@ const RADIO = (() => {
         { id: "PChZWswp004", t: "Dias Melhores", a: "Jota Quest", s: 0 },
         { id: "bu1qsGSfUmc", t: "Desde Quando Você Se Foi", a: "Fresno", s: 0 },
         { id: "ffcgo0owH9w", t: "Tropa de Elite", a: "Tihuana", s: 0 },
+      ],
+    },
+    manu: {
+      name: "Purpurina FM",
+      style: "pop rock das meninas",
+      hand: "#f6d2bb", band: "#ff7ac0",
+      tracks: [
+        { id: "60XiWvuj1hI", t: "A Thousand Miles", a: "Vanessa Carlton", s: 0 },
+        { id: "_owoZtWeB7c", t: "White Houses", a: "Vanessa Carlton", s: 0 },
+        { id: "DTtb9rt1tnk", t: "Complicated", a: "Avril Lavigne", s: 0 },
+        { id: "UYocLBXr7hQ", t: "Sk8er Boi", a: "Avril Lavigne", s: 0 },
+        { id: "_qHWIvq_WR4", t: "I'm with You", a: "Avril Lavigne", s: 0 },
+        { id: "APe922QQTN0", t: "My Happy Ending", a: "Avril Lavigne", s: 0 },
+        { id: "OzH9EsqVgS0", t: "Girlfriend", a: "Avril Lavigne", s: 0 },
+        { id: "tN95-dFLbiI", t: "Equalize", a: "Pitty", s: 0 },
+        { id: "A_jV1KnpCic", t: "Na Sua Estante", a: "Pitty", s: 0 },
+        { id: "uJfYja5noKI", t: "Me Adora", a: "Pitty", s: 0 },
+        { id: "ji1LffDQfaM", t: "Memórias", a: "Pitty", s: 0 },
+        { id: "UCzLhySDWME", t: "Everywhere", a: "Michelle Branch", s: 0 },
+        { id: "DvUeCz12tNE", t: "All You Wanted", a: "Michelle Branch", s: 0 },
+        { id: "p0BiGek2bKA", t: "Since U Been Gone", a: "Kelly Clarkson", s: 0 },
+        { id: "Qe2pjBYskUU", t: "So Yesterday", a: "Hilary Duff", s: 0 },
+        { id: "6OhMVzV5VuM", t: "Pieces of Me", a: "Ashlee Simpson", s: 0 },
+        { id: "1VPotzhpAGE", t: "Misery Business", a: "Paramore", s: 0 },
+      ],
+    },
+    kaua: {
+      name: "Distorção FM",
+      style: "nu metal e grunge",
+      hand: "#f0c7a4", band: "#2a5bd7",
+      tracks: [
+        { id: "BLZWkjBXfN8", t: "In the End", a: "Linkin Park", s: 0 },
+        { id: "5qZQEq_C3vc", t: "Numb", a: "Linkin Park", s: 0 },
+        { id: "yOW7Eh81Gto", t: "Faint", a: "Linkin Park", s: 0 },
+        { id: "ihgc5LQbjg8", t: "Freak on a Leash", a: "Korn", s: 0 },
+        { id: "mJSyXqBKVpY", t: "Falling Away from Me", a: "Korn", s: 0 },
+        { id: "foEgkz8exLY", t: "Chop Suey!", a: "System of a Down", s: 0 },
+        { id: "mUEsqQpact0", t: "Toxicity", a: "System of a Down", s: 0 },
+        { id: "2tBsklV1HnI", t: "Rollin'", a: "Limp Bizkit", s: 0 },
+        { id: "PiihIwhjIvQ", t: "Last Resort", a: "Papa Roach", s: 0 },
+        { id: "hzRltUL5M3k", t: "Change (In the House of Flies)", a: "Deftones", s: 0 },
+        { id: "y6ZmoejZLWM", t: "Bring Me to Life", a: "Evanescence", s: 0 },
+        { id: "BuHNDaFFO_0", t: "Youth of the Nation", a: "P.O.D.", s: 0 },
+        { id: "B2lmOei7qfk", t: "Duality", a: "Slipknot", s: 0 },
+        { id: "ljUtuoFt-8c", t: "Smells Like Teen Spirit", a: "Nirvana", s: 0 },
+        { id: "ZEMBDKMtHqM", t: "Come as You Are", a: "Nirvana", s: 0 },
+        { id: "u7T2OR-O2Vk", t: "Even Flow", a: "Pearl Jam", s: 0 },
+        { id: "sNRX7jzwGVQ", t: "Man in the Box", a: "Alice in Chains", s: 0 },
+        { id: "-1ofDUXvnGo", t: "Black Hole Sun", a: "Soundgarden", s: 0 },
       ],
     },
   };
@@ -4362,7 +4412,7 @@ function dmSet(cls,line){const dm=$('dm');clearTimeout(dmQ);
   dmQ=setTimeout(()=>{dm.className='dm show '+cls;$('dmLine').textContent=line;clearTimeout(dmMini);
     if(cls==='play')dmMini=setTimeout(()=>dm.classList.add('mini'),5000)},Math.max(0,insertEnd-performance.now()))}
 RADIO.onEvent((ev,t,st)=>{const dm=$('dm');
-  if(ev==='insert'){clearTimeout(dmQ);clearTimeout(dmMini);$('dmName').textContent=st.name.toUpperCase();$('dmLine').textContent=st.style;
+  if(ev==='insert'){clearTimeout(dmQ);clearTimeout(dmMini);dm.style.setProperty('--dmSkin',st.hand||'#a8714a');dm.style.setProperty('--dmBand',st.band||'#e8242c');$('dmName').textContent=st.name.toUpperCase();$('dmLine').textContent=st.style;
     dm.className='dm';void dm.offsetWidth;dm.className='dm show insert';insertEnd=performance.now()+1750}
   else if(ev==='loading')dmSet('load','carregando');
   else if(ev==='playing')dmSet('play','♪ '+t.t+' — '+t.a);
