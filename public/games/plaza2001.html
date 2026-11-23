@@ -138,6 +138,23 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .over .card{max-height:calc(100% - 20px);overflow:auto;overscroll-behavior:contain}
 .talking .dm{display:none!important}
 .mis{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(27,21,48,.82);color:#fff;border:3px solid #ffd23f;border-radius:12px;padding:4px 14px;font:800 14px Rubik,sans-serif;display:none;white-space:nowrap}.mis.on{display:block}
+.trk{position:absolute;left:12px;top:62px;max-width:58%;background:rgba(27,21,48,.78);color:#fff;border:2px solid #b79cff;border-radius:10px;padding:4px 10px 5px;font:700 12px Rubik,sans-serif;display:none;line-height:1.3}
+.trk.on{display:block}.trkN{display:inline-block;background:#b79cff;color:#1b1530;border-radius:6px;padding:0 5px;margin-right:6px;font-weight:900;font-size:11px}
+.trkP{margin-left:6px;color:#ffd23f;font-weight:900}.trk small{display:block;opacity:.75;font-size:11px;font-weight:600}
+.trkBar{display:none;height:5px;background:rgba(255,255,255,.18);border-radius:3px;margin:3px 0 1px;overflow:hidden}.trkBar.on{display:block}.trkBar i{display:block;height:100%;width:0;background:#ffd23f;transition:width .25s}
+.photo .trk,.talking .trk{display:none}
+.win{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;z-index:8}.win.on{display:grid}
+.winC{position:relative;background:#fff8e6;border:4px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:14px 30px 16px;text-align:center;max-width:78%;animation:winIn .5s cubic-bezier(.2,1.6,.4,1)}
+.win.out .winC{animation:winOut .35s ease-in forwards}
+.winK{display:inline-block;background:#ff4fa3;color:#fff;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;font:900 13px Rubik,sans-serif;letter-spacing:.06em;transform:rotate(-2deg)}
+.winC b{display:block;font:900 22px Rubik,sans-serif;color:var(--ink);margin:8px 0 2px}.winC small{display:block;font:700 13px Rubik,sans-serif;color:#5a4f70}
+.winOk{position:absolute;right:-18px;top:-20px;width:44px;height:44px;border-radius:50%;background:#1f9a4a;color:#fff;border:3px solid var(--ink);display:grid;place-items:center;font:900 24px Rubik,sans-serif;animation:winStamp .6s .25s both}
+@keyframes winIn{from{transform:scale(.3) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes winOut{to{transform:translateY(-30px) scale(.9);opacity:0}}
+@keyframes winStamp{from{transform:scale(3);opacity:0}to{transform:none;opacity:1}}
+.conf{position:absolute;inset:0;overflow:hidden}.conf i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:confF 1.9s linear forwards}
+@keyframes confF{to{transform:translateY(110vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){.winC,.winOk,.conf i{animation:none}}
 .toastC{position:absolute;left:50%;top:56px;transform:translateX(-50%);background:#ff4fa3;color:#fff;border:3px solid var(--ink);border-radius:12px;padding:6px 14px;font:900 15px Rubik,sans-serif;display:none;box-shadow:3px 3px 0 var(--ink)}
 .mlist{list-style:none;padding:0;margin:4px 0 10px;font-size:13px;columns:2;column-gap:16px}.mlist li{break-inside:avoid;margin:2px 0}.mlist li.done{opacity:.55;text-decoration:line-through}.mlist li.on{color:#d8247a;font-weight:800}
 .chill .score,.chill .time,.chill .tr,.chill .combo,.chill .spec,.chill .mm,.chill .msg{display:none!important}
@@ -165,6 +182,8 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="pl" id="pl" aria-hidden="true"><div class="glitch"></div><div class="tl" id="plSt">▶ PLAY</div><div class="tr2" id="plT">00:00</div><div class="trk" id="plTrk"></div><div class="end">FIM DA FITA</div><div class="hint">Espaço: pausa · ←/→: volta/avança · R: do começo · B: baixar vídeo · Esc: sair</div></div>
     <div class="mis" id="mis"></div>
     <div class="toastC" id="toastC"></div>
+    <div class="trk" id="trk"><span class="trkN" id="trkN"></span><b id="trkT"></b><span class="trkP" id="trkP"></span><i class="trkBar"><i id="trkBar"></i></i><small id="trkH"></small></div>
+    <div class="win" id="win" aria-live="polite"><div class="winC"><span class="winK" id="winK"></span><b id="winT"></b><small id="winS"></small><span class="winOk">✓</span></div><div class="conf" id="conf"></div></div>
     <div class="dlg" id="dlg" role="dialog" aria-live="polite"><b id="dlgW"></b><p id="dlgL"></p><span class="mt" id="dlgT"></span><div class="row"><button class="ok" id="dlgOk">Aceitar (Enter)</button><button id="dlgNo">Agora não</button></div></div>
     <div class="mm" id="mmBox" aria-hidden="true"><canvas id="mm" width="318" height="300"></canvas></div>
     <div class="dm" id="dm" role="status" aria-live="polite"><div class="dm-dev" aria-hidden="true"><div class="dm-body"></div><div class="dm-cd"></div><div class="dm-lid"></div><div class="dm-hand"><b></b></div><canvas id="dm3d"></canvas></div><div class="dm-txt"><b id="dmName"></b><span id="dmLine"></span></div></div>
@@ -4929,6 +4948,14 @@ const STREET = (() => {
     const FLIP_N = new Set([...Object.values(FLIPS).map((f) => f.name), ...Object.values(SK_FLIP)]);
     const near = (e, x, z, r) => Math.hypot(e.x - x, e.z - z) < r;
     const clipHas = (c, f) => (c.ev || []).some(f);
+    // relógio do jogo e registro dos pontos (pra desafios de "some X pontos em Y segundos")
+    let NOW = 0;
+    const PTS = [];
+    const ptsIn = (win, f) => PTS.filter((p) => NOW - p.t <= win && (!f || f(p))).reduce((a, p) => a + p.pts, 0);
+    const FLIP_SORT = () => [...FLIP_N].sort((a, b) => b.length - a.length);
+    const baseFlip = (n) => (FLIP_N.has(n) ? n : FLIP_SORT().find((f) => n.endsWith(" " + f)) || null);
+    const fmt = (n) => Math.floor(n).toLocaleString("pt-BR");
+    const recTricks = () => (REC ? distinctTricks({ ev: REC.events }) : 0);
     const distinctTricks = (c) => new Set((c.ev || []).filter((e) => e.type === "trick" && !e.name.startsWith("GAP")).map((e) => e.name)).size;
     // k = morador que pede; check(e) recebe cada evento do jogo
     const MISSIONS = [
@@ -4938,47 +4965,69 @@ const STREET = (() => {
       { k: 2, title: "Deslize em cima de uma banca da feira", line: "Ô, skatista! Faz uma manobra em cima da minha banca que eu te dou uma laranja!", check: (e) => e.type === "grind" && e.rail === "banca da feira" },
       { k: 0, title: "Pule por cima do chafariz", line: "No meu tempo a molecada pulava o chafariz inteiro de bicicleta. E você, pula?", check: (e) => e.type === "gap" && e.name === "SOBRE O CHAFARIZ" },
       { k: 7, title: "Deslize no trilho do trem", line: "O trem não passa mais aqui faz tempo... Desliza no trilho pra mim, pra eu lembrar do barulho.", check: (e) => e.type === "grind" && e.rail === "trilho do trem" },
-      { k: 10, title: "Combo de 3.000 no posto", line: "Movimento tá fraco hoje. Faz um combo de 3.000 pontos aqui no posto pra animar?", check: (e) => e.type === "combo" && e.pts >= 3000 && e.x > 46 && e.x < 112 && e.z > 210 && e.z < 247 },
+      { k: 10, title: "Some 3.000 pontos no posto (60 s)", line: "Movimento tá fraco hoje. Faz 3.000 pontos aqui no posto em um minuto pra animar?", time: 60, score: 3000, where: (e) => e.x > 46 && e.x < 112 && e.z > 210 && e.z < 247 },
       { k: 9, title: "Deslize no travessão do gol", line: "Aposto um pastel que você não desliza no travessão do gol.", check: (e) => e.type === "grind" && e.rail === "travessão do gol" },
       { k: 8, title: "Tire uma foto sua na estação", line: "Tô montando um zine sobre a cidade. Tira uma foto sua aqui na estação? (F abre a câmera)", check: (e) => e.type === "photo" && e.x > 46 && e.z > 108 && e.z < 162 },
       { k: 4, title: "Filme 3 manobras diferentes", line: "Grava um vídeo com três manobras diferentes pro meu fotolog! (R liga a filmadora)", check: (e) => e.type === "clip" && distinctTricks(e.clip) >= 3 },
       { k: 11, title: "Pule do teto do vagão", line: "Se você pular lá do teto do vagão, eu rezo pelos seus joelhos, meu filho.", check: (e) => e.type === "gap" && e.name === "TETO DO VAGÃO" },
       { k: 5, title: "Leve o pão pra Dona Cida (90 s)", line: "Leva esse pão quentinho pra Dona Cida? Ela tá passeando em volta da praça da prefeitura. Corre que esfria!", time: 90, deliver: 1 },
     ];
+    // desafios de cada skatista: ok(e) conclui; score = some X pontos dentro de "win" segundos;
+    // prog() mostra o andamento no canto da tela; hint diz como fazer
     const DESAFIOS = {
       kf: [
-        { t: "Grave um vídeo com 4 manobras diferentes", ok: (e) => e.type === "clip" && distinctTricks(e.clip) >= 4 },
-        { t: "Filme um gap na cidade nova", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.z > 100) },
-        { t: "Selfie à noite em frente à prefeitura", ok: (e) => e.type === "photo" && e.night > 0.6 && e.view === "selfie" && near(e, -1, 150, 28) },
+        { t: "Some 4.000 pontos em 60 s", hint: "emende manobras: cada combo soma", score: 4000, win: 60 },
+        { t: "Grave um vídeo com 4 manobras diferentes", hint: "R liga a filmadora · R de novo salva", ok: (e) => e.type === "clip" && distinctTricks(e.clip) >= 4, prog: () => (REC ? [recTricks(), 4] : null) },
+        { t: "Filme um gap na cidade nova", hint: "R grava · escadaria da prefeitura, chafariz, vagão", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.z > 100) },
+        { t: "Selfie à noite em frente à prefeitura", hint: "Hora: Noite (menu) · F abre a câmera · Espaço tira", ok: (e) => e.type === "photo" && e.night > 0.5 && e.view === "selfie" && near(e, -1, 155, 30) },
       ],
       manu: [
-        { t: "Grave uma Parada de Mão na rampa", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "trick" && v.name === "Parada de Mão") },
-        { t: "Grave um grind na borda do chafariz", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "borda do chafariz") },
-        { t: "Selfie no meio da feira", ok: (e) => e.type === "photo" && e.view === "selfie" && near(e, -4, 226, 20) },
+        { t: "Some 3.500 pontos em 60 s", hint: "manobras na rampa rendem mais", score: 3500, win: 60 },
+        { t: "Grave uma Parada de Mão na rampa", hint: "R grava · no alto da rampa segure L", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "trick" && v.name === "Parada de Mão") },
+        { t: "Grave um grind na borda do chafariz", hint: "R grava · K em cima da borda do chafariz", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "borda do chafariz") },
+        { t: "Selfie no meio da feira", hint: "F abre a câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && near(e, -4, 226, 22) },
       ],
       kaua: [
-        { t: "Grave um flip e um grind no mesmo vídeo", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind") && clipHas(e.clip, (v) => v.type === "trick" && FLIP_N.has(v.name)) },
-        { t: "Grave um combo de 5.000", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "combo" && v.pts >= 5000) },
-        { t: "Foto de amigo no campo de várzea", ok: (e) => e.type === "photo" && e.view === "amigo" && near(e, -75, 154, 30) },
+        { t: "Some 5.000 pontos em 60 s", hint: "flip + grind + manual no mesmo combo", score: 5000, win: 60 },
+        { t: "Grave um flip e um grind no mesmo vídeo", hint: "R grava · J flip · K grind", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind") && clipHas(e.clip, (v) => v.type === "trick" && baseFlip(v.name)) },
+        { t: "Foto de amigo no campo de várzea", hint: "F câmera · V troca pra AMIGO · Espaço tira", ok: (e) => e.type === "photo" && e.view === "amigo" && near(e, -75, 154, 32) },
       ],
       gabi: [
-        { t: "Selfie no campo no pôr do sol", ok: (e) => e.type === "photo" && near(e, -75, 154, 30) && e.tod > 0.16 && e.tod < 0.38 },
-        { t: "Grave um grind no trilho do trem", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "trilho do trem") },
-        { t: "Grave 20 segundos de rolê sem cair", ok: (e) => e.type === "clip" && e.clip.len >= 20 && !clipHas(e.clip, (v) => v.type === "bail") },
+        { t: "Foto no campo de várzea com o céu de tarde", hint: "Hora: Fim de tarde · F câmera · Espaço tira", ok: (e) => e.type === "photo" && near(e, -75, 154, 32) && e.night < 0.4 },
+        { t: "Grave um grind no trilho do trem", hint: "R grava · K no trilho, na estação", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "trilho do trem") },
+        { t: "Grave 20 segundos de rolê sem cair", hint: "R grava · se cair, recomeça", ok: (e) => e.type === "clip" && e.clip.len >= 20 && !clipHas(e.clip, (v) => v.type === "bail"), prog: () => (REC ? [REC.events.some((v) => v.type === "bail") ? 0 : Math.floor(REC.t), 20, "s"] : null) },
+        { t: "Some 3.000 pontos em 60 s", hint: "sem pressa, só não para", score: 3000, win: 60 },
       ],
       kauane: [
-        { t: "Filme a escadaria da prefeitura", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.name === "ESCADARIA DA PREFEITURA") },
-        { t: "Grave um combo de 5.000", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "combo" && v.pts >= 5000) },
-        { t: "Selfie debaixo de chuva", ok: (e) => e.type === "photo" && e.view === "selfie" && e.rain > 0.5 },
+        { t: "Some 5.000 pontos em 45 s", hint: "rápido e sem cair", score: 5000, win: 45 },
+        { t: "Filme a escadaria da prefeitura", hint: "R grava · desça a escadaria pulando", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.name === "ESCADARIA DA PREFEITURA") },
+        { t: "Selfie debaixo de chuva", hint: "Chuva: Chovendo (menu) · F câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && e.rain > 0.4 },
       ],
       julie: [
-        { t: "Mande um Hardflip", ok: (e) => e.type === "trick" && e.name === "Hardflip" },
-        { t: "Grind no corrimão da prefeitura", ok: (e) => e.type === "grind" && e.x > -16 && e.x < 16 && e.z > 158 && e.z < 170 },
-        { t: "Combo de 6.000 na pista", ok: (e) => e.type === "combo" && e.pts >= 6000 && e.z < 60 },
-        { t: "Selfie à noite na estação", ok: (e) => e.type === "photo" && e.view === "selfie" && e.night > 0.5 && e.x > 48 && e.z > 120 && e.z < 160 },
-        { t: "Filme um Varial Kickflip", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "trick" && v.name === "Varial Kickflip") },
+        { t: "Mande um Hardflip", hint: "no ar: J + W", ok: (e) => e.type === "trick" && baseFlip(e.name) === "Hardflip" },
+        { t: "Grind no corrimão da prefeitura", hint: "K em cima do corrimão da escadaria", ok: (e) => e.type === "grind" && (e.rail === "corrimão da prefeitura" || e.rail === "corrimão do meio") },
+        { t: "Some 6.000 pontos em 60 s", hint: "combo grande ou vários seguidos", score: 6000, win: 60 },
+        { t: "Filme um Varial Kickflip", hint: "R grava · no ar: J + A", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "trick" && baseFlip(v.name) === "Varial Kickflip") },
+        { t: "Selfie à noite na estação", hint: "Hora: Noite (menu) · F câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && e.night > 0.5 && e.x > 46 && e.z > 115 && e.z < 162 },
       ],
     };
+    for (const k in DESAFIOS) for (const c of DESAFIOS[k]) if (c.score) {
+      c.ok = (e) => e.type === "combo" && ptsIn(c.win) >= c.score;
+      c.prog = () => [ptsIn(c.win), c.score, "pts"];
+    }
+    // celebração na tela + fumacinha colorida em volta do skatista
+    function celebrate(kind, title, sub) {
+      sfx.goal();
+      // anel de fumacinha colorida subindo em volta do skatista
+      puffs.forEach((p, i) => {
+        const an = (i / puffs.length) * Math.PI * 2;
+        p.hidden = false;
+        p.life = 0.7 + Math.random() * 0.3;
+        p.p = [S.x + Math.cos(an) * 0.7, S.y + 0.4, S.z + Math.sin(an) * 0.7];
+        p.v = [Math.cos(an) * 1.6, 2.6 + Math.random() * 1.6, Math.sin(an) * 1.6];
+      });
+      ui.win && ui.win({ kind, title, sub });
+    }
     let mDone = {}, dDone = {};
     try { mDone = JSON.parse(localStorage.getItem("plaza-missoes") || "{}"); dDone = JSON.parse(localStorage.getItem("plaza-desafios") || "{}"); } catch (e) {}
     const saveM = () => { try { localStorage.setItem("plaza-missoes", JSON.stringify(mDone)); localStorage.setItem("plaza-desafios", JSON.stringify(dDone)); } catch (e) {} };
@@ -4995,12 +5044,20 @@ const STREET = (() => {
     function emit(type, d) {
       const e = Object.assign({ type, x: S.x, z: S.z, t: REC ? REC.t : 0 }, d);
       if (REC && type !== "clip") REC.events.push(e);
+      if (type === "combo") { PTS.push({ t: NOW, pts: e.pts, x: e.x, z: e.z }); if (PTS.length > 300) PTS.shift(); }
       if (MA && MA.m.check && MA.m.check(e)) missionDone();
+      if (MA && MA.m.score && type === "combo" && (!MA.m.where || MA.m.where(e))) { MA.pts += e.pts; if (MA.pts >= MA.m.score) missionDone(); }
       storyEvent(e);
       const key = lookKey(), list = DESAFIOS[key];
       if (list) list.forEach((c, i) => {
         const id = key + i;
-        if (!dDone[id] && c.ok(e)) { dDone[id] = 1; saveM(); sfx.goal(); ui.mission && ui.mission("challenge", { t: c.t, who: look.name }); }
+        if (!dDone[id] && c.ok(e)) {
+          dDone[id] = 1;
+          saveM();
+          const left = list.filter((_, j) => !dDone[key + j]).length;
+          celebrate("DESAFIO CONCLUÍDO", c.t, left ? `${look.name}: faltam ${left}` : `${look.name}: todos os desafios feitos!`);
+          ui.mission && ui.mission("challenge", { t: c.t, who: look.name });
+        }
       });
     }
     function missionDone() {
@@ -5008,11 +5065,17 @@ const STREET = (() => {
       mDone[MISSIONS.indexOf(m)] = 1;
       saveM();
       S.score += 1000;
-      sfx.goal();
-      say("MISSÃO CUMPRIDA! +1.000", 2.2, true);
+      celebrate("MISSÃO CUMPRIDA", m.title.replace(/ \(\d+ s\)$/, ""), `${npcOf(m.k).name} agradece · +1.000`);
       items.forEach((o) => (o.hidden = true));
       ui.mission && ui.mission("done", { title: m.title, who: npcOf(m.k).name });
       MA = null;
+    }
+    function trackFrame() {
+      const key = lookKey(), list = DESAFIOS[key] || [];
+      const i = list.findIndex((_, j) => !dDone[key + j]);
+      if (i < 0) return ui.track && ui.track(null);
+      const c = list[i], pr = c.prog && c.prog();
+      ui.track && ui.track({ n: i + 1, of: list.length, t: c.t, hint: c.hint, prog: pr ? (pr[2] === "pts" ? `${fmt(Math.min(pr[0], pr[1]))}/${fmt(pr[1])}` : `${pr[0]}/${pr[1]}${pr[2] === "s" ? " s" : ""}`) : null, pct: pr ? Math.min(1, pr[0] / pr[1]) : null });
     }
     function missionFrame(dt, t) {
       // marcadores e oferta quando o skatista para perto
@@ -5048,12 +5111,12 @@ const STREET = (() => {
         const n = npcOf(m.deliver);
         if (Math.hypot(n.x - S.x, n.z - S.z) < 2.4) return missionDone();
       }
-      ui.mission && ui.mission("tick", { title: m.title, left: m.time ? MA.left : null, got: m.items ? MA.got.filter(Boolean).length : null });
+      ui.mission && ui.mission("tick", { title: m.title, left: m.time ? MA.left : null, prog: m.items ? `${MA.got.filter(Boolean).length}/5` : m.score ? `${fmt(MA.pts)}/${fmt(m.score)}` : null });
     }
     function acceptMission() {
       if (soffer) return acceptStory();
       if (!offer || MA) return false;
-      MA = { m: offer.m, left: offer.m.time || 0, got: offer.m.items ? offer.m.items.map(() => false) : null };
+      MA = { m: offer.m, left: offer.m.time || 0, pts: 0, got: offer.m.items ? offer.m.items.map(() => false) : null };
       offer = null;
       sfx.beep();
       ui.mission && ui.mission("start", { title: MA.m.title });
@@ -5066,7 +5129,7 @@ const STREET = (() => {
     const saveHS = () => { try { localStorage.setItem("plaza-historia", JSON.stringify(HS)); localStorage.setItem("plaza-julie", julieOn ? "1" : "0"); } catch (e) {} };
     const STORY = {
       kf: [
-        { title: "A garota da pista", line: "Ei, você do shape de tubarão. Até que você anda... Faz um combo de 2.000 aqui na pista que eu vejo.", kind: "combo", pts: 2000 },
+        { title: "A garota da pista", line: "Ei, você do shape de tubarão. Até que você anda... Faz 2.000 pontos em 90 segundos que eu quero ver.", kind: "score", pts: 2000, time: 90 },
         { title: "Game de S.K.A.T.E. com a Julie", line: "Ok, ok, não foi ruim. Mas aguenta um game de S.K.A.T.E. comigo? Eu mando, você repete. Quem errar ganha letra.", kind: "skate" },
         { title: "Rolê com a Julie até a estação", line: "Tá bom, você anda bem. Bora dar um rolê? Me leva até a estação de trem, lá na cidade nova.", kind: "ride", to: [48, 112, 109, 160] },
       ],
@@ -5086,11 +5149,11 @@ const STREET = (() => {
     function storyEvent(e) {
       if (!SA) return;
       const st = SA.def;
-      if (st.kind === "combo" && e.type === "combo" && e.pts >= st.pts && Math.hypot(S.x - julie.x, S.z - julie.z) < 32) storyStepDone();
+      if (st.kind === "score" && e.type === "combo") { SA.pts += e.pts; if (SA.pts >= st.pts) storyStepDone(); }
       if (st.kind === "skate") {
         const G = SA.g;
         if (e.type === "bail" && (G.phase === "copy" || G.phase === "set")) G.fail = true;
-        if (e.type === "trick" && FLIP_N.has(e.name) && (G.phase === "copy" || G.phase === "set") && !G.got) G.got = e.name;
+        if (e.type === "trick" && baseFlip(e.name) && (G.phase === "copy" || G.phase === "set") && !G.got) G.got = baseFlip(e.name);
         if (e.type === "combo" && G.got) {
           if (G.phase === "copy" && G.got === G.target) G.ok = true;
           if (G.phase === "set") { G.target = G.got; G.ok = true; }
@@ -5102,24 +5165,25 @@ const STREET = (() => {
     function storyStepDone() {
       const k = lookKey(), st = SA.def;
       HS[k] = stepOf(k) + 1;
-      sfx.goal();
       ui.mission && ui.mission("done", { title: st.title, who: "Julie" });
+      const nx = STORY.kf[HS[k]];
+      celebrate(`CAPÍTULO ${HS[k]} CONCLUÍDO`, st.title, nx ? `Próximo: ${nx.title} · fale com a Julie` : "");
       if (st.kind === "ride") {
         julieOn = true;
-        say("JULIE DESBLOQUEADA!", 2.6, true);
+        celebrate("JULIE DESBLOQUEADA ♡", "Agora dá pra jogar com ela", "escolha a Julie no menu · rádio Travessura FM");
         ui.mission && ui.mission("unlock", { who: "Julie" });
-      } else say("CAPÍTULO CONCLUÍDO!", 2.2, true);
+      }
       saveHS();
       SA = null;
     }
     function skateFrame(dt) {
       const G = SA.g;
       const tick = (txt) => ui.mission && ui.mission("tick", { title: `S.K.A.T.E. · você ${letters5(G.pl)} · Julie ${letters5(G.ju)} · ${txt}`, left: G.t > 0 ? G.t : null });
-      if (G.ju >= 5) { say("VOCÊ GANHOU O GAME!", 2.4, true); return storyStepDone(); }
+      if (G.ju >= 5) return storyStepDone();
       if (G.pl >= 5) { say("PERDEU O GAME! fala com a Julie pra revanche", 2.6, true); sfx.nocan(); ui.mission && ui.mission("fail", { title: "Game de S.K.A.T.E." }); SA = null; return; }
       G.t -= dt;
       if (G.phase === "julie") {
-        tick("vez da Julie...");
+        tick("vez da Julie…");
         if (G.t > 0) return;
         // a Julie escolhe e manda a manobra
         G.target = G.list[Math.floor(Math.random() * G.list.length)];
@@ -5199,7 +5263,11 @@ const STREET = (() => {
         const [x0, x1, z0, z1] = SA.def.to;
         ui.mission && ui.mission("tick", { title: SA.def.title });
         if (S.x > x0 && S.x < x1 && S.z > z0 && S.z < z1 && Math.hypot(S.x - julie.x, S.z - julie.z) < 20) storyStepDone();
-      } else ui.mission && ui.mission("tick", { title: SA.def.title + ` (${SA.def.pts.toLocaleString("pt-BR")} perto da Julie)` });
+      } else if (SA.def.kind === "score") {
+        SA.left -= S.running ? dt : 0;
+        ui.mission && ui.mission("tick", { title: SA.def.title, prog: `${fmt(SA.pts)}/${fmt(SA.def.pts)}`, left: SA.left });
+        if (SA.left <= 0) { say("NÃO DEU! fala com a Julie e tenta de novo", 2.6, true); sfx.nocan(); ui.mission && ui.mission("fail", { title: SA.def.title }); SA = null; }
+      }
     }
     function acceptStory() {
       if (!soffer) return false;
@@ -5213,7 +5281,7 @@ const STREET = (() => {
         return true;
       }
       const def = STORY.kf[o.step];
-      SA = { def };
+      SA = { def, pts: 0, left: def.time || 0 };
       if (def.kind === "skate") SA.g = { pl: 0, ju: 0, phase: "julie", t: 0, list: Object.values(FLIPS).map((f) => f.name) };
       if (def.kind === "ride") { julie.follow = true; if (RADIO_ && RADIO_.special) RADIO_.special("juntos"); }
       sfx.beep();
@@ -6311,8 +6379,10 @@ const STREET = (() => {
       L.tags.forEach((tg, i) => { if (!tg.done) tg.go.tint = [1, 1, 1].map(() => 0.75 + 0.25 * Math.sin(t * 4 + i)); });
       atmos(dt, t);
       npcFrame(dt, t);
+      NOW = t;
       missionFrame(dt, t);
       storyFrame(dt, t);
+      trackFrame();
       render(dt);
       if (REC) recFrame(dt);
       // som de rodinha
@@ -6851,13 +6921,25 @@ function drawStory(){const s=game.storyInfo();$('pickJulie').hidden=!s.julie;con
 $('storyGo').addEventListener('click',()=>{if(game.continueStory()){go('free',true)}});
 ui.mission=(ev,d)=>{
   if(ev==='offer'){$('dlgW').textContent=d.who;$('dlgL').textContent='“'+d.line+'”';$('dlgT').textContent=(d.who==='Julie'?'♡ ':'Missão: ')+d.title;dlg(true)}
-  else if(ev==='unlock'){drawStory();toastC('JULIE DESBLOQUEADA! escolha ela no menu ♡')}
+  else if(ev==='unlock'){drawStory()}
   else if(ev==='hide'){dlg(false);$('mis').classList.remove('on')}
   else if(ev==='start'){dlg(false);$('mis').classList.add('on');$('mis').textContent='★ '+d.title}
-  else if(ev==='tick'){set($('mis'),'textContent','★ '+d.title+(d.got!=null?` · ${d.got}/5`:'')+(d.left!=null?` · ${Math.ceil(d.left)} s`:''))}
-  else if(ev==='done'){$('mis').classList.remove('on');toastC((d.who==='Julie'?'CAPÍTULO CONCLUÍDO: ':'MISSÃO CUMPRIDA: ')+d.title+' ✓');drawStory()}
+  else if(ev==='tick'){$('mis').classList.add('on');set($('mis'),'textContent','★ '+d.title+(d.prog!=null?` · ${d.prog}`:'')+(d.left!=null?` · ⏱ ${Math.ceil(d.left)} s`:''))}
+  else if(ev==='done'){$('mis').classList.remove('on');drawStory();drawMissions()}
   else if(ev==='fail'){$('mis').classList.remove('on');toastC('Não deu tempo: '+d.title)}
-  else if(ev==='challenge'){toastC('DESAFIO DO(A) '+d.who.toUpperCase()+': '+d.t+' ✓')}};
+  else if(ev==='challenge'){drawMissions()}};
+// desafio atual do skatista no canto, com o andamento
+ui.track=(d)=>{const el=$('trk');if(!d){el.classList.remove('on');return}el.classList.add('on');
+  set($('trkN'),'textContent',`DESAFIO ${d.n}/${d.of}`);set($('trkT'),'textContent',d.t);set($('trkP'),'textContent',d.prog||'');set($('trkH'),'textContent',d.hint||'');
+  const bar=el.querySelector('.trkBar');bar.classList.toggle('on',d.pct!=null);if(d.pct!=null)set($('trkBar').style,'width',Math.round(d.pct*100)+'%')};
+// celebração quando conclui capítulo, missão ou desafio (uma de cada vez)
+const winQ=[];let winOn=false;
+function winNext(){const d=winQ.shift();if(!d){winOn=false;return}winOn=true;const w=$('win');
+  $('winK').textContent=d.kind;$('winT').textContent=d.title;$('winS').textContent=d.sub||'';w.classList.remove('out');w.classList.add('on');
+  const cf=$('conf');cf.innerHTML='';const cols=['#ff4fa3','#ffd23f','#3fd0ff','#8c5cff','#1f9a4a','#b79cff'];
+  for(let i=0;i<46;i++){const p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%cols.length];p.style.animationDelay=(Math.random()*.5)+'s';p.style.animationDuration=(1.5+Math.random()*1.1)+'s';cf.appendChild(p)}
+  setTimeout(()=>w.classList.add('out'),2700);setTimeout(()=>{w.classList.remove('on','out');cf.innerHTML='';winNext()},3100)}
+ui.win=(d)=>{winQ.push(d);if(!winOn)winNext()};
 
 // ---------- câmera digital de cada um e filmadora ----------
 const CAMS={kf:{c:'#c9ced8',t:'#e8242c',f:'saturate(1.35) contrast(1.08) sepia(.12)',n:'K.F. CAM'},
