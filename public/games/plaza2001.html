@@ -4410,6 +4410,8 @@ const STREET = (() => {
         S.speed = -S.speed;
         S.head += Math.PI;
         S.fakie = !S.fakie;
+        // patins sempre de frente: ela gira o corpo na volta da rampa em vez de estalar 180°
+        if (look.skates && skFwd) S.turnOff = (S.turnOff || 0) - Math.PI;
         return null;
       }
       const ndx = Math.sin(S.head), ndz = Math.cos(S.head);
@@ -4816,7 +4818,7 @@ const STREET = (() => {
     let curPose = Object.assign({}, ART.POSES.ride);
     let pitchVis = 0;
     // sentido da viagem no espaço do boneco: +1 = pro bico (regular andando pra frente)
-    const lead = () => ((look.stance === "goofy") !== !!S.fakie ? -1 : 1);
+    const lead = () => ((look.stance === "goofy") !== !!(S.fakie && !(look.skates && skFwd)) ? -1 : 1);
     // espelha uma pose pra quem anda com o outro pé na frente
     function mirror(p, sg) {
       if (sg > 0 || !p) return p;
@@ -4882,14 +4884,21 @@ const STREET = (() => {
       curPose.fx = tp.fx || 0;
       if (tp.push !== undefined) { curPose.push = tp.push; curPose.pushFoot = tp.pushFoot; curPose.pushDir = tp.pushDir; }
       else delete curPose.push;
+      // fk = corpo virado de costas pro movimento. Com "Manu sempre de frente" ela anda de fakie
+      // olhando pra frente, então inclinação e giro usam fk (não S.fakie) pra não afundar na rampa.
       const fk = S.fakie && !(look.skates && skFwd);
-      let yaw = S.head + (fk ? Math.PI : 0), pitch = 0, roll = 0, y = S.y;
+      const fs = fk ? -1 : 1;
+      if (S.turnOff) {
+        const d = S.turnOff * Math.min(1, dt * 7);
+        S.turnOff = Math.abs(S.turnOff - d) < 0.01 ? 0 : S.turnOff - d;
+      }
+      let yaw = S.head + (fk ? Math.PI : 0) + (S.turnOff || 0), pitch = 0, roll = 0, y = S.y;
       let flipM = null, lift = 0;
       if (S.mode === "ground" || S.mode === "manual") {
         const dx = Math.sin(S.head), dz = Math.cos(S.head);
         const s = slopeAt(S.x, S.z, dx, dz);
-        pitch = Math.atan(s) * (S.fakie ? -1 : 1);
-        if (S.mode === "manual") pitch += (S.man.nose ? -0.22 : 0.22) * (S.fakie ? -1 : 1);
+        pitch = Math.atan(s) * fs;
+        if (S.mode === "manual") pitch += (S.man.nose ? -0.22 : 0.22) * fs;
         if (S.man && S.man.special) yaw += S.spinVis || 0;
         roll = -((keys.left ? 1 : 0) - (keys.right ? 1 : 0)) * (look.skates ? 0.22 : 0.12) * Math.min(1, S.speed / 5);
       }
@@ -4898,9 +4907,9 @@ const STREET = (() => {
         yaw += a.spin;
         if (a.vert) {
           const p = Math.min(1, a.t / a.vert.T);
-          yaw = a.vert.head0 + Math.PI * (p * p * (3 - 2 * p)) + a.spin + (S.fakie ? Math.PI : 0);
-          pitch = (Math.PI / 2) * (1 - 2 * p) * 0.92 * (S.fakie ? -1 : 1);
-        } else pitch = Math.max(-0.45, Math.min(0.45, Math.atan2(S.vy, Math.hypot(S.vx, S.vz) + 2) * 0.6)) * (S.fakie ? -1 : 1);
+          yaw = a.vert.head0 + Math.PI * (p * p * (3 - 2 * p)) + a.spin + (fk ? Math.PI : 0);
+          pitch = (Math.PI / 2) * (1 - 2 * p) * 0.92 * fs;
+        } else pitch = Math.max(-0.45, Math.min(0.45, Math.atan2(S.vy, Math.hypot(S.vx, S.vz) + 2) * 0.6)) * fs;
         if (a.flip) {
           const f = Math.min(1, a.flip.t);
           const e = f * f * (3 - 2 * f);
@@ -4915,8 +4924,8 @@ const STREET = (() => {
       if (S.mode === "grind") {
         const g = S.grind;
         const d3 = V.norm(V.sub(g.r.b, g.r.a));
-        yaw = Math.atan2(d3[0] * g.sgn, d3[2] * g.sgn) + (S.fakie ? Math.PI : 0);
-        pitch = Math.asin(d3[1] * g.sgn) * (S.fakie ? -1 : 1);
+        yaw = Math.atan2(d3[0] * g.sgn, d3[2] * g.sgn) + (fk ? Math.PI : 0);
+        pitch = Math.asin(d3[1] * g.sgn) * fs;
         if (g.type === "left" || g.type === "right" || g.special) yaw += Math.PI / 2;
         if (g.type === "up") pitch -= 0.2;
         if (g.type === "down") pitch += 0.2;
