@@ -1149,9 +1149,12 @@ const ART = (() => {
     const p = Object.assign({}, POSES.air, { py: 0.58, lean: 0.55, lf: 0.06, lb: 0.06, hy: -0.85, hp: 0.25, hF: [0.05, 1.25, 0.62], hB: [-0.08, 1.2, -0.62] });
     return Object.assign(p, GRABS[name] || {});
   }
+  const FEET = { fzF: 0.13, fzB: -0.13, fxF: 0, fxB: 0 }; // pés dos patins (padrão quando a pose não diz)
   function lerpPose(a, b, t) {
     const o = {};
+    for (const k in FEET) if (k in a || k in b) o[k] = (a[k] ?? FEET[k]) + ((b[k] ?? FEET[k]) - (a[k] ?? FEET[k])) * t;
     for (const k in a) {
+      if (k in FEET) continue;
       if (Array.isArray(a[k])) {
         const bb = b[k] || a[k];
         o[k] = a[k].map((v, i) => (i === 3 ? (t > 0.5 ? bb[3] || 0 : v) : v + ((bb[i] ?? v) - v) * t));
@@ -1574,8 +1577,13 @@ const CHARS = (() => {
         // pé da frente gira e aponta pra onde o skate vai, em cima dos parafusos
         foot = M.pt(feetBase, [0.0, 0.21, pd * 0.17]);
         yawF = (-Math.PI / 2) * pd;
+      } else if (look.skates) {
+        // patins: pés quase embaixo do quadril (afastados de leve) e joelho apontando pra frente
+        const fzS = s === "F" ? (p.fzF ?? 0.13) : (p.fzB ?? -0.13);
+        const fxS = (s === "F" ? p.fxF : p.fxB) ?? (p.fx || 0);
+        foot = M.pt(feetBase, [0.02 + fxS, 0.21 + lift, fzS]);
       } else foot = M.pt(feetBase, [0.02 + (p.fx || 0), 0.21 + lift, fz]);
-      const hint = V.add(fwd, V.mul(along, hz > 0 ? 0.2 : -0.2));
+      const hint = look.skates ? V.add(fwd, V.mul(along, hz > 0 ? 0.04 : -0.04)) : V.add(fwd, V.mul(along, hz > 0 ? 0.2 : -0.2));
       const k = ik(hip, foot, LEN.thigh, LEN.shin, hint);
       F[BONE["thigh" + s]] = seg(hip, k.mid, along);
       F[BONE["shin" + s]] = seg(k.mid, k.end, along);
@@ -4201,7 +4209,7 @@ const STREET = (() => {
       const hv = [Math.sin(S.head), Math.cos(S.head)];
       const sgn = hv[0] * d3[0] + hv[1] * d3[2] >= 0 ? 1 : -1;
       // pousar no grind no meio de um flip = tombo
-      if (S.air && S.air.flip && S.air.flip.t > 0.2 && S.air.flip.t < 0.8) return bail();
+      if (S.air && S.air.flip && S.air.flip.t > 0.32 && S.air.flip.t < 0.6) return bail();
       finishAir(false);
       let name = grName(dirName) || grName("none");
       if (r.kind === "wire") name = "Fio: " + name;
@@ -4260,12 +4268,19 @@ const STREET = (() => {
       const a = S.air;
       const g = H(S.x, S.z);
       // checagens de tombo
-      if (a.flip && a.flip.t > 0.22 && a.flip.t < 0.82) return bail();
-      if (a.grab && keys.grab && a.grab.t < 0.12) return bail();
-      if (a.special && a.special.t < a.special.dur * 0.85) return bail();
+      if (a.flip && a.flip.t > 0.32 && a.flip.t < 0.6) return bail();
+      // flip quase terminado conta (o shape "assenta" no pé)
+      if (a.flip && a.flip.t >= 0.6) {
+        const f = a.flip;
+        a.flips[f.key] = (a.flips[f.key] || 0) + 1;
+        addTrick(fName(f.key), look.skates ? (f.key === "back" ? 450 : 250) : FLIPS[f.key].pts);
+        a.flip = null;
+      }
+      if (a.grab && keys.grab && a.grab.t < 0.05) return bail();
+      if (a.special && a.special.t < a.special.dur * 0.55) return bail();
       const k = Math.round(a.spin / Math.PI);
       const err = Math.abs(a.spin - k * Math.PI);
-      if (err > 0.85) return bail("TORTO! TOMBO");
+      if (err > 1.22) return bail("TORTO! TOMBO");
       finishAir(true);
       for (const gp of L.gaps) {
         if (gp.cond && !gp.cond(S)) continue;
@@ -4361,7 +4376,7 @@ const STREET = (() => {
         else { bx = H(nx, S.z) - S.y > 0.14; bz = H(S.x, nz) - S.y > 0.14; }
         // de frente e rápido: tombo; de raspão: desliza junto da parede
         const head_on = (bx && Math.abs(ndx) > 0.8) || (bz && Math.abs(ndz) > 0.8) || (bx && bz);
-        if (head_on && S.speed > 6.5) { bail("BATEU!"); return "bail"; }
+        if (head_on && S.speed > 8.8) { bail("BATEU!"); return "bail"; }
         let vx = ndx, vz = ndz;
         if (bx) vx = 0;
         if (bz) vz = 0;
@@ -4500,7 +4515,7 @@ const STREET = (() => {
         m.el += dt;
         S.balT += dt;
         const inp = (keys.up ? 1 : 0) - (keys.down ? 1 : 0);
-        S.balV += ((Math.random() - 0.5) * 3 + S.bal * 2.2) * (0.5 + S.balT * 0.25) * dt * (m.special ? 0.4 : 1) - inp * 4.4 * dt * (m.nose ? -1 : 1);
+        S.balV += ((Math.random() - 0.5) * 2.2 + S.bal * 1.6) * (0.45 + S.balT * 0.16) * dt * (m.special ? 0.4 : 1) - inp * 4.8 * dt * (m.nose ? -1 : 1);
         S.bal += S.balV * dt;
         if (Math.abs(S.bal) > 1) return bail();
         S.head += turn * 2.2 * dt;
@@ -4528,7 +4543,7 @@ const STREET = (() => {
         S.x = p[0]; S.y = p[1]; S.z = p[2];
         S.head = Math.atan2(d3[0] * g.sgn, d3[2] * g.sgn);
         const inp = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-        S.balV += ((Math.random() - 0.5) * 3.2 + S.bal * 2.4) * (0.5 + S.balT * 0.3) * dt * (g.special ? 0.35 : 1) + inp * 4.6 * dt;
+        S.balV += ((Math.random() - 0.5) * 2.3 + S.bal * 1.7) * (0.45 + S.balT * 0.18) * dt * (g.special ? 0.35 : 1) + inp * 5 * dt;
         S.bal += S.balV * dt;
         if (Math.abs(S.bal) > 1) return bail("CAIU DO CORRIMÃO!");
         if (edge.special && S.specialOn && !g.special) {
@@ -4755,10 +4770,13 @@ const STREET = (() => {
       if (S.pushPh > 0) {
         if (look.skates) {
           // passada de patins: empurra pra fora com um pé de cada vez, balançando os braços
-          const ph = S.pushPh * Math.PI * 2, sw = Math.sin(ph);
+          // cada pé empurra pra fora e pra trás enquanto o outro desliza embaixo do corpo
+          const ph = S.pushPh * Math.PI * 2, sw = Math.sin(ph), oF = Math.max(0, sw), oB = Math.max(0, -sw);
           return Object.assign({}, P.ride, look.ride || {}, {
-            lean: 0.38, py: 0.88, lf: Math.max(0, sw) * 0.14, lb: Math.max(0, -sw) * 0.14, fx: -Math.abs(sw) * 0.12,
-            roll: sw * 0.16, hy: -sw * 0.25, hF: [0.18 - sw * 0.28, 0.95, 0.3], hB: [0.18 + sw * 0.28, 0.95, -0.3],
+            lean: 0.34, py: 0.99, twist: 0, hp: -0.05,
+            fzF: 0.12 + oF * 0.17, fxF: -oF * 0.16 + oB * 0.05, lf: oB * 0.05,
+            fzB: -0.12 - oB * 0.17, fxB: -oB * 0.16 + oF * 0.05, lb: oF * 0.05,
+            roll: -sw * 0.07, hy: -sw * 0.18, hF: [0.16 - sw * 0.26, 0.98, 0.3], hB: [0.16 + sw * 0.26, 0.98, -0.3],
           });
         }
         return pushPose(sg);
@@ -4767,7 +4785,7 @@ const STREET = (() => {
       if (look.skates) {
         // patins andando sem remar: deslizando com balanço leve
         const sw = Math.sin(clock * 3);
-        return Object.assign({}, P.ride, look.ride || {}, { lean: 0.22, py: 0.9, roll: sw * 0.05, hF: [0.12, 0.92, 0.32 + sw * 0.05], hB: [0.12, 0.92, -0.32 + sw * 0.05] });
+        return Object.assign({}, P.ride, look.ride || {}, { lean: 0.2, py: 1.02, twist: 0, roll: sw * 0.04, fxF: 0.07, fxB: -0.07, fzF: 0.12, fzB: -0.12, hF: [0.12, 0.95, 0.32 + sw * 0.05], hB: [0.12, 0.95, -0.32 + sw * 0.05] });
       }
       return mirror(Object.assign({}, P.ride, look.ride || {}), sg);
     }
@@ -5041,7 +5059,7 @@ const DISC = (() => {
     sun: V.norm([0.35, 0.9, 0.45]), top: [0, 0, 0], mid: hex(0xc9d6ff), hz: [0, 0, 0], fog: [0, 0, 0], fogd: 0,
     shade: hex(0x8f7fd6), ink: INK, ink_w: 1.35, objects: [],
   };
-  const cam = { eye: [0.15, 3.3, 2.75], at: [0.55, 0.1, -0.15], fov: 0.86 };
+  const cam = { eye: [0.25, 3.7, 2.1], at: [0.55, 0.1, -0.2], fov: 0.86 };
   const css = (h) => hex(parseInt(h.replace("#", ""), 16));
 
   // ---------- modelos ----------
@@ -5063,11 +5081,6 @@ const DISC = (() => {
     m.box(-0.42, 0.08, 0.9, 0.0, 0.22, 0.98, hex(0x9cf2c8), { m: 2 });
     // dobradiça atrás
     m.box(-0.3, H - 0.04, -1.04, 0.3, H + 0.06, -0.94, side);
-    // cabo vermelho do fone saindo pela direita
-    let p = [0.98, 0.16, 0.2];
-    const pts = [[1.25, 0.12, 0.35], [1.45, 0.05, 0.7], [1.5, 0.02, 1.2], [1.4, 0.02, 1.7]];
-    for (const q of pts) { m.tube(p, q, 0.035, 0.035, 5, hex(0xe8242c)); p = q; }
-    m.box(0.92, 0.11, 0.14, 1.04, 0.21, 0.26, hex(0x2b2640));
     return m;
   }
   function lidMesh() {
@@ -5077,30 +5090,35 @@ const DISC = (() => {
     for (let i = 0; i < N; i++) {
       const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
       const P = (a, r, y) => [Math.cos(a) * r, y, Math.sin(a) * r + 0.98];
-      m.quad(P(a0, 0.62, th), P(a1, 0.62, th), P(a1, Rr, th), P(a0, Rr, th), hex(0xe9edf4));
+      m.quad(P(a0, 0.86, th), P(a1, 0.86, th), P(a1, Rr, th), P(a0, Rr, th), hex(0xe9edf4));
       m.quad(P(a0, Rr, 0), P(a1, Rr, 0), P(a1, Rr, th), P(a0, Rr, th), hex(0xb7bfcf));
-      m.quad(P(a0, 0.62, 0), P(a0, Rr, 0), P(a1, Rr, 0), P(a1, 0.62, 0), hex(0xb7bfcf));
-      ring.push(P(a0, 0.62, th * 0.5));
+      m.quad(P(a0, 0.86, 0), P(a0, Rr, 0), P(a1, Rr, 0), P(a1, 0.86, 0), hex(0xb7bfcf));
+      m.quad(P(a0, 0.86, 0), P(a1, 0.86, 0), P(a1, 0.86, th), P(a0, 0.86, th), hex(0xb7bfcf));
+      ring.push(P(a0, 0.86, th * 0.5));
     }
     m.orient([0, -1, 0.98]);
     const glass = new Mesh();
-    for (let i = 0; i < N; i++) glass.tri([0, th * 0.5, 0.98], ring[i], ring[(i + 1) % N], hex(0xbfe8ff), 3);
+    // reflexo: duas faixinhas na janela, sem cobrir o CD
+    for (const [a, b] of [[0.55, 0.62], [0.72, 0.76]]) glass.quad([-0.5, th * 0.5, 0.98 - a + 0.3], [-0.5 + 0.18, th * 0.5, 0.98 - a + 0.3], [0.1 + 0.18, th * 0.5, 0.98 - b - 0.3], [0.1, th * 0.5, 0.98 - b - 0.3], hex(0xffffff), 3);
     // logo pequeno
-    m.box(0.25, th, 0.98 + 0.68, 0.55, th + 0.01, 0.98 + 0.76, hex(0xff4fa3));
+    m.box(0.2, th, 0.98 + 0.88, 0.5, th + 0.01, 0.98 + 0.95, hex(0xff4fa3));
     return { m, glass };
   }
   function cdMesh() {
     // CD low poly: setores com cores furta-cor, miolo transparente e furo
     const m = new Mesh(), N = 24, Ro = 0.78, Ri = 0.24, th = 0.028;
-    const iri = [0xeef1f7, 0x9fe7ff, 0xffd1f0, 0xfff3a8, 0xc7f7d0, 0xd9c8ff].map(hex);
+    const iri = [0xdfe6f2, 0x7fdcff, 0xb59cff, 0xff9fd8, 0xffe38a, 0x9ff0b8, 0xdfe6f2, 0xc6ccd8].map(hex);
     for (let i = 0; i < N; i++) {
       const a0 = (i / N) * Math.PI * 2, a1 = ((i + 1) / N) * Math.PI * 2;
       const P = (a, r, y) => [Math.cos(a) * r, y, Math.sin(a) * r];
-      const c = iri[i % iri.length];
-      m.quad(P(a0, Ri, th), P(a1, Ri, th), P(a1, Ro, th), P(a0, Ro, th), c);
+      const c = iri[i % iri.length], c2 = iri[(i + 3) % iri.length];
+      m.quad(P(a0, Ri, th), P(a1, Ri, th), P(a1, 0.5, th), P(a0, 0.5, th), V.lerp(c2, hex(0xe9edf4), 0.35), 1);
+      m.quad(P(a0, 0.5, th), P(a1, 0.5, th), P(a1, Ro, th), P(a0, Ro, th), c, 1);
+      m.quad(P(a0, 0.5, th + 0.001), P(a1, 0.5, th + 0.001), P(a1, 0.52, th + 0.001), P(a0, 0.52, th + 0.001), hex(0xb7bfcf));
       m.quad(P(a0, Ri, 0), P(a0, Ro, 0), P(a1, Ro, 0), P(a1, Ri, 0), hex(0xc9d0de));
       m.quad(P(a0, Ro, 0), P(a1, Ro, 0), P(a1, Ro, th), P(a0, Ro, th), hex(0xe9edf4));
-      m.quad(P(a0, 0.1, th + 0.002), P(a1, 0.1, th + 0.002), P(a1, Ri, th + 0.002), P(a0, Ri, th + 0.002), hex(0xf6f8fc));
+      m.quad(P(a0, 0.1, th + 0.002), P(a1, 0.1, th + 0.002), P(a1, Ri, th + 0.002), P(a0, Ri, th + 0.002), hex(0xdfe4ee));
+      m.quad(P(a0, Ri - 0.02, th + 0.003), P(a1, Ri - 0.02, th + 0.003), P(a1, Ri, th + 0.003), P(a0, Ri, th + 0.003), hex(0x9aa3b6));
       m.quad(P(a0, 0.1, 0), P(a1, 0.1, 0), P(a1, 0.1, th), P(a0, 0.1, th), hex(0x2b2640));
     }
     // risquinho de brilho
