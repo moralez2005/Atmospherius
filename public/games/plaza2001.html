@@ -36,10 +36,13 @@ canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:no
 .combo{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);text-align:center;width:92%}
 .combo .names{font-size:clamp(12px,1.7vw,19px);color:#fff}
 .combo .pts{font-size:clamp(16px,2.4vw,28px);color:var(--cy)}
-.bal{position:absolute;left:50%;top:58%;transform:translateX(-50%);width:clamp(140px,22vw,240px);height:14px;border:2px solid var(--ink);border-radius:7px;background:linear-gradient(90deg,#ff4f4f,var(--yel) 30%,#7dff8a 50%,var(--yel) 70%,#ff4f4f);display:none}
-.bal.v{width:14px;height:clamp(90px,16vw,160px);top:30%;left:62%;background:linear-gradient(180deg,#ff4f4f,var(--yel) 30%,#7dff8a 50%,var(--yel) 70%,#ff4f4f)}
-.bal i{position:absolute;top:-6px;left:50%;width:6px;height:22px;margin-left:-3px;background:#fff;border:2px solid var(--ink);border-radius:3px}
-.bal.v i{left:-6px;top:50%;width:22px;height:6px;margin:-3px 0 0}
+.bal{position:absolute;left:50%;top:60%;transform:translateX(-50%);width:clamp(150px,22vw,250px);height:16px;padding:0;border:3px solid var(--ink);border-radius:999px;box-shadow:3px 3px 0 var(--pink),inset 0 0 0 3px rgba(27,21,48,.86);background:linear-gradient(90deg,#ff5c7a 0 12%,#ffd23f 12% 34%,#5be36a 34% 66%,#ffd23f 66% 88%,#ff5c7a 88%);display:none}
+.bal::before{content:'EQUILÍBRIO';position:absolute;left:50%;top:-20px;transform:translateX(-50%);font:400 11px/1 Bungee,sans-serif;color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;letter-spacing:.06em;white-space:nowrap}
+.bal.v{width:16px;height:clamp(100px,16vw,170px);top:30%;left:62%;transform:none;background:linear-gradient(180deg,#ff5c7a 0 12%,#ffd23f 12% 34%,#5be36a 34% 66%,#ffd23f 66% 88%,#ff5c7a 88%)}
+.bal.v::before{left:24px;top:50%;transform:translateY(-50%)}
+.bal i{position:absolute;top:50%;left:50%;width:18px;height:18px;margin:-9px 0 0 -9px;background:#fff36b;border:3px solid var(--ink);clip-path:polygon(50% 0,63% 35%,100% 38%,71% 61%,82% 100%,50% 78%,18% 100%,29% 61%,0 38%,37% 35%);transition:left .05s linear,top .05s linear}
+.bal i::after{content:'';position:absolute;inset:3px;background:#fff36b}
+.bal.v i{left:50%;top:50%}
 .track{position:absolute;left:14px;bottom:10px;font-size:clamp(11px,1.4vw,15px);color:#fff;opacity:0;transition:opacity .4s}
 .track.on{opacity:1}
 .toast{position:absolute;left:50%;top:15%;transform:translateX(-50%);background:var(--yel);color:var(--ink);font-style:normal;padding:6px 14px;border:3px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--ink);font-size:clamp(12px,1.6vw,17px);display:none;white-space:nowrap}
@@ -95,6 +98,7 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .dm.load .dm-txt span::after{content:"";animation:dm-dots 1.2s steps(4) infinite}
 @keyframes dm-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 .radiohint{margin:0 0 6px;font-size:14px;font-weight:700}
+.skf{font-size:14px;font-weight:700;gap:8px;align-items:center;cursor:pointer;margin:0 0 6px}.skf input{width:18px;height:18px;accent-color:var(--pink)}
 #dm3d{position:absolute;left:-8px;top:-70px;width:170px;height:160px;pointer-events:none;display:none}
 .dm3d #dm3d{display:block}.dm3d .dm-body,.dm3d .dm-cd,.dm3d .dm-lid,.dm3d .dm-hand{display:none}
 .mm{position:absolute;right:12px;bottom:34px;width:clamp(110px,15vw,160px);aspect-ratio:212/200;border:3px solid var(--ink);border-radius:12px;background:rgba(27,21,48,.5);box-shadow:3px 3px 0 var(--pink);overflow:hidden;display:none}
@@ -124,18 +128,19 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <p id="ovP">Fim de tarde na praça e na cidade em volta. Encadeie manobras, ache os gaps, pegue latas de spray e grafite os pontos marcados (o mapinha mostra onde).</p>
     <div class="row" role="group" aria-label="Skatista"><b>Skatista:</b><button class="pick" data-look="kf" aria-pressed="true">K.F.</button><button class="pick" data-look="manu" aria-pressed="false">Manu</button><button class="pick" data-look="kaua" aria-pressed="false">Kauã</button></div>
     <p class="radiohint" id="radioHint"></p>
+    <label class="row skf" id="skfRow"><input type="checkbox" id="skf"> Manu sempre de frente (não patina de costas)</label>
     <div class="row"><button class="btn" id="goS">Sessão de 3 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
     <b>Metas</b><ul class="goals" id="goals"></ul>
   </div></div>
 </div></div>
 <div class="keys">
   <span><kbd>W</kbd> remar</span><span><kbd>A</kbd><kbd>D</kbd> virar / girar no ar</span><span><kbd>S</kbd> frear</span>
-  <span><kbd>Espaço</kbd> segure e solte = pular</span><span><kbd>J</kbd> <b id="kJ">kickflip</b></span><span><kbd>L</kbd> <b id="kL">grab (segure)</b></span>
-  <span><kbd>K</kbd> <b id="kK">grind no corrimão</b></span><span><kbd>C</kbd> câmera (trás / frente / lado)</span>
+  <span><kbd>Espaço</kbd> segure e solte = pular</span><span><kbd>J</kbd> <b id="kJ">flip</b></span><span><kbd>L</kbd> <b id="kL">grab (segure)</b></span>
+  <span><kbd>K</kbd> <b id="kK">grind</b></span><span>+ <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> muda a manobra</span><span><kbd>E</kbd> especial (barra cheia)</span><span><kbd>C</kbd> câmera (trás / frente / lado)</span>
   <span><kbd>N</kbd> música · <kbd>M</kbd> mudo</span><span><kbd>Esc</kbd> pausa</span>
 </div>
 <div class="touch"><div class="dpad"><span></span><button data-k="up">▲</button><span></span><button data-k="left">◀</button><button data-k="down">▼</button><button data-k="right">▶</button></div>
-<div class="acts"><button data-k="flip">FLIP</button><button data-k="grind">GRIND</button><button data-k="grab">GRAB</button><button data-k="cam">CÂM.</button><button data-k="jump">PULAR</button></div></div>
+<div class="acts"><button data-k="flip">FLIP</button><button data-k="grind">GRIND</button><button data-k="grab">GRAB</button><button data-k="cam">CÂM.</button><button data-k="special">ESP.</button><button data-k="jump">PULAR</button></div></div>
 <p class="note">Protótipo de estudo: tudo em polígonos com contorno e sombra em faixas, resolução interna baixa e ajuste automático se a máquina estiver sofrendo. Trilha sintetizada na hora. Personagens, grafites e marcas são inventados.</p>
 <script>// Motor low-poly cel-shaded (WebGL1). Sombra em faixas (toon), contorno preto por "casco
 // invertido" empurrado pra trás na profundidade, decalques de um atlas (grafites, placas),
@@ -1131,7 +1136,7 @@ const ART = (() => {
     ride: { px: 0, py: 0.9, pz: 0, lean: 0.2, twist: 0.25, hy: -1.05, hp: 0.05, hF: [0.12, 0.92, 0.48], hB: [-0.05, 0.85, -0.46], lf: 0, lb: 0 },
     crouch: { px: 0.06, py: 0.64, pz: 0, lean: 0.55, twist: 0.2, hy: -0.95, hp: 0.1, hF: [0.38, 0.62, 0.36], hB: [0.3, 0.52, -0.36], lf: 0, lb: 0 },
     air: { px: 0, py: 0.8, pz: 0, lean: 0.3, twist: 0.2, hy: -0.9, hp: 0.1, hF: [0.05, 1.3, 0.62], hB: [-0.08, 1.2, -0.62], lf: 0.04, lb: 0.04 },
-    flip: { px: 0, py: 0.98, pz: 0, lean: 0.28, twist: 0.25, hy: -0.6, hp: 0.45, hF: [0.12, 1.35, 0.58], hB: [-0.02, 1.25, -0.58], lf: 0.3, lb: 0.3 },
+    flip: { px: 0, py: 0.9, pz: 0, lean: 0.34, twist: 0.25, hy: -0.75, hp: 0.35, hF: [0.18, 1.25, 0.6], hB: [-0.05, 1.1, -0.55], lf: 0.34, lb: 0.04, fxF: 0.16, fxB: -0.02 },
     grind: { px: 0, py: 0.86, pz: 0, lean: 0.22, twist: 0.4, hy: -1.1, hp: 0.05, hF: [0.0, 1.12, 0.7], hB: [0.0, 1.02, -0.68], lf: 0, lb: 0 },
     manual: { px: -0.04, py: 0.9, pz: -0.08, lean: -0.08, twist: 0.35, hy: -1.1, hp: -0.05, hF: [0.15, 1.15, 0.55], hB: [-0.15, 1.08, -0.55], lf: 0, lb: 0 },
     nmanual: { px: 0.04, py: 0.88, pz: 0.1, lean: 0.4, twist: 0.35, hy: -1.1, hp: 0.2, hF: [0.25, 1.0, 0.6], hB: [-0.2, 1.15, -0.5], lf: 0, lb: 0 },
@@ -1144,6 +1149,8 @@ const ART = (() => {
     Stalefish: { hB: [-0.12, 0.17, -0.06, 1] },
     Nosegrab: { hF: [0.0, 0.17, 0.37, 1] },
     Tailgrab: { hB: [0.0, 0.17, -0.37, 1] },
+    // parada de mão na borda da rampa (invert): uma mão no coping, a outra segura o shape
+    Plant: { py: 0.95, lean: 0.05, hp: 0.3, hy: -0.2, hF: [0.12, 1.98, 0.08], hB: [0.12, 0.17, -0.02, 1], lf: 0.1, lb: 0.1 },
   };
   function grabPose(name) {
     const p = Object.assign({}, POSES.air, { py: 0.58, lean: 0.55, lf: 0.06, lb: 0.06, hy: -0.85, hp: 0.25, hF: [0.05, 1.25, 0.62], hB: [-0.08, 1.2, -0.62] });
@@ -1572,7 +1579,7 @@ const CHARS = (() => {
         if (ph < 0.5) { const u = ph / 0.5; zz = pd * (0.12 - 0.62 * u); yy = 0.075; }
         else { const u = (ph - 0.5) / 0.5; zz = pd * (-0.5 + 0.62 * u); yy = 0.075 + Math.sin(u * Math.PI) * 0.13; }
         foot = M.pt(base, [0.2, yy, zz]);
-        yawF = -0.35 * pd;
+        yawF = (-Math.PI / 2) * pd * 0.88;
       } else if (pushing) {
         // pé da frente gira e aponta pra onde o skate vai, em cima dos parafusos
         foot = M.pt(feetBase, [0.0, 0.21, pd * 0.17]);
@@ -1582,7 +1589,7 @@ const CHARS = (() => {
         const fzS = s === "F" ? (p.fzF ?? 0.13) : (p.fzB ?? -0.13);
         const fxS = (s === "F" ? p.fxF : p.fxB) ?? (p.fx || 0);
         foot = M.pt(feetBase, [0.02 + fxS, 0.21 + lift, fzS]);
-      } else foot = M.pt(feetBase, [0.02 + (p.fx || 0), 0.21 + lift, fz]);
+      } else foot = M.pt(feetBase, [0.02 + ((s === "F" ? p.fxF : p.fxB) || p.fx || 0), 0.21 + lift, fz]);
       const hint = look.skates ? V.add(fwd, V.mul(along, hz > 0 ? 0.04 : -0.04)) : V.add(fwd, V.mul(along, hz > 0 ? 0.2 : -0.2));
       const k = ik(hip, foot, LEN.thigh, LEN.shin, hint);
       F[BONE["thigh" + s]] = seg(hip, k.mid, along);
@@ -3735,6 +3742,16 @@ const RADIO = (() => {
         { id: "PChZWswp004", t: "Dias Melhores", a: "Jota Quest", s: 0 },
         { id: "bu1qsGSfUmc", t: "Desde Quando Você Se Foi", a: "Fresno", s: 0 },
         { id: "ffcgo0owH9w", t: "Tropa de Elite", a: "Tihuana", s: 0 },
+        { id: "lEntNFYE4Tc", t: "Zóio de Lula", a: "Charlie Brown Jr.", s: 0 },
+        { id: "Z2IbIKXjoLE", t: "Proibida pra Mim", a: "Charlie Brown Jr.", s: 0 },
+        { id: "zHU3kvOH0E4", t: "Te Levar Daqui", a: "Charlie Brown Jr.", s: 0 },
+        { id: "B_B8br4eNC0", t: "Não É Sério", a: "Charlie Brown Jr. e Negra Li", s: 0 },
+        { id: "YsnMBgJjHZ4", t: "Tarde de Outubro", a: "CPM 22", s: 0 },
+        { id: "iQhVPNY7S9k", t: "Não Sei Viver Sem Ter Você", a: "CPM 22", s: 0 },
+        { id: "oE3cK6kC7Es", t: "Anna Júlia", a: "Los Hermanos", s: 0 },
+        { id: "fX3ix7rFp9U", t: "Primeiros Erros (Chove)", a: "Capital Inicial", s: 0 },
+        { id: "ehCkyxt06SQ", t: "Mulher de Fases", a: "Raimundos", s: 0 },
+        { id: "6CpV9tN7eM8", t: "Quando o Sol Se For", a: "Detonautas", s: 0 },
       ],
     },
     manu: {
@@ -3759,6 +3776,17 @@ const RADIO = (() => {
         { id: "Qe2pjBYskUU", t: "So Yesterday", a: "Hilary Duff", s: 0 },
         { id: "6OhMVzV5VuM", t: "Pieces of Me", a: "Ashlee Simpson", s: 0 },
         { id: "1VPotzhpAGE", t: "Misery Business", a: "Paramore", s: 0 },
+        { id: "KJ0vHOAXB3M", t: "Pretty Baby", a: "Vanessa Carlton", s: 0 },
+        { id: "2tmAf7S4eX4", t: "Ordinary Day", a: "Vanessa Carlton", s: 0 },
+        { id: "LiVYyRjx2Mw", t: "Don't Tell Me", a: "Avril Lavigne", s: 0 },
+        { id: "bChbkVRX3jM", t: "Come Clean", a: "Hilary Duff", s: 0 },
+        { id: "J2wYJERAN3Q", t: "Behind These Hazel Eyes", a: "Kelly Clarkson", s: 0 },
+        { id: "STuMztGizek", t: "4ever", a: "The Veronicas", s: 0 },
+        { id: "3QTFbx-4XDA", t: "Untouched", a: "The Veronicas", s: 0 },
+        { id: "aVbdEnIolPo", t: "That's What You Get", a: "Paramore", s: 0 },
+        { id: "p1Gr_Bg2Eag", t: "crushcrushcrush", a: "Paramore", s: 0 },
+        { id: "4_PU2vKgkjw", t: "Teto de Vidro", a: "Pitty", s: 0 },
+        { id: "A3nR9GHXJhM", t: "Ragatanga", a: "Rouge", s: 0 },
       ],
     },
     kaua: {
@@ -3784,10 +3812,22 @@ const RADIO = (() => {
         { id: "u7T2OR-O2Vk", t: "Even Flow", a: "Pearl Jam", s: 0 },
         { id: "sNRX7jzwGVQ", t: "Man in the Box", a: "Alice in Chains", s: 0 },
         { id: "-1ofDUXvnGo", t: "Black Hole Sun", a: "Soundgarden", s: 0 },
+        { id: "-YQ8IbVIwPM", t: "Somewhere I Belong", a: "Linkin Park", s: 0 },
+        { id: "I6NU3kWqnDE", t: "Crawling", a: "Linkin Park", s: 0 },
+        { id: "KwN_f0fTHoE", t: "One Step Closer", a: "Linkin Park", s: 0 },
+        { id: "Qf1FHLjoRRc", t: "Coming Undone", a: "Korn", s: 0 },
+        { id: "OMtq6JzREcA", t: "B.Y.O.B.", a: "System of a Down", s: 0 },
+        { id: "LMsBHDoC51c", t: "My Way", a: "Limp Bizkit", s: 0 },
+        { id: "PIF4So6xcU8", t: "My Own Summer (Shove It)", a: "Deftones", s: 0 },
+        { id: "JKmmGegan64", t: "Down with the Sickness", a: "Disturbed", s: 0 },
+        { id: "mQxWYy1JaqU", t: "Before I Forget", a: "Slipknot", s: 0 },
+        { id: "RNDWIh3Z_zo", t: "It's Been Awhile", a: "Staind", s: 0 },
+        { id: "553VogDv5DI", t: "Lithium", a: "Nirvana", s: 0 },
+        { id: "4L56DPmFl8w", t: "Would?", a: "Alice in Chains", s: 0 },
       ],
     },
   };
-  const VOLUME = 27;
+  const VOLUME = 60;
   let apiP = null, player = null, readyP = null; // player só fica preenchido depois de pronto (onReady)
   let st = null, order = [], idx = 0, errors = 0, on = false, paused = false, muted = false;
   let emit = () => {};
@@ -3958,7 +3998,15 @@ const STREET = (() => {
   const GRINDN = { none: "50-50", up: "Nosegrind", down: "5-0", left: "Boardslide", right: "Lipslide" };
   const SK_FLIP = { none: "Mortal", back: "Mortal de Costas", right: "Parafuso", down: "Mortal de Costas", up: "Estrela", left: "Pirueta Dupla" };
   // patins: o corpo inteiro gira (mortal pra frente no plano, mortal de costas na rampa)
-  const SK_ROT = { none: (f) => M.RX(f * Math.PI * 2), back: (f) => M.RX(-f * Math.PI * 2) };
+  const SK_ROT = {
+    none: (f) => M.RX(f * Math.PI * 2),
+    back: (f) => M.RX(-f * Math.PI * 2),
+    right: (f) => M.mul(M.RY(f * Math.PI * 2), M.RX(f * Math.PI * 2)),
+    up: (f) => M.RZ(f * Math.PI * 2),
+    left: (f) => M.RY(f * Math.PI * 4),
+  };
+  const SK_PTS = { none: 250, back: 450, right: 350, up: 350, left: 400 };
+  const GRAB_POSE = { none: "Indy", left: "Melon", right: "Stalefish", up: "Nosegrab", down: "Tailgrab" };
   const SK_GRAB = { none: "Pegada no Patins", left: "Pernas Abertas", right: "Patins na Mão", up: "Joelho no Peito", down: "Pegada de Trás" };
   const SK_GRIND = { none: "Soul", up: "Royale", down: "Unity", left: "Makio", right: "Frontside" };
   const GOALS = [
@@ -4006,6 +4054,7 @@ const STREET = (() => {
     const puffs = Array.from({ length: 28 }, (_, i) => add(puffG[i % 4], M.I(), { hidden: true, v: [0, 0, 0], p: [0, 0, 0], life: 0 }));
     // skatista
     let look = ART.LOOKS[opt.look || "kf"];
+    let skFwd = opt.skatesForward !== false;
     let rig = ART.makeRig(Rn, look);
     let rigObjs = [...rig.objs, rig.board];
     objs.push(...rigObjs);
@@ -4155,7 +4204,7 @@ const STREET = (() => {
         if (S.special >= 1) {
           S.specialOn = true;
           sfx.special();
-          setTimeout(() => say("ESPECIAL PRONTO! aperte O no ar, no grind ou no manual", 2.2), 900);
+          say("ESPECIAL PRONTO! aperte E", 1.8, true);
         }
       }
       if (tot >= 5000) goal("combo5");
@@ -4240,6 +4289,15 @@ const STREET = (() => {
       }
     }
 
+    function startPlant(qq) {
+      const a = S.air;
+      if (a.grab) { addTrick(a.grab.name, 150 + Math.round(a.grab.t * 260)); a.grab = null; }
+      S.mode = "plant";
+      S.plant = { t: 0, dur: 1.2, cop: [S.x, L.RAD, qq.q.zLip], y0: S.y, head0: a.vert.head0 };
+      S.air = null;
+      S.vy = 0;
+      sfx.land();
+    }
     // ---------- ar ----------
     function goAir(vy, vx, vz, vert) {
       S.mode = "air";
@@ -4273,7 +4331,7 @@ const STREET = (() => {
       if (a.flip && a.flip.t >= 0.6) {
         const f = a.flip;
         a.flips[f.key] = (a.flips[f.key] || 0) + 1;
-        addTrick(fName(f.key), look.skates ? (f.key === "back" ? 450 : 250) : FLIPS[f.key].pts);
+        addTrick(fName(f.key), look.skates ? SK_PTS[f.key] || 250 : FLIPS[f.key].pts);
         a.flip = null;
       }
       if (a.grab && keys.grab && a.grab.t < 0.05) return bail();
@@ -4369,7 +4427,7 @@ const STREET = (() => {
         return "vert";
       }
       const h1 = H(nx, nz);
-      const ob = blocked(nx, nz, S.y);
+      const ob = blocked(S.x, S.z, S.y) ? null : blocked(nx, nz, S.y);
       if (h1 - S.y > 0.14 || ob) {
         let bx, bz;
         if (ob) { bx = !!blocked(nx, S.z, S.y); bz = !!blocked(S.x, nz, S.y); }
@@ -4424,7 +4482,7 @@ const STREET = (() => {
           S.endWait += dt;
           if ((S.mode === "ground" && !S.combo.length) || S.mode === "bail" || S.endWait > 6) {
             commit();
-            if (S.score >= 20000) goal("score");
+            if (S.score >= 30000) goal("score");
             S.over = true;
             S.running = false;
             ui.end && ui.end(S);
@@ -4476,6 +4534,14 @@ const STREET = (() => {
           ollie();
           return;
         }
+        // especial no chão: pula sozinho e já sai girando
+        if (edge.special && S.specialOn) {
+          if (S.grace > 0) commit();
+          ollie(1.2);
+          S.air.special = { t: 0, dur: 0.95 };
+          sfx.special();
+          return;
+        }
         if (edge.grind || keys.grind) {
           let n = null;
           for (const ahead of [0, 0.7, 1.4]) {
@@ -4484,7 +4550,7 @@ const STREET = (() => {
           }
           if (n) {
             if (S.grace > 0) commit();
-            S.hop = { n, from: [S.x, S.y, S.z], el: 0, dur: 0.26, dir: "none" };
+            S.hop = { n, from: [S.x, S.y, S.z], el: 0, dur: 0.26, dir: dirKey() };
             S.mode = "hop";
             sfx.pop();
             return;
@@ -4574,6 +4640,17 @@ const STREET = (() => {
         }
         return;
       }
+      if (S.mode === "plant") {
+        const p = S.plant;
+        p.t += dt;
+        if (p.t >= p.dur || (!keys.grab && p.t > 0.5)) {
+          addTrick(look.skates ? "Parada de Mão" : "Handplant", 350 + Math.round(p.t * 320));
+          S.plant = null;
+          S.y = L.RAD + 0.25;
+          goAir(-0.3, 0, 0, { head0: p.head0, T: 0.3 });
+        }
+        return;
+      }
       if (S.mode === "air") {
         const a = S.air;
         a.t += dt;
@@ -4593,12 +4670,13 @@ const STREET = (() => {
               const last = S.combo[S.combo.length - 1];
               if (last && last.name.endsWith(fName(f.key))) S.combo.pop();
             }
-            addTrick(pre + fName(f.key), (look.skates ? (f.key === "back" ? 450 : 250) : FLIPS[f.key].pts) * n * (n > 1 ? 1.4 : 1));
+            addTrick(pre + fName(f.key), (look.skates ? SK_PTS[f.key] || 250 : FLIPS[f.key].pts) * n * (n > 1 ? 1.4 : 1));
             a.flip = keys.flip ? { key: f.key, t: 0 } : null;
             if (a.flip) sfx.flip();
           }
         } else if (edge.flip && !a.grab && !a.special) {
-          a.flip = { key: look.skates && a.vert ? "back" : "none", t: 0 };
+          const dk = dirKey();
+          a.flip = { key: look.skates ? (a.vert || dk === "down" ? "back" : dk) : dk, t: 0 };
           sfx.flip();
         }
         // grabs
@@ -4608,7 +4686,12 @@ const STREET = (() => {
             addTrick(a.grab.name, 150 + Math.round(a.grab.t * 260));
             a.grab = null;
           }
-        } else if (edge.grab && !a.flip && !a.special) a.grab = { name: gName("none"), gkey: "Indy", t: 0 };
+        } else if (edge.grab && !a.flip && !a.special) {
+          const qq = a.vert ? L.qpAt(S.x, S.z) : null;
+          if (qq && S.y > L.RAD - 0.35 && S.y < L.RAD + 1.25) { startPlant(qq); return; }
+          const dk = dirKey();
+          a.grab = { name: gName(dk), gkey: GRAB_POSE[dk], t: 0 };
+        }
         // especial
         if (edge.special && S.specialOn && !a.special && !a.flip && !a.grab) {
           a.special = { t: 0, dur: 0.95 };
@@ -4634,15 +4717,16 @@ const STREET = (() => {
         a.kBuf = (a.kBuf || 0) - dt;
         if (a.kBuf > 0 && S.vy < 2.5) {
           const n = railNear(S.x, S.y, S.z, a.vert ? 0.9 : 0.75, 0.55, 0.9);
-          if (n) { startGrind(n, "none"); return; }
+          if (n) { startGrind(n, dirKey()); return; }
         }
         S.vy -= G * dt;
         if (!a.vert) {
           const nx = S.x + S.vx * dt, nz = S.z + S.vz * dt;
           // só é parede se a altura "salta" (degrau/prédio); rampa contínua é pouso normal
           const here = H(S.x, S.z);
-          if ((H(nx, S.z) > S.y + 0.25 && H(nx, S.z) - here > 0.45) || blocked(nx, S.z, S.y)) { S.vx = 0; sfx.bump(); }
-          if ((H(S.x, nz) > S.y + 0.25 && H(S.x, nz) - here > 0.45) || blocked(S.x, nz, S.y)) { S.vz = 0; sfx.bump(); }
+          const inOb = blocked(S.x, S.z, S.y);
+          if ((H(nx, S.z) > S.y + 0.25 && H(nx, S.z) - here > 0.45) || (!inOb && blocked(nx, S.z, S.y))) { S.vx = 0; sfx.bump(); }
+          if ((H(S.x, nz) > S.y + 0.25 && H(S.x, nz) - here > 0.45) || (!inOb && blocked(S.x, nz, S.y))) { S.vz = 0; sfx.bump(); }
           S.x += S.vx * dt;
           S.z += S.vz * dt;
         }
@@ -4737,7 +4821,7 @@ const STREET = (() => {
     function mirror(p, sg) {
       if (sg > 0 || !p) return p;
       const m = (h) => (h ? [h[0], h[1], -h[2], h[3]] : h);
-      const o = Object.assign({}, p, { hy: -(p.hy || 0), twist: -(p.twist || 0), pz: -(p.pz || 0), hF: m(p.hB), hB: m(p.hF), lf: p.lb, lb: p.lf });
+      const o = Object.assign({}, p, { hy: -(p.hy || 0), twist: -(p.twist || 0), pz: -(p.pz || 0), hF: m(p.hB), hB: m(p.hF), lf: p.lb, lb: p.lf, fxF: p.fxB, fxB: p.fxF });
       if (o.hF && o.hF[3] === undefined) o.hF.length = 3;
       if (o.hB && o.hB[3] === undefined) o.hB.length = 3;
       return o;
@@ -4755,6 +4839,7 @@ const STREET = (() => {
       const P = ART.POSES;
       const sg = look.skates ? 1 : lead();
       if (window.__pose) return typeof window.__pose === "string" ? (P[window.__pose] || ART.grabPose(window.__pose)) : window.__pose;
+      if (S.mode === "plant") return mirror(ART.grabPose("Plant"), sg);
       if (S.mode === "air") {
         const a = S.air;
         if (a.special) return P.special;
@@ -4797,7 +4882,8 @@ const STREET = (() => {
       curPose.fx = tp.fx || 0;
       if (tp.push !== undefined) { curPose.push = tp.push; curPose.pushFoot = tp.pushFoot; curPose.pushDir = tp.pushDir; }
       else delete curPose.push;
-      let yaw = S.head + (S.fakie ? Math.PI : 0), pitch = 0, roll = 0, y = S.y;
+      const fk = S.fakie && !(look.skates && skFwd);
+      let yaw = S.head + (fk ? Math.PI : 0), pitch = 0, roll = 0, y = S.y;
       let flipM = null, lift = 0;
       if (S.mode === "ground" || S.mode === "manual") {
         const dx = Math.sin(S.head), dz = Math.cos(S.head);
@@ -4842,7 +4928,13 @@ const STREET = (() => {
       // suaviza a inclinação
       let dp = pitch - pitchVis;
       pitchVis += dp * Math.min(1, dt * (S.mode === "air" ? 30 : 14));
-      const base = M.mul(M.T(S.x, y, S.z), M.mul(M.RY(yaw), M.mul(M.RX(-pitchVis), M.RZ(roll))));
+      let base = M.mul(M.T(S.x, y, S.z), M.mul(M.RY(yaw), M.mul(M.RX(-pitchVis), M.RZ(roll))));
+      if (S.mode === "plant") {
+        // gira em volta do coping até ficar de ponta-cabeça, com a mão apoiada na borda
+        const p = S.plant, k = Math.min(1, p.t / 0.24), e = k * k * (3 - 2 * k);
+        const h0 = p.cop[1] - p.y0, h1 = 1.9 * (look.scale || 1), h = h0 + (h1 - h0) * e;
+        base = M.mul(M.T(p.cop[0], p.cop[1], p.cop[2]), M.mul(M.RY(p.head0 + (fk ? Math.PI : 0)), M.mul(M.RX(Math.PI * e), M.T(0, -h, 0))));
+      }
       let boardM = base;
       if (flipM) boardM = M.mul(base, M.mul(M.T(0, 0.12 + lift, 0), M.mul(flipM, M.T(0, -0.09, 0))));
       const goofy = !look.skates && look.stance === "goofy" ? M.RY(Math.PI) : null;
@@ -4910,6 +5002,7 @@ const STREET = (() => {
     function camFrame(dt) {
       let want = S.head;
       if (S.mode === "air" && S.air.vert) want = S.air.vert.head0;
+      if (S.mode === "plant") want = S.plant.head0;
       if (S.mode === "bail") want = S.camYaw;
       let d = want - S.camYaw;
       while (d > Math.PI) d -= Math.PI * 2;
@@ -4924,8 +5017,9 @@ const STREET = (() => {
       if (camMode === 1) { fx = -fx; fz = -fz; hgt = 0.75; }
       if (camMode === 2) { const t = fx; fx = fz; fz = -t; hgt = 0.6; }
       let want3 = [tgt[0] - fx * (camMode ? dist * 0.95 : dist), tgt[1] + hgt, tgt[2] - fz * (camMode ? dist * 0.95 : dist)];
-      if (S.mode === "air" && S.air.vert) {
-        want3 = [tgt[0] - fx * (dist + 1.5), Math.max(S.air.take.y + 2.2, tgt[1] + 0.6), tgt[2] - fz * (dist + 1.5)];
+      if ((S.mode === "air" && S.air.vert) || S.mode === "plant") {
+        const ty = S.mode === "plant" ? S.plant.y0 : S.air.take.y;
+        want3 = [tgt[0] - fx * (dist + 1.5), Math.max(ty + 2.2, tgt[1] + 0.6), tgt[2] - fz * (dist + 1.5)];
       }
       // não entrar em parede/prédio
       for (let i = 1; i <= 10; i++) {
@@ -5034,6 +5128,7 @@ const STREET = (() => {
         } else if (music && !music.playing && !opt.noMusic) music.start();
         reset(run || "session");
       },
+      setSkatesForward(v) { skFwd = !!v; },
       synthOn() { initAudio(); if (music && !music.playing && !opt.noMusic) music.start(); },
       pause(v) { S.running = !v; },
       cycleCam() { camMode = (camMode + 1) % 3; say(CAMS[camMode], 1.2); return camMode; },
@@ -5254,7 +5349,9 @@ const ui={
   goal(t){$('toast').textContent='META CUMPRIDA: '+t;$('toast').style.display='block';toastT=performance.now()+3200},
   end(S){try{parent.postMessage({type:'plaza2001-score',score:S.score},'*')}catch(e){}$('ovT').textContent='FIM DA SESSÃO';$('ovP').textContent=`${S.score.toLocaleString('pt-BR')} pontos · melhor combo ${S.bestCombo.toLocaleString('pt-BR')} · ${S.tags}/6 grafites · ${S.letters.length}/5 letras`;$('goS').textContent='Jogar de novo';drawGoals();$('over').style.display='grid'},
 };
-const game=STREET.Game($('cv'),ui,{lowH:window.__lowH||400,keep:!!window.__keep,noMusic:!!window.__noMusic});
+let skf=true;try{skf=localStorage.getItem('plaza-skf')!=='0'}catch(e){}
+const game=STREET.Game($('cv'),ui,{lowH:window.__lowH||400,keep:!!window.__keep,noMusic:!!window.__noMusic,skatesForward:skf});
+$('skf').checked=skf;$('skf').addEventListener('change',e=>{game.setSkatesForward(e.target.checked);try{localStorage.setItem('plaza-skf',e.target.checked?'1':'0')}catch(_){}})
 window.__game=game;
 
 // ---------- mapinha da cidade (norte pra cima): ruas, quarteirões, picos, grafites que faltam e você ----------
@@ -5296,8 +5393,8 @@ const go=(run)=>{$('over').style.display='none';$('mmBox').classList.add('on');p
 $('goS').addEventListener('click',()=>go('session'));$('goF').addEventListener('click',()=>go('free'));
 $('mus').addEventListener('click',()=>{if(RADIO.active){RADIO.next();$('mus').textContent='♪ Próxima música';return}const n=game.nextTrack();$('mus').textContent='♪ '+n});
 function pause(v){paused=v;game.pause(v);try{RADIO.pause(v)}catch(e){}if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();$('over').style.display='grid'}else $('over').style.display='none'}
-const map={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right',j:'flip',k:'grind',l:'grab',' ':'jump'};
-function legend(){const sk=look==='manu';$('kJ').textContent=sk?'mortal (na rampa: mortal de costas)':'kickflip';$('kL').textContent=sk?'pegada no patins (segure)':'grab (segure)';$('kK').textContent=sk?'soul grind no corrimão':'grind no corrimão';}
+const map={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'left',d:'right',arrowright:'right',j:'flip',k:'grind',l:'grab',e:'special',' ':'jump'};
+function legend(){const sk=look==='manu';$('kJ').textContent=sk?'mortal / parafuso / estrela':'flip (kick, heel, shove-it…)';$('kL').textContent=sk?'pegada (na borda da rampa: parada de mão)':'grab (na borda da rampa: handplant)';$('kK').textContent=sk?'grind de patins':'grind';$('skfRow').style.display=sk?'':'none'}
 legend();
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
   if(k==='escape'||k==='p'){if(game.S.running||paused){pause(!paused)}e.preventDefault();return}
