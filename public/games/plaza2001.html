@@ -143,6 +143,16 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .trkP{margin-left:6px;color:#ffd23f;font-weight:900}.trk small{display:block;opacity:.75;font-size:11px;font-weight:600}
 .trkBar{display:none;height:5px;background:rgba(255,255,255,.18);border-radius:3px;margin:3px 0 1px;overflow:hidden}.trkBar.on{display:block}.trkBar i{display:block;height:100%;width:0;background:#ffd23f;transition:width .25s}
 .photo .trk,.talking .trk{display:none}
+.cutO{position:absolute;inset:0;pointer-events:none;display:none;z-index:7}.cutO.on{display:block}
+.cutO .lb{position:absolute;left:0;right:0;height:13%;background:#07060b;transition:transform .5s ease}.lbT{top:0;transform:translateY(-100%)}.lbB{bottom:0;transform:translateY(100%)}
+.cutO.in .lbT,.cutO.in .lbB{transform:none}
+.cutO .grain{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(20,8,30,.55) 100%),repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,rgba(0,0,0,0) 1px 3px);mix-blend-mode:multiply}
+.cutO .sub{position:absolute;left:50%;bottom:2.2%;transform:translateX(-50%);width:84%;text-align:center;font:700 clamp(12px,2.1vw,19px) Rubik,sans-serif;color:#fff;text-shadow:0 2px 0 #000,0 0 8px #000;line-height:1.3}
+.cutO .sub b{display:inline-block;margin-right:8px;padding:0 8px;border-radius:6px;font-weight:900;color:#1b1530;background:#ff8fc8}.cutO .sub b.kf{background:#ff8a1f}
+.cutO .skip{position:absolute;right:12px;top:3%;font:700 11px Rubik,sans-serif;color:rgba(255,255,255,.7)}
+.cutO .fade{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .35s}
+.cut .hud>*:not(.cutO):not(.win):not(.flash){visibility:hidden}.cut #mmBox,.cut .dm{visibility:hidden}
+.cut #cv{filter:contrast(1.08) saturate(1.18) sepia(.1)}
 .win{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;z-index:8}.win.on{display:grid}
 .winC{position:relative;background:#fff8e6;border:4px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:14px 30px 16px;text-align:center;max-width:78%;animation:winIn .5s cubic-bezier(.2,1.6,.4,1)}
 .win.out .winC{animation:winOut .35s ease-in forwards}
@@ -183,6 +193,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="mis" id="mis"></div>
     <div class="toastC" id="toastC"></div>
     <div class="trk" id="trk"><span class="trkN" id="trkN"></span><b id="trkT"></b><span class="trkP" id="trkP"></span><i class="trkBar"><i id="trkBar"></i></i><small id="trkH"></small></div>
+    <div class="cutO" id="cutO" aria-live="polite"><i class="lb lbT"></i><i class="lb lbB"></i><div class="grain"></div><div class="sub" id="cutSub"><b id="cutW"></b><span id="cutL"></span></div><div class="skip">Enter pula a cena</div></div>
     <div class="win" id="win" aria-live="polite"><div class="winC"><span class="winK" id="winK"></span><b id="winT"></b><small id="winS"></small><span class="winOk">✓</span></div><div class="conf" id="conf"></div></div>
     <div class="dlg" id="dlg" role="dialog" aria-live="polite"><b id="dlgW"></b><p id="dlgL"></p><span class="mt" id="dlgT"></span><div class="row"><button class="ok" id="dlgOk">Aceitar (Enter)</button><button id="dlgNo">Agora não</button></div></div>
     <div class="mm" id="mmBox" aria-hidden="true"><canvas id="mm" width="318" height="300"></canvas></div>
@@ -197,7 +208,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="row clima" role="group" aria-label="Chuva"><b>Chuva:</b><button class="pick" data-rain="off" aria-pressed="true">Sem chuva</button><button class="pick" data-rain="on" aria-pressed="false">Chovendo</button><button class="pick" data-rain="auto" aria-pressed="false">Às vezes</button></div>
     <label class="row skf" id="skfRow"><input type="checkbox" id="skf"> Manu sempre de frente (não patina de costas)</label>
     <div class="row"><button class="btn" id="goS">Sessão de 3 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="goR">Só rolê</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
-    <div id="storyBox"><b>História do K.F.</b> <span id="storyTxt"></span> <button class="pick" id="storyGo" style="font-size:13px;min-height:32px;padding:3px 12px">Continuar ▸</button></div>
+    <div id="storyBox"><b>História do K.F.</b> <span id="storyTxt"></span> <button class="pick" id="storyGo" style="font-size:13px;min-height:32px;padding:3px 12px">Continuar ▸</button> <button class="pick" id="cutGo" style="font-size:13px;min-height:32px;padding:3px 12px" hidden>🎬 Ver cena do game</button></div>
     <b>Desafios do skatista</b><ul class="mlist" id="chal"></ul>
     <b>Missões dos moradores</b> <small>(procure o <b style="color:#c99a00">!</b> amarelo no mapinha)</small><ul class="mlist" id="mlist"></ul>
     <div id="mediaBox" style="display:none"><b>Álbum e fitas</b><div class="media" id="media"></div></div>
@@ -2859,8 +2870,7 @@ const CITY = (() => {
     fim(BOUNDS.x1, 32, BOUNDS.x1 + 0.6, 41, [-1, 0, 0], 0);
     fim(-47, BOUNDS.z0 - 0.6, -38, BOUNDS.z0, [0, 0, 1], 3);
     fim(36, BOUNDS.z0 - 0.6, 45, BOUNDS.z0, [0, 0, 1], 6);
-    fim(-47, BOUNDS.z1, -38, BOUNDS.z1 + 0.6, [0, 0, -1], 1);
-    fim(36, BOUNDS.z1, 45, BOUNDS.z1 + 0.6, [0, 0, -1], 4);
+    // (as duas ruas norte-sul agora continuam descendo pro bairro da Ladeira)
 
     // ---------- NO: casinhas ----------
     block(BOUNDS.x0, BOUNDS.z0, -47, -41, "se", "casas");
@@ -3194,11 +3204,11 @@ const CITY = (() => {
     deco.decal([46.12, SW + 3.4, -10.7], [0, 0, 1], [0, 1, 0], 3.3, 1.65, RECT.road);
     ob(46.2, -9, 0.08, SW + 4.3); ob(46.2, -12.4, 0.08, SW + 4.3);
     // carros parados na rua
-    car(41.6, -60, "z", 0xf5f1e6, 0);
-    car(41.6, 66, "z", 0x7cc8ff, 0);
-    car(-75, -34.6, "x", 0xffd166, 0);
-    car(86, 38.4, "x", 0xe0302b, 0);
-    car(-20, 38.4, "x", 0x1fae5a, 0);
+    car(44.0, -60, "z", 0xf5f1e6, 0);
+    car(44.0, 66, "z", 0x7cc8ff, 0);
+    car(-75, -33.0, "x", 0xffd166, 0);
+    car(86, 40.0, "x", 0xe0302b, 0);
+    car(-20, 40.0, "x", 0x1fae5a, 0);
     // outdoors em cima de prédios
     billboard([8, SW + 9.2 + 3.2, -84], [1, 0, 0], RECT.bill[0]);
     billboard([-11, SW + 10 + 3.2, 50], [-1, 0, 0], RECT.bill[1]);
@@ -3455,7 +3465,7 @@ const CITY = (() => {
       posteLine("z", 46.4, 112, 296, 16, [-1, 0]);
       for (const [x, z, c] of [[-60, 110.6, 0xff8fc8], [-20, 197.6, 0xffd23f], [60, 197.6, 0xff8fc8], [-48.6, 150, 0xffd23f], [46.6, 180, 0xff8fc8], [-80, 210.6, 0xffd23f], [30, 210.6, 0xff8fc8]]) ipe(x, z, SW, c);
       for (const [x, z] of [[-36.5, 120], [46.6, 120], [-36.5, 215], [46.6, 250]]) lixeira(x, z);
-      car(41.6, 160, "z", 0xffd166, 0); car(-42.6, 250, "z", 0xf5f1e6, 0); car(10, 106.6, "x", 0x7cc8ff, 0); car(-70, 202.4, "x", 0xe0302b, 0);
+      car(44.0, 160, "z", 0xffd166, 0); car(-46.0, 250, "z", 0xf5f1e6, 0); car(10, 108.0, "x", 0x7cc8ff, 0); car(-70, 201.0, "x", 0xe0302b, 0);
       TAGS.push(
         { c: [100, 3.2, 196.96], r: [1, 0, 0], n: [0, 0, 1], w: 4.4, h: 2.0, piece: 6 },
         { c: [-46.96, 2.6, 260], r: [0, 0, 1], n: [1, 0, 0], w: 4.4, h: 2.2, piece: 7 },
@@ -3468,6 +3478,120 @@ const CITY = (() => {
         { name: "TETO DO VAGÃO", pts: 300, from: (s) => s.y > SW + 3.1 && s.x > 64 && s.x < 82 && s.z > 129 && s.z < 132, to: (s) => s.y < SW + 0.4 },
       );
     }
+    // =====================================================================================
+    // ---------- bairro da Ladeira (z 300 a 440): ruas descendo o morro, escadaria com corrimão,
+    // casinhas em degraus, praça lá embaixo e o canal (valetão de concreto que dá pra andar) ----------
+    // =====================================================================================
+    const LZ0 = 300, LZ1 = 440, DROP = 10;
+    const ez = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+    const baseAt = (x, z) => {
+      if (z <= LZ0) return 0;
+      let y = -DROP * ez((z - LZ0) / 72);
+      y += 4 * ez((x - 52) / 45) * ez((z - 306) / 40) * (1 - ez((z - 392) / 6));
+      if (z > 418 && z < 432) y -= 2.4 * (z < 422 ? ez((z - 418) / 4) : z > 428 ? 1 - ez((z - 428) / 4) : 1);
+      return y;
+    };
+    const minG = (x0, x1, z0, z1) => { let m = 1e9; for (let i = 0; i <= 4; i++) for (let j = 0; j <= 4; j++) m = Math.min(m, baseAt(x0 + ((x1 - x0) * i) / 4, z0 + ((z1 - z0) * j) / 4)); return m; };
+    {
+      const isRoad = (x, z) => (z < 409 && ((x > -47 && x < -38) || (x > 36 && x < 45))) || (z > 400 && z < 409);
+      const near = (x, z, m) => isRoad(x - m, z) || isRoad(x + m, z) || isRoad(x, z - m) || isRoad(x, z + m);
+      const GRAMA = hex(0x9fcf7e), GRAMA2 = hex(0x94c473), CAN = C.conc, CAN2 = C.conc2;
+      const ST = 2;
+      for (let x = BOUNDS.x0; x < BOUNDS.x1 - 1e-6; x += ST) for (let z = LZ0; z < LZ1 - 1e-6; z += ST) {
+        const cx = x + ST / 2, cz = z + ST / 2, ti = (Math.floor(x / 8) + Math.floor(z / 8)) & 1;
+        let col;
+        if (isRoad(cx, cz)) col = ti ? ASF2 : ASF;
+        else if (cz > 418 && cz < 432) col = Math.abs(cz - 425) < 3 ? CAN2 : CAN;
+        else if (cx > -36 && cx < 34 && cz > 374 && cz < 398) col = ((Math.floor(x / 2) + Math.floor(z / 2)) & 1) ? C.pav : C.pav2;
+        else if (cx > -8 && cx < 8 && cz < 372) col = C.conc;
+        else if (near(cx, cz, 3) || cz < 306) col = ((Math.floor(x / 2) + Math.floor(z / 2)) & 1) ? C.pav : C.pav2;
+        else col = ti ? GRAMA : GRAMA2;
+        flat.quad([x, baseAt(x, z), z], [x, baseAt(x, z + ST), z + ST], [x + ST, baseAt(x + ST, z + ST), z + ST], [x + ST, baseAt(x + ST, z), z], col);
+      }
+      // filete d'água no fundo do canal + faixas da rua de baixo
+      deco.quad([BOUNDS.x0, baseAt(0, 425) + 0.02, 424.4], [BOUNDS.x0, baseAt(0, 425) + 0.02, 425.6], [BOUNDS.x1, baseAt(0, 425) + 0.02, 425.6], [BOUNDS.x1, baseAt(0, 425) + 0.02, 424.4], hex(0x5ab8e8), 2);
+      for (let x = BOUNDS.x0; x < BOUNDS.x1; x += 4) if (!(x > -48 && x < -37) && !(x > 35 && x < 46)) deco.quad([x, -DROP + 0.01, 404.3], [x, -DROP + 0.01, 404.7], [x + 2, -DROP + 0.01, 404.7], [x + 2, -DROP + 0.01, 404.3], LINE);
+      for (const xc of [-42.5, 40.5]) for (let z = LZ0; z < 398; z += 4) { const y0 = baseAt(xc, z) + 0.02, y1 = baseAt(xc, z + 2) + 0.02; deco.quad([xc - 0.12, y0, z], [xc - 0.12, y1, z + 2], [xc + 0.12, y1, z + 2], [xc + 0.12, y0, z], YEL); }
+      fim(BOUNDS.x0 - 0.6, 400, BOUNDS.x0, 409, [1, 0, 0], 5);
+      fim(BOUNDS.x1, 400, BOUNDS.x1 + 0.6, 409, [-1, 0, 0], 7);
+      // muro no fim do bairro (com grafite)
+      solid.box(BOUNDS.x0, -DROP, 437, BOUNDS.x1, -DROP + 3.2, 440, hex(0xe6d7bd), { top: C.white, noBottom: true });
+      for (let i = 0; i < 6; i++) deco.decal([-80 + i * 34, -DROP + 1.6, 436.97], [-1, 0, 0], [0, 1, 0], 6.5, 2.9, RECT.piece[i % 8]);
+
+      // escadaria do Rosário: degraus descendo o morro com três corrimãos (o do meio é o pico)
+      const SZ0 = 306, SZ1 = 372, TR = 0.8;
+      for (let z = SZ0; z < SZ1 - 1e-6; z += TR) {
+        const top = baseAt(0, z), bot = baseAt(0, Math.min(SZ1, z + TR));
+        solid.box(-7.6, bot - 0.4, z, 7.6, top, z + TR, C.stair, { top: C.stair, noBottom: true });
+        deco.quad([-7.6, top + 0.008, z], [-7.6, top + 0.008, z + 0.12], [7.6, top + 0.008, z + 0.12], [7.6, top + 0.008, z], C.nose);
+      }
+      feats.push({ x0: -7.6, z0: SZ0, x1: 7.6, z1: SZ1, f: (x, z) => baseAt(0, SZ0 + Math.floor((z - SZ0) / TR) * TR) });
+      const gStair = (x, z) => baseAt(0, SZ0 + Math.floor((z - SZ0) / TR) * TR);
+      for (const xr of [-7.0, 0, 7.0]) {
+        const segs = [[SZ0 + 0.6, 324], [324, 340], [340, 356], [356, SZ1 - 0.6]];
+        for (const [za, zb] of segs) handrail([xr, gStair(xr, za) + 0.85, za], [xr, gStair(xr, zb) + 0.85, zb], xr === 0 ? "corrimão da escadaria do Rosário" : "corrimão da ladeira", gStair);
+      }
+      for (const z of [316, 338, 360]) for (const x of [-9.2, 9.2]) lampPraca(x, z, baseAt(x, z));
+      // largo lá em cima (onde a escadaria começa)
+      for (const x of [-20, 20]) ipe(x, 303, 0, x < 0 ? 0xffd23f : 0xff8fc8);
+
+      // casinhas em degraus dos dois lados da ladeira e lojas na rua de baixo
+      const yz = (fx0, fx1) => (a, b) => minG(fx0, fx1, a, b);
+      const yx = (fz0, fz1) => (a, b) => minG(a, b, fz0, fz1);
+      const CAS = (n) => Array.from({ length: n }, (_, i) => (i % 4 === 2 ? { w: 9, style: "loja", shop: (i * 3) % 8, h: 6.8 } : { w: 8 + (i % 3), style: "casas" }));
+      row("-x", -36, 308, 370, 10, CAS(8), yz(-36, -26));
+      row("x", 34, 308, 370, 10, CAS(8), yz(24, 34));
+      row("x", -49, 306, 398, 11, CAS(11), yz(-60, -49));
+      row("-x", 47, 306, 398, 11, CAS(11), yz(47, 58));
+      row("z", 398, BOUNDS.x0, -49, 10, [{ w: 12, style: "loja", shop: 4 }, { w: 10, style: "casas" }, { w: 12, style: "loja", shop: 6 }, { w: 9, style: "casas" }, { w: 12, style: "loja", shop: 2 }], yx(388, 398));
+      row("z", 398, 47, BOUNDS.x1, 10, [{ w: 12, style: "loja", shop: 7 }, { w: 10, style: "casas" }, { w: 12, style: "loja", shop: 1 }, { w: 9, style: "casas" }, { w: 12, style: "loja", shop: 5 }, { w: 10, style: "casas" }], yx(388, 398));
+      // mais casinhas soltas no morrinho do leste e no oeste
+      for (const [x0, z0] of [[62, 312], [76, 318], [92, 330], [64, 346], [84, 352], [100, 364], [-72, 316], [-88, 334], [-70, 352], [-90, 372]]) {
+        const x1 = x0 + 9, z1 = z0 + 8;
+        withY(minG(x0, x1, z0, z1), () => building(x0, z0, x1, z1, 6, x0 > 0 ? "-x" : "x", { style: "casas" }));
+      }
+      // árvores e postes pelo morro
+      for (const [x, z] of [[-18, 320], [-22, 344], [-16, 364], [18, 318], [22, 340], [16, 362], [-64, 332], [-80, 360], [70, 334], [96, 346], [80, 372]]) ipe(x, z, baseAt(x, z), [0xff8fc8, 0xffd23f, 0xb79cff][(x + z) & 1 ? 0 : 1]);
+      for (const z of [314, 340, 366, 392]) { lampPraca(-37.4, z, baseAt(-37.4, z)); lampPraca(35.4, z, baseAt(35.4, z)); }
+
+      // praça da Baixada: bancos, manual pad, bank e um caixote com corrimão
+      const BY = -DROP;
+      ledgeBox(-30, 380, -18, 381.2, BY, BY + 0.5, C.ledge, C.white, "banco da Baixada", "nsew");
+      ledgeBox(-30, 392, -18, 393.2, BY, BY + 0.5, C.ledge, C.white, "banco da Baixada", "nsew");
+      ledgeBox(-10, 383, 6, 389, BY, BY + 0.3, hex(0xb7b0c9), hex(0xd8d2e4), "manual pad", "nsew");
+      solid.box(-2.5, BY, 377, 2.5, BY + 0.6, 379.5, C.fun, { top: C.fun, noBottom: true });
+      fbox(-2.5, 377, 2.5, 379.5, BY + 0.6);
+      handrail([-2.2, BY + 1.0, 378.25], [2.2, BY + 1.0, 378.25], "corrimão da Baixada", () => BY + 0.6);
+      // bank (rampa inclinada) encostado no lado leste da praça
+      {
+        const x0 = 18, x1 = 30, z0 = 378, z1 = 394, h = 1.5;
+        const st = solid.v.length;
+        solid.quad([x0, BY, z0], [x0, BY, z1], [x1, BY + h, z1], [x1, BY + h, z0], C.ramp);
+        solid.quad([x1, BY, z0], [x1, BY + h, z0], [x1, BY + h, z1], [x1, BY, z1], C.ramp2);
+        solid.quad([x0, BY, z0], [x1, BY + h, z0], [x1, BY, z0], [x0, BY, z0], C.ramp2);
+        solid.quad([x0, BY, z1], [x1, BY, z1], [x1, BY + h, z1], [x0, BY, z1], C.ramp2);
+        solid.orient([(x0 + x1) / 2, BY + h / 3, (z0 + z1) / 2], st);
+        framp(x0, z0, x1, z1, BY, BY + h, "x");
+        solid.box(x1, BY, z0, x1 + 3, BY + h, z1, C.deck, { top: C.deck, noBottom: true });
+        fbox(x1, z0, x1 + 3, z1, BY + h);
+        rail([x1, BY + h, z0 + 0.3], [x1, BY + h, z1 - 0.3], "ledge", "borda do bank");
+      }
+      for (const [x, z] of [[-33, 376], [-33, 396], [31.5, 376], [-12, 396], [8, 396]]) lampPraca(x, z, BY);
+      for (const [x, z] of [[-24, 386], [12, 376], [12, 396]]) ipe(x, z, BY, 0xffd23f);
+      lixeira(-14, 380, BY); lixeira(10, 380, BY);
+      MAP.push({ x0: -36, z0: 374, x1: 34, z1: 398, c: "#d6cab8", name: "praça da Baixada" });
+      MAP.push({ x0: -8, z0: 306, x1: 8, z1: 372, c: "#d8d2c4", name: "escadaria" });
+      MAP.push({ x0: BOUNDS.x0, z0: 418, x1: BOUNDS.x1, z1: 432, c: "#b3b0a8", name: "canal" });
+      MAP.push({ x0: BOUNDS.x0, z0: 400, x1: BOUNDS.x1, z1: 409, c: "#8a8698" });
+      MAP.push({ x0: -47, z0: 300, x1: -38, z1: 400, c: "#8a8698" }, { x0: 36, z0: 300, x1: 45, z1: 400, c: "#8a8698" });
+      GAPS.push(
+        { name: "DESCEU A ESCADARIA DO ROSÁRIO", pts: 800, from: (s) => s.z > 306 && s.z < 312 && Math.abs(s.x) < 7.6, to: (s) => s.z > 372 && s.z < 378 && Math.abs(s.x) < 9 && s.y < BY + 0.4 },
+        { name: "PULOU O CANAL", pts: 600, from: (s) => s.z > 414 && s.z < 418.5 && s.y > -10.5, to: (s) => s.z > 431.5 && s.z < 436 && s.y < -9.6 },
+      );
+      CANS.push([0, baseAt(0, 340) + 1.6, 340], [-24, BY + 1.4, 386], [0, -12.4 + 1.2, 425], [70, baseAt(70, 340) + 1.4, 340]);
+    }
+    BOUNDS.z1 = LZ1;
+
     // ---------- grafites, latas e gaps da cidade ----------
     TAGS.push(
       { c: [47.95, 2.6, -12.5], r: [0, 0, 1], n: [-1, 0, 0], w: 4.4, h: 2.2, piece: 3 },
@@ -3491,7 +3615,7 @@ const CITY = (() => {
       { name: "ARQUIBANCADA ABAIXO", pts: 450, from: (s) => s.z > 79.9 && s.y > SW + 1.7, to: (s) => s.z < 73.6 && s.y < SW + 0.3 },
       { name: "TERRAÇO → RUA", pts: 350, from: (s) => s.x > -38 && s.x < -36 && s.y > 1.3, to: (s) => s.x < -40.5 && s.y < 0.3 },
     );
-    return { obstacles: OB, tags: TAGS, cans: CANS, gaps: GAPS, map: MAP };
+    return { obstacles: OB, tags: TAGS, cans: CANS, gaps: GAPS, map: MAP, baseAt };
   }
   return { build, BOUNDS };
 })();
@@ -3535,6 +3659,7 @@ const LEVEL = (() => {
     const lights = []; // cabeças de luminária (acendem à noite e iluminam o chão em volta)
     const feats = [];
     const rails = [];
+    const shops = []; // lojas abertas (pra pôr atendente na porta)
     const fbox = (x0, z0, x1, z1, h) => feats.push({ x0, z0, x1, z1, f: () => h });
     const framp = (x0, z0, x1, z1, h0, h1, ax) =>
       feats.push({ x0, z0, x1, z1, f: (x, z) => { const t = ax === "x" ? (x - x0) / (x1 - x0) : (z - z0) / (z1 - z0); return h0 + (h1 - h0) * t; } });
@@ -3884,10 +4009,34 @@ const LEVEL = (() => {
       const o2 = V.add(o, V.mul(n, 0.03));
       if (opt.style === "loja") {
         const nd = Math.max(1, Math.min(4, Math.floor((w - 1) / 3.6)));
+        const open = opt.shop != null;
+        const PROD = [0xe0302b, 0xffd23f, 0x1fae5a, 0x3f63c8, 0xff8fc8, 0xff8a1f, 0xf5f1e6, 0x8c5cff];
         for (let i = 0; i < nd; i++) {
           const sx = -((nd - 1) / 2) * 3.6 + i * 3.6;
           fq(F, sx, 1.42, 3.2, 2.84, V.mul(col, 0.7));
-          fdecal(F, sx, 1.35, 2.9, 2.7, RECT.door);
+          if (!open) { fdecal(F, sx, 1.35, 2.9, 2.7, RECT.door); continue; }
+          // porta de aço levantada: interior aceso com prateleiras, produtos e balcão
+          fdecal(F, sx, 2.62, 2.9, 0.3, RECT.door);
+          fq(F, sx, 1.24, 2.9, 2.36, hex(0xffe6b8), 2, 0.04);
+          for (let k = 0; k < 2; k++) {
+            const yy = 1.45 + k * 0.62;
+            fq(F, sx, yy, 2.7, 0.07, hex(0x6b4a34), 0, 0.05);
+            for (let j = 0; j < 6; j++) fq(F, sx - 1.12 + j * 0.45, yy + 0.21, 0.3, 0.34, hex(PROD[(i * 5 + j * 3 + k) % PROD.length]), 2, 0.055);
+          }
+          fq(F, sx, 0.5, 2.9, 1.0, hex(0x8a5a3a), 0, 0.06);
+          fq(F, sx, 1.02, 2.95, 0.07, hex(0xd8b48a), 0, 0.065);
+        }
+        if (open) {
+          // toldo listrado em cima das portas
+          const sw = Math.min(w - 0.6, nd * 3.6 + 0.4), g0 = V.add(F.o, V.mul(F.n, 0.05)), n8 = Math.max(6, Math.round(sw / 1.1));
+          for (let i = 0; i < n8; i++) {
+            const a = V.add(V.add(g0, V.mul(F.r, -sw / 2 + (i * sw) / n8)), [0, 2.62, 0]);
+            const b = V.add(a, V.mul(F.r, sw / n8));
+            const out = V.mul(F.n, 1.2);
+            deco.quad(a, b, V.add(V.add(b, out), [0, -0.42, 0]), V.add(V.add(a, out), [0, -0.42, 0]), i % 2 ? C.white : V.mul(col, 0.85));
+          }
+          const pp = fpt(F, nd > 1 ? 1.8 : 0, 0, 1.1);
+          shops.push({ x: pp[0], z: pp[2], nx: F.n[0], nz: F.n[2] });
         }
         fq(F, 0, 3.3, 5.7, 1.32, V.mul(col, 0.6), 0, 0.035);
         if (opt.shop != null) fdecal(F, 0, 3.3, 5.4, 1.1, RECT.shop[opt.shop]);
@@ -4066,13 +4215,17 @@ const LEVEL = (() => {
     const inCity = (x, z, m = 6) => x > B.x0 - m && x < B.x1 + m && z > B.z0 - m && z < B.z1 + m;
     {
       // pasto só em volta da cidade (embaixo dela brigaria com o asfalto na profundidade)
-      const E = 430, y = -0.02, g = (x0, z0, x1, z1, c) => far.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], c);
+      const E = 560, y = -0.02, g = (x0, z0, x1, z1, c) => far.quad([x0, y, z0], [x0, y, z1], [x1, y, z1], [x1, y, z0], c);
       g(-E, -E, E, B.z0, C.pasto); g(-E, B.z1, E, E, C.pasto); g(-E, B.z0, B.x0, B.z1, C.pasto); g(B.x1, B.z0, E, B.z1, C.pasto);
     }
     const hills = [];
     for (let i = 0; i < 26; i++) {
       // morros em volta da cidade inteira (centro em z = 100 desde que a cidade cresceu pro sul)
-      const a = (i / 26) * Math.PI * 2 + fr() * 0.2, d = 325 + fr() * 70, r = 55 + fr() * 35, top = 20 + fr() * 30;
+      const a = (i / 26) * Math.PI * 2 + fr() * 0.2, r = 55 + fr() * 35, top = 20 + fr() * 30;
+      let d = 325 + fr() * 70;
+      // empurra o morro pra fora se ele encostar na cidade (que agora vai até a Ladeira)
+      const rectD = (x, z) => Math.hypot(Math.max(B.x0 - x, 0, x - B.x1), Math.max(B.z0 - z, 0, z - B.z1));
+      while (rectD(6 + Math.cos(a) * d, 100 + Math.sin(a) * d) < r + 20) d += 10;
       const c = [6 + Math.cos(a) * d, -r * 0.12, 100 + Math.sin(a) * d], sy = (top + r * 0.12) / r;
       far.ball(c, r, V.lerp(hex(0x8cc06c), hex(0x6fae5e), fr()), 0, 14, 6, { sy });
       hills.push({ c, r, sy });
@@ -4178,7 +4331,7 @@ const LEVEL = (() => {
     // ---------- mapa de altura ----------
     function heightAt(x, z) {
       if (x < B.x0 || x > B.x1 || z < B.z0 || z > B.z1) return 60;
-      let h = 0;
+      let h = CT.baseAt ? CT.baseAt(x, z) : 0;
       for (const f of feats) {
         if (x < f.x0 || x > f.x1 || z < f.z0 || z > f.z1) continue;
         const v = f.f(x, z);
@@ -4213,7 +4366,7 @@ const LEVEL = (() => {
       ...CT.obstacles,
     ];
     const map = { ...B, rects: [{ x0: -38, z0: -32, x1: 36, z1: 32, c: "#d3ccdf", name: "praça" }, { x0: -38, z0: -14, x1: -20, z1: 14, c: "#e9dfcf" }, { x0: -14, z0: -31.5, x1: 14, z1: -24.8, c: "#3ec9d6" }, { x0: -14, z0: 24.8, x1: 14, z1: 31.5, c: "#3ec9d6" }, ...CT.map] };
-    return { solid, flat, deco, far, clouds, rails, tags, cans, letters, gaps, heightAt, qpAt, RAD, TH, obstacles, map, lights, winC: C.win };
+    return { shops, solid, flat, deco, far, clouds, rails, tags, cans, letters, gaps, heightAt, qpAt, RAD, TH, obstacles, map, lights, winC: C.win };
   }
   return { build };
 })();
@@ -4893,11 +5046,50 @@ const STREET = (() => {
       { k: 9, at: [-50.6, 150], dir: [-1, 0], idle: "peace" },
       { k: 10, at: [72, 228], dir: [0, -1], idle: "hips" },
     ];
+    // figurantes: gente que só passeia ou trabalha nas lojas (mesmos rostos dos moradores, outras roupas e cabelos)
+    {
+      const HAIRS = ["short", "long", "bun", "cap", "afro", "bob", "spiky", "short", "long", "bald"];
+      const HC = [0x1b1210, 0x2b170c, 0x6a3a1a, 0xc88a3a, 0x1b1530, 0x8a5a2a, 0xd84a8a, 0x2a1a10];
+      const TOPS = [0x2457c8, 0xe0302b, 0x1fae5a, 0xffd23f, 0xff8fc8, 0x8c5cff, 0xf5f1e6, 0x1b1530, 0xff8a1f, 0x3fd0ff, 0x7a4a9a, 0x2a8a7a];
+      const PANTS = [0x2b3a7a, 0x3a3a52, 0x5a4a3a, 0x1b1a22, 0x6a6a7a, 0xd8cbb0, 0x2f6fd8];
+      const dk = (c) => (((c >> 16) & 255) * 0.78) << 16 | (((c >> 8) & 255) * 0.78) << 8 | ((c & 255) * 0.78);
+      for (let i = 0; i < 30; i++) {
+        const src = ART.LOOKS["npc" + ((i * 5 + 3) % 12)], top = TOPS[(i * 7 + 2) % TOPS.length];
+        const old = src.npc && src.npc.old;
+        ART.LOOKS["fig" + i] = Object.assign({}, src, {
+          name: "", hairStyle: old ? src.hairStyle : HAIRS[(i * 3 + 1) % HAIRS.length], hair: old ? src.hair : HC[(i * 5) % HC.length], hatCol: undefined, hatBand: undefined,
+          top, top2: dk(top), pants: PANTS[(i * 5 + 1) % PANTS.length], apron: i >= 18 && i % 2 ? TOPS[(i + 4) % TOPS.length] : undefined, sleeve: i % 3 ? "short" : "long",
+        });
+      }
+      // calçadas por onde eles andam (anel da cidade velha, quadra da prefeitura, Av. Brasil e R. São Pedro)
+      const W = [
+        [[-48.6, -42.6], [46.6, -42.6], [46.6, 42.6], [-48.6, 42.6]],
+        [[-48.6, 110.4], [34.4, 110.4], [34.4, 198.6], [-48.6, 198.6]],
+        [[-98, 210.4], [110, 210.4]],
+        [[-48.6, -98], [-48.6, 298]],
+        [[-98, 42.6], [-50, 42.6]],
+        [[110, 110.4], [36, 110.4]],
+        [[-37.2, 302], [-37.2, 398.6], [34.8, 398.6], [34.8, 302]],
+        [[-98, 399.2], [-49, 399.2]],
+        [[4.2, 304], [4.2, 371]],
+      ];
+      const plan = [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 6, 6, 6, 7, 8];
+      plan.forEach((w, i) => {
+        let path = W[w].slice();
+        const loop = path.length > 2;
+        if (loop && i % 2) path = path.reverse();
+        NPC_DEF.push({ look: "fig" + i, path, loop, sp: 1.0 + ((i * 37) % 10) / 20, seg0: loop ? i % path.length : 0, u0: ((i * 0.37) % 1), extra: 1 });
+      });
+      // atendentes nas portas das lojas abertas
+      const IDL = ["calm", "hips", "boss", "peace", "shy"];
+      (L.shops || []).slice(0, 12).forEach((sh, i) => NPC_DEF.push({ look: "fig" + (18 + i), at: [sh.x, sh.z], dir: [sh.nx, sh.nz], idle: IDL[i % IDL.length], extra: 1 }));
+    }
     const NPCS = NPC_DEF.map((d, i) => {
-      const look = ART.LOOKS["npc" + d.k], r = ART.makeRig(Rn, look), body = r.objs[0];
+      const look = ART.LOOKS[d.look || "npc" + d.k], r = ART.makeRig(Rn, look), body = r.objs[0];
       objs.push(body);
-      const p0 = d.at || d.path[0];
-      const n = { d, look, rig: r, body, x: p0[0], z: p0[1], seg: 0, u: 0, dirS: 1, ph: i * 1.7, yaw: 0, wait: 0, name: look.name };
+      let p0 = d.at || d.path[0];
+      if (d.path && d.seg0 != null) { const A = d.path[d.seg0], B = d.path[(d.seg0 + 1) % d.path.length]; p0 = [A[0] + (B[0] - A[0]) * d.u0, A[1] + (B[1] - A[1]) * d.u0]; }
+      const n = { d, look, rig: r, body, x: p0[0], z: p0[1], seg: d.seg0 || 0, u: d.u0 || 0, dirS: 1, ph: i * 1.7, yaw: 0, wait: 0, name: look.name };
       n.ob = { x: n.x, z: n.z, r: 0.32, y1: 0 };
       n.yaw = d.dir ? Math.atan2(-d.dir[1], d.dir[0]) : 0;
       return n;
@@ -5143,7 +5335,7 @@ const STREET = (() => {
     const julie = (() => {
       const look = ART.LOOKS.julie, r = ART.makeRig(Rn, look);
       objs.push(r.objs[0], r.board);
-      return { look, rig: r, pi: 0, posed: false, x: JULIE_HOME[0], z: JULIE_HOME[1], head: 0, pitch: 0, follow: false, trail: [], wp: 1, v: 0, act: null, nextTrick: 4, cur: Object.assign({}, ART.POSES.ride), state: "ride" };
+      return { look, rig: r, pi: 0, posed: false, perf: null, x: JULIE_HOME[0], z: JULIE_HOME[1], head: 0, pitch: 0, follow: false, trail: [], wp: 1, v: 0, act: null, nextTrick: 4, cur: Object.assign({}, ART.POSES.ride), state: "ride" };
     })();
     // poses dela quando você tira foto perto (troca a cada foto)
     const JPOSES = [
@@ -5159,6 +5351,24 @@ const STREET = (() => {
       julie.act = { key, t: 0, dur: 0.78, ok, ft: 0 };
       if (Math.hypot(S.x - julie.x, S.z - julie.z) < 30) sfx.pop();
     }
+    // sequência de manobra da Julie no game: vai até o canteiro, pula, desliza, desce e volta
+    function jRoutine(st, ok) {
+      const key = FKEY[st.f] || "none", R = [];
+      if (st.grind) {
+        R.push({ go: [13.6, 10.5] }, { go: [15, 6.4] });
+        if (ok) R.push({ air: [[15, 0, 6.4], [15, 0.9, 2.6]], dur: 0.72, h: 0.7, key, dbl: st.dbl }, { grind: [[15, 0.9, 2.6], [15, 0.9, -2.8]] }, { air: [[15, 0.9, -2.8], [15, 0, -5.6]], dur: 0.62, h: 0.45, grab: st.grab ? "Indy" : null });
+        else R.push({ air: [[15, 0, 6.4], [15, 0, 3.7]], dur: 0.72, h: 0.75, key, dbl: st.dbl, fail: true });
+        R.push({ go: [12.5, -7.5] }, { go: [10, 4] }, { go: JULIE_HOME });
+      } else {
+        R.push({ go: [9.2, 12.5] });
+        const last = !st.grab;
+        R.push({ air: [[9.2, 0, 12.5], [9.6, 0, 9.4]], dur: st.dbl ? 0.95 : 0.78, h: st.dbl ? 1.05 : 0.8, key, dbl: st.dbl, fail: !ok && last });
+        if (st.grab && (ok || true)) R.push({ go: [9.8, 7.2] }, { air: [[9.8, 0, 7.2], [10.2, 0, 3.6]], dur: 0.85, h: 1.0, grab: "Indy", fail: !ok });
+        R.push({ go: [11.5, 2] }, { go: [11, 10] }, { go: JULIE_HOME });
+      }
+      julie.perf = { R, i: 0, t: 0 };
+    }
+    const jSparks = Array.from({ length: 8 }, () => add(sparkG, M.I(), { hidden: true, v: [0, 0, 0], p: [0, 0, 0], life: 0 }));
     const jMark = add(Rn.upload((() => { const m = new Mesh(); m.box(-0.07, 0.25, -0.07, 0.07, 0.75, 0.07, hex(0xff4fa3), { m: 2 }); m.box(-0.07, 0, -0.07, 0.07, 0.14, 0.07, hex(0xff4fa3), { m: 2 }); return m; })()), M.I(), { hidden: true });
     let SA = null, soffer = null;
     const stepOf = (k) => HS[k] || 0;
@@ -5220,7 +5430,15 @@ const STREET = (() => {
       const next = () => {
         // fim: depois da 5ª rodada (ou de cada par de desempate) quem tiver menos letras ganha
         if (G.round >= 5 && G.pl !== G.ju && (G.round === 5 || G.round % 2 === 0)) {
-          if (G.pl < G.ju) { say("VOCÊ GANHOU O GAME!", 2.4, true); return storyStepDone(); }
+          if (G.pl < G.ju) {
+            say("VOCÊ GANHOU O GAME!", 2.4, true);
+            const def = SA.def;
+            SA = null;
+            ui.mission && ui.mission("hide");
+            // cena dos dois e depois a comemoração do capítulo
+            setTimeout(() => { if (!playCut("game", () => { SA = { def }; storyStepDone(); })) { SA = { def }; storyStepDone(); } }, 1400);
+            return;
+          }
           say("A JULIE GANHOU! fala com ela pra revanche", 2.8, true); sfx.nocan();
           ui.mission && ui.mission("fail", { title: "Game de S.K.A.T.E." });
           SA = null; return;
@@ -5236,12 +5454,12 @@ const STREET = (() => {
         const tier = J_SETS[G.round >= 5 ? 2 : G.round >= 3 ? 1 : 0];
         G.set = tier[Math.floor(Math.random() * tier.length)];
         G.jok = Math.random() < (G.round >= 5 ? 0.72 : G.round >= 3 ? 0.82 : 0.92);
-        jTrick(FKEY[G.set.f], G.jok);
+        jRoutine(G.set, G.jok);
         say(`A JULIE VAI DE ${G.set.n.toUpperCase()}`, 1.8);
         G.phase = "jset";
       } else if (G.phase === "jset") {
         tick(`a Julie manda: ${G.set.n}`);
-        if (julie.act) return;
+        if (julie.act || julie.perf || julie.state !== "park") return;
         if (!G.jok) { say("A JULIE ERROU A PRÓPRIA MANOBRA! sem letra", 2.2, true); return next(); }
         say(`REPITA: ${G.set.n.toUpperCase()}`, 2, true);
         Object.assign(G, { phase: "copy", t: 15, att: null });
@@ -5265,13 +5483,15 @@ const STREET = (() => {
         G.mine = describe(a.names);
         G.jp = julieChance(a.names);
         const fl = a.names.map(baseFlip).find(Boolean);
+        // o que a Julie precisa repetir: o flip + grind/grab se você emendou
+        G.pst = { f: fl, grind: a.names.some((n) => GRIND_N.has(n)), grab: a.names.some((n) => GRAB_N.has(n)), dbl: a.names.some((n) => /^(Double|Triple|\d+x) /.test(n) && baseFlip(n)) };
         say(`VOCÊ MANDOU: ${G.mine.toUpperCase()}`, 1.8, true);
         Object.assign(G, { phase: "jtry", t: 1.4, fl });
       } else if (G.phase === "jtry") {
         tick(`a Julie tenta: ${G.mine}`);
         if (G.t > 0) return;
-        if (!G.tried) { G.tried = true; G.jok = Math.random() < G.jp; jTrick(FKEY[G.fl] || "none", G.jok); return; }
-        if (julie.act) return;
+        if (!G.tried) { G.tried = true; G.jok = Math.random() < G.jp; jRoutine(G.pst, G.jok); return; }
+        if (julie.act || julie.perf || julie.state !== "park") return;
         G.tried = false;
         if (G.jok) say("A JULIE ACERTOU", 1.8);
         else { G.ju++; say(`A JULIE ERROU! letra ${LET[G.ju - 1]} pra ela`, 2, true); sfx.combo(true); }
@@ -5283,6 +5503,7 @@ const STREET = (() => {
       const isJulie = k === "julie";
       julie.rig.objs[0].hidden = julie.rig.board.hidden = isJulie;
       if (isJulie) { jMark.hidden = true; if (soffer) { soffer = null; ui.mission && ui.mission("hide"); } return; }
+      if (CUT) return;
       // trilha do skatista (pra Julie seguir atrás e do lado)
       julie.trail.push([S.x, S.z, S.head, t]);
       while (julie.trail.length && t - julie.trail[0][3] > 1.2) julie.trail.shift();
@@ -5293,9 +5514,73 @@ const STREET = (() => {
       const game = SA && SA.def.kind === "skate";
       const talkable = k === "kf" && !following && !game && !MA;
       let target = null, want = Object.assign({}, ART.POSES.ride, julie.look.ride), wantHead = julie.head;
+      for (const sp of jSparks) {
+        if (sp.life > 0) { sp.life -= dt; sp.v[1] -= 12 * dt; sp.p = V.add(sp.p, V.mul(sp.v, dt)); sp.mo = M.T(sp.p[0], sp.p[1], sp.p[2]); }
+        sp.hidden = sp.life <= 0;
+      }
+      // manobra em sequência (game): controla posição, pose e shape direto
+      const P = julie.perf;
+      let perfBoard = null;
+      if (P && !julie.act) {
+        const st = P.R[P.i];
+        julie.state = "perf";
+        if (!st) { julie.perf = null; julie.state = "go"; }
+        else if (st.go) {
+          const dx = st.go[0] - julie.x, dz = st.go[1] - julie.z, d = Math.hypot(dx, dz);
+          julie.v += (4.2 - julie.v) * Math.min(1, dt * 3);
+          wantHead = Math.atan2(dx, dz);
+          julie.head = angTo(julie.head, wantHead, Math.min(1, dt * 9));
+          const stepL = Math.min(d, julie.v * dt);
+          julie.x += (dx / (d || 1)) * stepL;
+          julie.z += (dz / (d || 1)) * stepL;
+          if (d < 0.25) { P.i++; P.t = 0; }
+        } else if (st.air) {
+          if (P.t === 0 && dPl < 30) sfx.pop();
+          P.t += dt;
+          const f = Math.min(1, P.t / st.dur), [a0, a1] = st.air;
+          julie.x = a0[0] + (a1[0] - a0[0]) * f;
+          julie.z = a0[2] + (a1[2] - a0[2]) * f;
+          julie.head = angTo(julie.head, Math.atan2(a1[0] - a0[0], a1[2] - a0[2]), Math.min(1, dt * 9));
+          const y = a0[1] + (a1[1] - a0[1]) * f + Math.sin(f * Math.PI) * st.h;
+          const e = f * f * (3 - 2 * f), k = Math.sin(f * Math.PI);
+          const rideP = Object.assign({}, ART.POSES.ride, julie.look.ride);
+          want = st.grab ? ART.lerpPose(rideP, ART.grabPose(st.grab), Math.min(1, k * 1.6)) : ART.lerpPose(rideP, ART.POSES.flip, k);
+          julie.cur = ART.lerpPose(julie.cur, want, Math.min(1, dt * 14));
+          const base = M.mul(M.T(julie.x, y, julie.z), M.RY(julie.head));
+          const fm = st.key ? FLIPS[st.key].r((st.fail ? 0.7 : st.dbl ? 2 : 1) * e) : null;
+          perfBoard = { base, bm: fm ? M.mul(base, M.mul(M.T(0, 0.12, 0), M.mul(fm, M.T(0, -0.09, 0)))) : base };
+          if (f >= 1) {
+            P.i++; P.t = 0;
+            if (st.fail) {
+              // errou: cai e depois volta pra casa
+              julie.act = { key: st.key || "none", t: 1, dur: 0.78, ok: false, ft: 0 };
+              while (P.R[P.i] && !P.R[P.i].go) P.i++;
+            } else if (dPl < 30) sfx.land();
+          }
+        } else if (st.grind) {
+          const [a0, a1] = st.grind, L0 = Math.hypot(a1[0] - a0[0], a1[2] - a0[2]);
+          P.t += dt;
+          const f = Math.min(1, (P.t * 4.2) / L0);
+          julie.x = a0[0] + (a1[0] - a0[0]) * f;
+          julie.z = a0[2] + (a1[2] - a0[2]) * f;
+          julie.head = Math.atan2(a1[0] - a0[0], a1[2] - a0[2]);
+          want = Object.assign({}, ART.POSES.grind);
+          julie.cur = ART.lerpPose(julie.cur, want, Math.min(1, dt * 14));
+          const base = M.mul(M.T(julie.x, a0[1] + (a1[1] - a0[1]) * f, julie.z), M.RY(julie.head));
+          perfBoard = { base, bm: base };
+          for (const sp of jSparks) if (sp.life <= 0 && Math.random() < 0.5) {
+            sp.life = 0.15 + Math.random() * 0.2;
+            sp.p = [julie.x, a0[1] + 0.02, julie.z];
+            sp.v = [(Math.random() - 0.5) * 3 - Math.sin(julie.head) * 2, Math.random() * 3, (Math.random() - 0.5) * 3 - Math.cos(julie.head) * 2];
+          }
+          if (f >= 1) { P.i++; P.t = 0; }
+        }
+      }
       // foto: se ela tá perto, chega do seu lado (do lado contrário da mão da câmera) e faz pose
       const hh = PH && dPl < 7 && !julie.act && !game ? handAndHead() : null;
-      if (hh) {
+      if (julie.perf || perfBoard) {
+        // já tratado acima
+      } else if (hh) {
         if (julie.state !== "pose") { julie.state = "pose"; julie.posed = false; }
         let sx = hh.hand[0] - hh.head[0], sz = hh.hand[2] - hh.head[2];
         const sl0 = Math.hypot(sx, sz) || 1;
@@ -5362,7 +5647,7 @@ const STREET = (() => {
           julie.z += Math.cos(julie.head) * julie.v * dt;
         }
       }
-      julie.head = angTo(julie.head, wantHead, Math.min(1, dt * (julie.state === "ride" ? 5 : julie.state === "pose" ? 12 : 8)));
+      if (!julie.perf) julie.head = angTo(julie.head, wantHead, Math.min(1, dt * (julie.state === "ride" ? 5 : julie.state === "pose" ? 12 : 8)));
       // inclina o shape com a rampa
       const sl = (julie.state === "park" || julie.state === "wait" || julie.state === "pose") ? 0 : jSlope(julie.x, julie.z, julie.head);
       julie.pitch += (Math.atan(Math.max(-2.5, Math.min(2.5, sl))) - julie.pitch) * Math.min(1, dt * 12);
@@ -5388,10 +5673,13 @@ const STREET = (() => {
           if (A.ft > 1.7) julie.act = null;
         }
       }
-      julie.cur = ART.lerpPose(julie.cur, want, Math.min(1, dt * 10));
+      if (!perfBoard) julie.cur = ART.lerpPose(julie.cur, want, Math.min(1, dt * 10));
       const gy = H(julie.x, julie.z) + hop;
       const base = M.mul(M.T(julie.x, gy, julie.z), M.mul(M.RY(julie.head), M.RX(-julie.pitch)));
-      if (A && !A.ok && A.ft > 0) {
+      if (perfBoard) {
+        julie.rig.pose(perfBoard.base, julie.cur, perfBoard.bm);
+        julie.rig.board.mo = perfBoard.bm;
+      } else if (A && !A.ok && A.ft > 0) {
         // caiu: tomba sentada e o shape escapa de cabeça pra baixo
         const ang = 1.2 * fall * (1 - up);
         const body = M.mul(M.T(julie.x, gy, julie.z), M.mul(M.RY(julie.head), M.RX(ang)));
@@ -5427,6 +5715,110 @@ const STREET = (() => {
         ui.mission && ui.mission("tick", { title: SA.def.title, prog: `${fmt(SA.pts)}/${fmt(SA.def.pts)}`, left: SA.left });
         if (SA.left <= 0) { say("NÃO DEU! fala com a Julie e tenta de novo", 2.6, true); sfx.nocan(); ui.mission && ui.mission("fail", { title: SA.def.title }); SA = null; }
       }
+    }
+    // ---------- cutscene (estilo PS1/PS2): barras pretas, cortes de câmera e poses mais vivas ----------
+    let CUT = null;
+    const ez = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
+    const STD = (o) => Object.assign({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.02, twist: 0.05, hy: 0, hp: 0.02, hF: [0.02, 0.97, 0.3], hB: [0.02, 0.97, -0.3], lf: 0, lb: 0 }, o);
+    // poses do K.F. e da Julie (peito pra +x; mão da frente em +z)
+    const KP = {
+      stand: (t) => STD({ py: 0.94 + Math.sin(t * 2.2) * 0.006, hy: Math.sin(t * 0.9) * 0.08 }),
+      scratch: (t) => STD({ lean: 0.06, twist: 0.15, hy: 0.25 + Math.sin(t * 6) * 0.05, hp: 0.14, hF: [-0.1, 1.74 + Math.sin(t * 14) * 0.025, 0.16] }),
+      proud: (t) => STD({ py: 0.95, lean: -0.12, twist: 0, hy: -0.05, hp: -0.18 + Math.sin(t * 3) * 0.02, hF: [-0.02, 1.0, 0.33], hB: [-0.02, 1.0, -0.33] }),
+      recoil: (t) => STD({ px: -0.06, py: 0.93, lean: -0.14, twist: -0.4, hy: 0.35, hp: 0.05, hF: [0.12, 1.36, -0.1] }),
+      laugh: (t) => STD({ py: 0.94 + Math.abs(Math.sin(t * 12)) * 0.015, lean: 0.14, twist: 0.1, hy: 0.1, hp: -0.18 + Math.sin(t * 12) * 0.07, hF: [0.2, 1.05, 0.14] }),
+      wave: (t) => STD({ twist: 0.1, hp: -0.06, hF: [0.12, 1.9, 0.4 + Math.sin(t * 11) * 0.17] }),
+    };
+    const JPc = {
+      cross: (t) => STD({ py: 0.94 + Math.sin(t * 2) * 0.008, lean: -0.05, twist: 0.12 + Math.sin(t * 1.5) * 0.05, hy: -0.18, hp: -0.1, hF: [0.24, 1.24, -0.07], hB: [0.24, 1.2, 0.07] }),
+      shrug: (t) => STD({ py: 0.96, lean: 0.02, twist: 0.05, hy: 0.28, hp: 0.14, hF: [0.3, 1.14, 0.5], hB: [0.3, 1.14, -0.5] }),
+      // risada: primeiro joga a cabeça pra trás com a mão na boca, depois dobra de rir
+      laugh: (t) => t < 0.9
+        ? STD({ py: 0.95 + Math.abs(Math.sin(t * 14)) * 0.02, lean: -0.2, twist: 0.1, hy: 0.1, hp: -0.5 + Math.sin(t * 14) * 0.06, hF: [0.22, 1.02, 0.12], hB: [0.3, 1.52, -0.04] })
+        : STD({ py: 0.84 + Math.abs(Math.sin(t * 16)) * 0.03, lean: 0.72 + Math.sin(t * 16) * 0.09, twist: 0.2, hy: 0.2, hp: 0.45 + Math.sin(t * 16) * 0.1, hF: [0.42, 0.72, 0.16], hB: [0.44, 0.76, -0.14], lf: 0.04 }),
+      punch: (t) => { const k = Math.sin(Math.min(1, t / 0.32) * Math.PI); return STD({ lean: 0.1 + 0.18 * k, twist: -0.1 - 0.3 * k, hy: -0.1, hp: 0.05, hF: [0.25 + 0.5 * k, 1.3 + 0.08 * k, 0.18], hB: [0.1, 1.0, -0.3] }); },
+      point: (t) => STD({ py: 0.94 + Math.abs(Math.sin(t * 4)) * 0.01, lean: 0.08, twist: -0.15, hy: -0.12, hp: 0.12, hF: [0.64, 1.42, 0.12], hB: [-0.02, 0.98, -0.32] }),
+      wave: (t) => STD({ twist: 0.2, hy: 0.15, hp: 0.05, hF: [0.1, 1.86, 0.38 + Math.sin(t * 12) * 0.17] }),
+    };
+    const SCENES = {
+      game: () => {
+        const K = [5.6, 15.0], J = [7.8, 15.8];
+        const dl = Math.hypot(J[0] - K[0], J[1] - K[1]), d = [(J[0] - K[0]) / dl, (J[1] - K[1]) / dl], pp = [-d[1], d[0]];
+        const M = [(K[0] + J[0]) / 2, (K[1] + J[1]) / 2];
+        const at3 = (b, a, s, y) => [b[0] + d[0] * a + pp[0] * s, y, b[1] + d[1] * a + pp[1] * s];
+        return {
+          K, J, d,
+          shots: [
+            { dur: 4.4, who: "Julie", text: "Tá bom, tá bom... você ganhou. Mas foi sorte, hein!",
+              cam: (u) => ({ eye: at3(M, -1.6 + u * 1.2, 5.2 - u * 0.6, 1.9), at: at3(M, 0, 0, 1.05), fov: 0.85 }),
+              kf: (t) => KP.stand(t), ju: (t) => (t < 1.8 ? JPc.cross(t) : JPc.shrug(t)) },
+            { dur: 3.4, who: "K.F.", text: "Sorte? Isso aí se chama talento.",
+              cam: (u) => ({ eye: at3(J, 1.1, 0.55, 1.62), at: at3(K, 0, -0.1 + u * 0.05, 1.55), fov: 0.66 - u * 0.04 }),
+              kf: (t) => (t < 1.5 ? KP.scratch(t) : KP.proud(t)), ju: (t) => JPc.cross(t) },
+            { dur: 4.0, who: "Julie", text: "Hahaha! Você é muito convencido, sabia?",
+              cam: (u) => ({ eye: at3(J, -1.8, 0.5, 1.3 + u * 0.05), at: at3(J, 0, 0, 1.0), fov: 0.74 }),
+              kf: (t) => KP.proud(t), ju: (t) => JPc.laugh(t) },
+            { dur: 3.8, who: "Julie", text: "Mas até que você anda bem, tubarão.",
+              cam: (u) => ({ eye: at3(M, 0.3 - u * 0.5, 3.3, 1.4), at: at3(M, 0, 0, 1.08), fov: 0.75 }),
+              kf: (t) => (t < 0.25 ? KP.proud(t) : t < 1.4 ? KP.recoil(t) : KP.laugh(t)), ju: (t) => (t < 0.9 ? JPc.punch(t) : JPc.point(t)) },
+            { dur: 4.6, who: "Julie", text: "Amanhã tem mais. Não se atrasa!",
+              cam: (u) => ({ eye: at3(K, -1.7, 0.7, 1.6), at: at3(J, 1 + u * 3.5, 0, 1.0), fov: 0.8 }),
+              kf: (t) => (t < 1.2 ? KP.stand(t) : KP.wave(t)), ju: (t) => (t < 1.0 ? JPc.wave(t) : null),
+              jmove: (t) => (t < 1.0 ? null : { a: Math.pow((t - 1.0) / 3.6, 1.3) * 9 }) },
+          ],
+        };
+      },
+    };
+    function playCut(key, onEnd) {
+      if (CUT || !SCENES[key] || lookKey() !== "kf") return false;
+      const sc = SCENES[key]();
+      CUT = { sc, i: -1, t: 0, onEnd, eye: cam.eye.slice(), at: cam.at.slice(), fov: 0.8, kfPose: null };
+      if (PH) photoOff();
+      if (REC) recStop();
+      julie.perf = null; julie.act = null; julie.follow = false;
+      Object.assign(S, { x: sc.K[0], z: sc.K[1], y: H(sc.K[0], sc.K[1]), speed: 0, mode: "ground", air: null, grind: null, man: null, hop: null, fakie: false, head: Math.atan2(sc.d[0], sc.d[1]) - Math.PI / 2 });
+      julie.x = sc.J[0]; julie.z = sc.J[1]; julie.head = Math.atan2(-sc.d[0], -sc.d[1]) - Math.PI / 2;
+      if (soffer) { soffer = null; }
+      ui.mission && ui.mission("hide");
+      ui.cut && ui.cut("start");
+      if (RADIO_ && RADIO_.special) RADIO_.special("juntos");
+      return true;
+    }
+    function endCut() {
+      const c = CUT;
+      CUT = null;
+      ui.cut && ui.cut("end");
+      julie.state = "go";
+      if (RADIO_ && RADIO_.special && !julie.follow) RADIO_.special(null);
+      if (c && c.onEnd) c.onEnd();
+    }
+    function cutFrame(dt, t) {
+      const C = CUT, shots = C.sc.shots;
+      C.t += dt;
+      let acc = 0, i = 0;
+      while (i < shots.length && C.t > acc + shots[i].dur) { acc += shots[i].dur; i++; }
+      if (i >= shots.length) return endCut();
+      const sh = shots[i], lt = C.t - acc, u = lt / sh.dur;
+      if (i !== C.i) { C.i = i; ui.cut && ui.cut("line", { who: sh.who, text: sh.text, n: i }); }
+      const cv = sh.cam(u);
+      C.eye = cv.eye; C.at = cv.at; C.fov = cv.fov;
+      C.kfPose = sh.kf(lt);
+      // Julie
+      let jp = sh.ju(lt);
+      const mv = sh.jmove && sh.jmove(lt);
+      let base;
+      if (mv) {
+        const d = C.sc.d, J = C.sc.J;
+        julie.x = J[0] + d[0] * mv.a; julie.z = J[1] + d[1] * mv.a;
+        julie.head = angTo(julie.head, Math.atan2(d[0], d[1]), Math.min(1, dt * 8));
+        jp = Object.assign({}, ART.POSES.ride, julie.look.ride);
+      }
+      julie.cur = ART.lerpPose(julie.cur, jp || julie.cur, Math.min(1, dt * 12));
+      base = M.mul(M.T(julie.x, H(julie.x, julie.z), julie.z), M.RY(julie.head));
+      julie.rig.objs[0].hidden = julie.rig.board.hidden = false;
+      julie.rig.pose(base, julie.cur, base);
+      julie.rig.board.mo = base;
+      jMark.hidden = true;
     }
     function acceptStory() {
       if (!soffer) return false;
@@ -5829,6 +6221,106 @@ const STREET = (() => {
     // ---------- obstáculos sólidos (postes, troncos, cones, lixeira...) ----------
     const OB = L.obstacles || [];
     for (const n of NPCS) OB.push(n.ob);
+
+    // ---------- carros rodando pelas ruas (param se tiver gente ou outro carro na frente) ----------
+    const CARS = (() => {
+      const carG = [0xe0302b, 0xf5f1e6, 0x3f63c8, 0x1fae5a, 0xffd166, 0x7cc8ff, 0xff8fc8, 0x1b1530].map((col) => {
+        const m = new Mesh(), c = hex(col), Lc = 3.9, Wc = 1.76, dark = hex(0x1b1a22);
+        m.box(-Wc / 2, 0.3, -Lc / 2, Wc / 2, 0.95, Lc / 2, c, { top: V.mul(c, 1.04) });
+        m.box(-Wc * 0.42, 0.95, -Lc * 0.32, Wc * 0.42, 1.5, Lc * 0.18, hex(0x3a4a7a), { top: c });
+        for (const sx of [-1, 1]) for (const sz of [-1, 1]) m.tube([sx * (Wc / 2 - 0.02), 0.33, sz * (Lc / 2 - 0.75)], [sx * (Wc / 2 + 0.1), 0.33, sz * (Lc / 2 - 0.75)], 0.33, 0.33, 8, dark);
+        for (const sx of [-0.55, 0.55]) {
+          const f = Lc / 2 + 0.01, b = -Lc / 2 - 0.01;
+          m.quad([sx - 0.18, 0.62, f], [sx + 0.18, 0.62, f], [sx + 0.18, 0.8, f], [sx - 0.18, 0.8, f], hex(0xfff6d8), 2);
+          m.quad([sx + 0.18, 0.62, b], [sx - 0.18, 0.62, b], [sx - 0.18, 0.8, b], [sx + 0.18, 0.8, b], hex(0xe0302b), 2);
+        }
+        return Rn.upload(m);
+      });
+      const shG = Rn.upload(new Mesh().decal([0, 0.03, 0], [1, 0, 0], [0, 0, -1], 2.4, 4.6, ART.RECT.shadow, [1, 1, 1], 5), { outline: false });
+      // rotas: anel da cidade velha e anel da cidade nova, nos dois sentidos (mão direita)
+      const RT = [
+        [[-42.5, -36.5], [40.5, -36.5], [40.5, 36.5], [-42.5, 36.5]],
+        [[-42.5, 104.5], [40.5, 104.5], [40.5, 404.5], [-42.5, 404.5]],
+      ];
+      const lanes = [];
+      for (const P0 of RT) for (const rev of [false, true]) {
+        const P = rev ? P0.slice().reverse() : P0, n = P.length, LANE = 1.6;
+        let pts = P.map((b, i) => {
+          const a = P[(i - 1 + n) % n], c = P[(i + 1) % n];
+          const d1 = V.norm([b[0] - a[0], 0, b[1] - a[1]]), d2 = V.norm([c[0] - b[0], 0, c[1] - b[1]]);
+          return [b[0] + (-d1[2] - d2[2]) * LANE, b[1] + (d1[0] + d2[0]) * LANE];
+        });
+        // arredonda as esquinas (Chaikin) e guarda o comprimento acumulado
+        for (let it = 0; it < 4; it++) {
+          const q = [];
+          pts.forEach((a, i) => { const b = pts[(i + 1) % pts.length]; q.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25], [a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]); });
+          pts = q;
+        }
+        const cum = [0];
+        for (let i = 1; i <= pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i % pts.length][0] - pts[i - 1][0], pts[i % pts.length][1] - pts[i - 1][1]));
+        lanes.push({ pts, cum, len: cum[cum.length - 1] });
+      }
+      const at = (ln, s) => {
+        s = ((s % ln.len) + ln.len) % ln.len;
+        let lo = 0, hi = ln.cum.length - 1;
+        while (hi - lo > 1) { const m = (lo + hi) >> 1; if (ln.cum[m] <= s) lo = m; else hi = m; }
+        const a = ln.pts[lo], b = ln.pts[(lo + 1) % ln.pts.length], f = (s - ln.cum[lo]) / (ln.cum[lo + 1] - ln.cum[lo] || 1);
+        return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, Math.atan2(b[0] - a[0], b[1] - a[1])];
+      };
+      const list = [];
+      lanes.forEach((ln, li) => {
+        const N = 3;
+        for (let i = 0; i < N; i++) {
+          const c = { ln, pos: (q) => at(ln, q), s: (ln.len * (i + (li % 2) * 0.5)) / N, v: 6, vmax: 6.5 + ((i * 3 + li) % 4) * 0.6, head: 0, x: 0, z: 0, wait: 0, honk: 0 };
+          c.o = add(carG[(li * 3 + i) % carG.length], M.I());
+          c.sh = add(shG, M.I());
+          c.obs = [{ x: 0, z: 0, r: 0.95, y1: 1.5 }, { x: 0, z: 0, r: 0.95, y1: 1.5 }];
+          OB.push(...c.obs);
+          list.push(c);
+        }
+      });
+      return list;
+    })();
+    function carFrame(dt) {
+      const e = cam.eye;
+      for (const c of CARS) {
+        const [x, z, hd] = c.pos(c.s);
+        const fx = Math.sin(hd), fz = Math.cos(hd);
+        // tem alguém na frente? (skatista, morador ou outro carro)
+        let block = 0, byPlayer = false;
+        const chk = (px, pz, py) => {
+          const rx = px - x, rz = pz - z, along = rx * fx + rz * fz, lat = Math.abs(-rx * fz + rz * fx);
+          return along > 1.2 && along < 8.5 && lat < 1.5 && (py == null || py < 2.5) ? along : 0;
+        };
+        const pb = chk(S.x, S.z, S.y);
+        if (pb) { block = pb; byPlayer = true; }
+        for (const n of NPCS) { const b = chk(n.x, n.z); if (b && (!block || b < block)) block = b; }
+        for (const o of CARS) if (o !== c && o.ln === c.ln) {
+          let gap = ((o.s - c.s) % c.ln.len + c.ln.len) % c.ln.len;
+          if (gap > 0 && gap < 8.5 && (!block || gap < block)) block = gap;
+        }
+        const want = block ? Math.max(0, (block - 2.6) * 1.6) : c.vmax;
+        c.v += (Math.min(want, c.vmax) - c.v) * Math.min(1, dt * (want < c.v ? 5 : 1.2));
+        if (c.v < 0.05) c.v = 0;
+        c.s += c.v * dt;
+        // buzina quando o skatista fica parado na frente
+        if (byPlayer && c.v < 0.3) { c.wait += dt; if (c.wait > 1.6 && c.honk <= 0 && Math.hypot(S.x - x, S.z - z) < 12) { sfx.beep(); say("BII-BIII!", 0.9); c.honk = 5; } }
+        else c.wait = 0;
+        c.honk -= dt;
+        c.head = hd;
+        const y = H(x, z);
+        c.x = x; c.z = z;
+        // inclina na ladeira
+        const sl = (H(x + fx * 1.4, z + fz * 1.4) - H(x - fx * 1.4, z - fz * 1.4)) / 2.8;
+        c.pitch = (c.pitch || 0) + (Math.atan(sl) - (c.pitch || 0)) * Math.min(1, dt * 6);
+        c.o.mo = M.mul(M.T(x, y, z), M.mul(M.RY(hd), M.RX(-c.pitch)));
+        c.sh.mo = M.mul(M.T(x, y, z), M.mul(M.RY(hd), M.RX(-c.pitch)));
+        const far = Math.hypot(x - e[0], z - e[2]) > 160;
+        c.o.hidden = c.sh.hidden = far;
+        c.obs[0].x = x + fx * 1.0; c.obs[0].z = z + fz * 1.0; c.obs[0].y1 = y + 1.5;
+        c.obs[1].x = x - fx * 1.0; c.obs[1].z = z - fz * 1.0; c.obs[1].y1 = y + 1.5;
+      }
+    }
     function blocked(x, z, y) {
       for (const o of OB) {
         if (y > o.y1) continue;
@@ -6298,6 +6790,7 @@ const STREET = (() => {
       const P = ART.POSES;
       const sg = look.skates ? 1 : lead();
       if (window.__pose) return typeof window.__pose === "string" ? (P[window.__pose] || ART.grabPose(window.__pose)) : window.__pose;
+      if (CUT && CUT.kfPose) return CUT.kfPose;
       if (PH) return mirror(CHARS.SELFIE(PH.arm), sg);
       if (S.mode === "plant") return mirror(ART.grabPose("Plant"), sg);
       if (S.mode === "air") {
@@ -6467,6 +6960,7 @@ const STREET = (() => {
     let camMode = 0;
     const CAMS = ["CÂMERA TRASEIRA", "CÂMERA FRONTAL", "CÂMERA LATERAL"];
     function camFrame(dt) {
+      if (CUT) { cam.eye = CUT.eye; cam.at = CUT.at; cam.fov = CUT.fov; return; }
       let want = S.head;
       if (S.mode === "air" && S.air.vert) want = S.air.vert.head0;
       if (S.mode === "plant") want = S.plant.head0;
@@ -6520,7 +7014,7 @@ const STREET = (() => {
         playFrame(dt, now / 1000);
         return;
       }
-      if (!PH && (S.running || S.mode !== "ground" || S.speed > 0)) {
+      if (!PH && !CUT && (S.running || S.mode !== "ground" || S.speed > 0)) {
         // passos fixos curtos pra física estável
         let left = dt;
         while (left > 0) {
@@ -6538,9 +7032,11 @@ const STREET = (() => {
       L.tags.forEach((tg, i) => { if (!tg.done) tg.go.tint = [1, 1, 1].map(() => 0.75 + 0.25 * Math.sin(t * 4 + i)); });
       atmos(dt, t);
       npcFrame(dt, t);
+      carFrame(dt);
       NOW = t;
       missionFrame(dt, t);
       storyFrame(dt, t);
+      if (CUT) cutFrame(dt, t);
       trackFrame();
       render(dt);
       if (REC) recFrame(dt);
@@ -6773,6 +7269,9 @@ const STREET = (() => {
       setSkatesForward(v) { skFwd = !!v; },
       acceptMission, dropMission() { if (MA) { MA = null; items.forEach((o) => (o.hidden = true)); ui.mission && ui.mission("hide"); } },
       get offering() { return (!!offer && !MA) || !!soffer; },
+      playCut: (k) => playCut(k || "game"),
+      cutSkip() { if (CUT) endCut(); },
+      get cutOn() { return !!CUT; },
       storyInfo: () => ({ kf: { step: stepOf("kf"), total: STORY.kf.length, next: STORY.kf[stepOf("kf")] ? STORY.kf[stepOf("kf")].title : null }, julie: julieOn, active: SA ? SA.def.title : null }),
       storyReset() { HS = {}; julieOn = false; julie.follow = false; SA = null; saveHS(); },
       continueStory() { return lookKey() === "kf"; },
@@ -7086,7 +7585,8 @@ function toastC(t){$('toastC').textContent=t;$('toastC').style.display='block';c
 function dlg(on){dlgOn=on;$('dlg').classList.toggle('on',on);$('screen').classList.toggle('talking',on)}
 $('dlgOk').addEventListener('click',()=>{game.acceptMission();dlg(false);$('cv').focus()});$('dlgNo').addEventListener('click',()=>{dlg(false);$('cv').focus()});
 function drawStory(){const s=game.storyInfo();$('pickJulie').hidden=!s.julie;const k=s.kf;
-  $('storyTxt').textContent=k.next?`capítulo ${k.step+1} de ${k.total}: ${k.next}`+(look!=='kf'?' (jogue de K.F.)':''):'completa ✓ (fale com a Julie pra andar junto)';$('storyGo').hidden=!k.next||look!=='kf'}
+  $('storyTxt').textContent=k.next?`capítulo ${k.step+1} de ${k.total}: ${k.next}`+(look!=='kf'?' (jogue de K.F.)':''):'completa ✓ (fale com a Julie pra andar junto)';$('storyGo').hidden=!k.next||look!=='kf';$('cutGo').hidden=k.step<2||look!=='kf'}
+$('cutGo').addEventListener('click',()=>{go('free',true);setTimeout(()=>game.playCut('game'),300)});
 $('storyGo').addEventListener('click',()=>{if(game.continueStory()){go('free',true)}});
 ui.mission=(ev,d)=>{
   if(ev==='offer'){$('dlgW').textContent=d.who;$('dlgL').textContent='“'+d.line+'”';$('dlgT').textContent=(d.who==='Julie'?'♡ ':'Missão: ')+d.title;dlg(true)}
@@ -7097,6 +7597,12 @@ ui.mission=(ev,d)=>{
   else if(ev==='done'){$('mis').classList.remove('on');drawStory();drawMissions()}
   else if(ev==='fail'){$('mis').classList.remove('on');toastC('Não deu tempo: '+d.title)}
   else if(ev==='challenge'){drawMissions()}};
+// cutscene: barras de cinema, legenda com efeito de máquina de escrever
+let cutTy=0;
+ui.cut=(ev,d)=>{const o=$('cutO');
+  if(ev==='start'){dlg(false);$('screen').classList.add('cut');o.classList.add('on');requestAnimationFrame(()=>o.classList.add('in'));$('cutW').textContent='';$('cutL').textContent=''}
+  else if(ev==='line'){const w=$('cutW');w.textContent=d.who;w.className=d.who==='K.F.'?'kf':'';clearInterval(cutTy);let i=0;const tx=d.text;$('cutL').textContent='';cutTy=setInterval(()=>{i+=1;$('cutL').textContent=tx.slice(0,i);if(i>=tx.length)clearInterval(cutTy)},28)}
+  else if(ev==='end'){clearInterval(cutTy);o.classList.remove('in');setTimeout(()=>{o.classList.remove('on');$('screen').classList.remove('cut')},350);drawStory()}};
 // desafio atual do skatista no canto, com o andamento
 ui.track=(d)=>{const el=$('trk');if(!d){el.classList.remove('on');return}el.classList.add('on');
   set($('trkN'),'textContent',`DESAFIO ${d.n}/${d.of}`);set($('trkT'),'textContent',d.t);set($('trkP'),'textContent',d.prog||'');set($('trkH'),'textContent',d.hint||'');
@@ -7154,6 +7660,7 @@ const map={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'lef
 function legend(){const sk=look==='manu';$('kJ').textContent=sk?'mortal / parafuso / estrela':'flip (kick, heel, shove-it…)';$('kL').textContent=sk?'pegada (na borda da rampa: parada de mão)':'grab (na borda da rampa: handplant)';$('kK').textContent=sk?'grind de patins':'grind';$('skfRow').style.display=sk?'':'none'}
 legend();
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
+  if(game.cutOn){if(k==='enter'||k==='escape'||k===' '){e.preventDefault();game.cutSkip()}return}
   if(dlgOn){if(k==='enter'){e.preventDefault();game.acceptMission();dlg(false);return}if(k==='escape'){e.preventDefault();dlg(false);return}}
   // fita passando: controles do videocassete
   if(game.playing){e.preventDefault();if(k===' ')game.playPause()?$('plSt').textContent='❚❚ PAUSE':$('plSt').textContent='▶ PLAY';else if(k==='arrowleft'||k==='a')game.playSeek(-2);else if(k==='arrowright'||k==='d')game.playSeek(2);else if(k==='r'){game.playRestart();$('pl').classList.remove('ended')}else if(k==='b')downloadVideo();else if(k==='escape'||k==='p')game.stopPlay();return}
