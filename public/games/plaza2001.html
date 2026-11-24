@@ -208,7 +208,8 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="row clima" role="group" aria-label="Chuva"><b>Chuva:</b><button class="pick" data-rain="off" aria-pressed="true">Sem chuva</button><button class="pick" data-rain="on" aria-pressed="false">Chovendo</button><button class="pick" data-rain="auto" aria-pressed="false">Às vezes</button></div>
     <label class="row skf" id="skfRow"><input type="checkbox" id="skf"> Manu sempre de frente (não patina de costas)</label>
     <div class="row"><button class="btn" id="goS">Sessão de 3 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="goR">Só rolê</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
-    <div id="storyBox"><b>História do K.F.</b> <span id="storyTxt"></span> <button class="pick" id="storyGo" style="font-size:13px;min-height:32px;padding:3px 12px">Continuar ▸</button> <button class="pick" id="cutGo" style="font-size:13px;min-height:32px;padding:3px 12px" hidden>🎬 Ver cena do game</button></div>
+    <div id="storyBox"><b>História do K.F.</b> <span id="storyTxt"></span> <button class="pick" id="storyGo" style="font-size:13px;min-height:32px;padding:3px 12px">Continuar ▸</button> <button class="pick" id="cutGo" style="font-size:13px;min-height:32px;padding:3px 12px" hidden>🎬 Ver cena do game</button>
+      <div id="replayBox" style="margin-top:4px;font-size:13px" hidden>Jogar de novo com a Julie: <button class="pick rp" data-rp="0" style="font-size:12px;min-height:30px;padding:2px 10px">Cap. 1 · 2.000 pontos</button> <button class="pick rp" data-rp="1" style="font-size:12px;min-height:30px;padding:2px 10px">Cap. 2 · S.K.A.T.E.</button> <button class="pick rp" data-rp="2" style="font-size:12px;min-height:30px;padding:2px 10px">Cap. 3 · rolê</button> <button class="pick" id="storyZero" style="font-size:12px;min-height:30px;padding:2px 10px">Zerar história</button></div></div>
     <b>Desafios do skatista</b><ul class="mlist" id="chal"></ul>
     <b>Missões dos moradores</b> <small>(procure o <b style="color:#c99a00">!</b> amarelo no mapinha)</small><ul class="mlist" id="mlist"></ul>
     <div id="mediaBox" style="display:none"><b>Álbum e fitas</b><div class="media" id="media"></div></div>
@@ -5370,7 +5371,7 @@ const STREET = (() => {
     }
     const jSparks = Array.from({ length: 8 }, () => add(sparkG, M.I(), { hidden: true, v: [0, 0, 0], p: [0, 0, 0], life: 0 }));
     const jMark = add(Rn.upload((() => { const m = new Mesh(); m.box(-0.07, 0.25, -0.07, 0.07, 0.75, 0.07, hex(0xff4fa3), { m: 2 }); m.box(-0.07, 0, -0.07, 0.07, 0.14, 0.07, hex(0xff4fa3), { m: 2 }); return m; })()), M.I(), { hidden: true });
-    let SA = null, soffer = null;
+    let SA = null, soffer = null, replay = null;
     const stepOf = (k) => HS[k] || 0;
     const LET = "SKATE";
     const letters5 = (n) => LET.split("").map((c, i) => (i < n ? c : "_")).join(" ");
@@ -5411,6 +5412,13 @@ const STREET = (() => {
     }
     function storyStepDone() {
       const k = lookKey(), st = SA.def;
+      if (SA.replay) {
+        // capítulo rejogado: comemora, mas não mexe no save
+        ui.mission && ui.mission("done", { title: st.title, who: "Julie" });
+        celebrate("CAPÍTULO REJOGADO", st.title, "");
+        replay = null; SA = null;
+        return;
+      }
       HS[k] = stepOf(k) + 1;
       ui.mission && ui.mission("done", { title: st.title, who: "Julie" });
       const nx = STORY.kf[HS[k]];
@@ -5432,11 +5440,11 @@ const STREET = (() => {
         if (G.round >= 5 && G.pl !== G.ju && (G.round === 5 || G.round % 2 === 0)) {
           if (G.pl < G.ju) {
             say("VOCÊ GANHOU O GAME!", 2.4, true);
-            const def = SA.def;
+            const def = SA.def, rp = SA.replay;
             SA = null;
             ui.mission && ui.mission("hide");
             // cena dos dois e depois a comemoração do capítulo
-            setTimeout(() => { if (!playCut("game", () => { SA = { def }; storyStepDone(); })) { SA = { def }; storyStepDone(); } }, 1400);
+            setTimeout(() => { if (!playCut("game", () => { SA = { def, replay: rp }; storyStepDone(); })) { SA = { def, replay: rp }; storyStepDone(); } }, 1400);
             return;
           }
           say("A JULIE GANHOU! fala com ela pra revanche", 2.8, true); sfx.nocan();
@@ -5692,15 +5700,16 @@ const STREET = (() => {
         julie.rig.board.mo = bm;
       }
       // "!" rosa quando tem capítulo pra fazer com o K.F.
-      const hasStep = k === "kf" && kfStep < steps.length && !SA;
+      const hasStep = k === "kf" && (kfStep < steps.length || replay != null) && !SA;
       jMark.hidden = !hasStep || !!PH;
       if (hasStep) jMark.mo = M.mul(M.T(julie.x, gy + 2.15, julie.z), M.RY(t * 2));
       // oferta: chegou perto da Julie parada
       // andando junto, ela só pergunta se quer parar quando vocês voltam pra pista dela
-      const near = dPl < 2.8 && S.speed < 4 && S.running && !PH && !REC && !MA && !SA && !julie.act &&
+      const near = dPl < 3.4 && S.speed < 4 && S.running && !PH && !REC && !MA && !SA && !julie.act &&
         (following ? Math.hypot(S.x - JULIE_HOME[0], S.z - JULIE_HOME[1]) < 7 : julie.state === "wait" && julie.v < 0.5);
       if (near && k === "kf" && !soffer) {
-        if (kfStep < steps.length) soffer = { step: kfStep, line: steps[kfStep].line, title: steps[kfStep].title };
+        if (replay != null) soffer = { step: replay, line: steps[replay].line, title: steps[replay].title + " (de novo)" };
+        else if (kfStep < steps.length) soffer = { step: kfStep, line: steps[kfStep].line, title: steps[kfStep].title };
         else soffer = { toggle: true, line: julie.follow ? "Já vou indo... amanhã a gente anda de novo?" : "Bora dar um rolê?", title: julie.follow ? "Deixar a Julie em casa" : "Andar com a Julie" };
         ui.mission && ui.mission("offer", { who: "Julie", line: soffer.line, title: soffer.title });
       } else if (!near && soffer) { soffer = null; ui.mission && ui.mission("hide"); }
@@ -5832,7 +5841,7 @@ const STREET = (() => {
         return true;
       }
       const def = STORY.kf[o.step];
-      SA = { def, pts: 0, left: def.time || 0 };
+      SA = { def, pts: 0, left: def.time || 0, replay: replay != null };
       if (def.kind === "skate") SA.g = { round: 1, pl: 0, ju: 0, phase: "jprep", t: 1.5, att: null };
       if (def.kind === "ride") { julie.follow = true; if (RADIO_ && RADIO_.special) RADIO_.special("juntos"); }
       sfx.beep();
@@ -6245,11 +6254,14 @@ const STREET = (() => {
       const lanes = [];
       for (const P0 of RT) for (const rev of [false, true]) {
         const P = rev ? P0.slice().reverse() : P0, n = P.length, LANE = 1.6;
-        let pts = P.map((b, i) => {
+        const corners = P.map((b, i) => {
           const a = P[(i - 1 + n) % n], c = P[(i + 1) % n];
           const d1 = V.norm([b[0] - a[0], 0, b[1] - a[1]]), d2 = V.norm([c[0] - b[0], 0, c[1] - b[1]]);
-          return [b[0] + (-d1[2] - d2[2]) * LANE, b[1] + (d1[0] + d2[0]) * LANE];
+          return { p: [b[0] + (-d1[2] - d2[2]) * LANE, b[1] + (d1[0] + d2[0]) * LANE], d1, d2 };
         });
+        // cada esquina vira 3 pontos (5 m antes, a esquina, 5 m depois): a curva fica dentro do cruzamento
+        let pts = [];
+        for (const c of corners) pts.push([c.p[0] - c.d1[0] * 5, c.p[1] - c.d1[2] * 5], c.p, [c.p[0] + c.d2[0] * 5, c.p[1] + c.d2[2] * 5]);
         // arredonda as esquinas (Chaikin) e guarda o comprimento acumulado
         for (let it = 0; it < 4; it++) {
           const q = [];
@@ -7273,7 +7285,8 @@ const STREET = (() => {
       cutSkip() { if (CUT) endCut(); },
       get cutOn() { return !!CUT; },
       storyInfo: () => ({ kf: { step: stepOf("kf"), total: STORY.kf.length, next: STORY.kf[stepOf("kf")] ? STORY.kf[stepOf("kf")].title : null }, julie: julieOn, active: SA ? SA.def.title : null }),
-      storyReset() { HS = {}; julieOn = false; julie.follow = false; SA = null; saveHS(); },
+      storyReset() { HS = {}; julieOn = false; julie.follow = false; SA = null; replay = null; saveHS(); },
+      storyReplay(i) { if (i < 0 || i >= STORY.kf.length || i >= Math.max(1, stepOf("kf"))) return false; replay = i; julie.follow = false; return true; },
       continueStory() { return lookKey() === "kf"; },
       missionList: () => MISSIONS.map((m, i) => ({ who: npcOf(m.k).name, title: m.title, done: !!mDone[i], on: !!(MA && MA.m === m) })),
       challenges: (k) => (DESAFIOS[k || lookKey()] || []).map((c, i) => ({ t: c.t, done: !!dDone[(k || lookKey()) + i] })),
@@ -7281,7 +7294,7 @@ const STREET = (() => {
         const out = MISSIONS.map((m, i) => (mDone[i] || (MA && MA.m === m) ? null : { x: npcOf(m.k).x, z: npcOf(m.k).z, on: false })).filter(Boolean);
         if (MA && MA.m.deliver != null) { const n = npcOf(MA.m.deliver); out.push({ x: n.x, z: n.z, on: true }); }
         if (MA && MA.m.items) MA.m.items.forEach(([x, z], i) => { if (!MA.got[i]) out.push({ x, z, on: true }); });
-        if (lookKey() === "kf" && stepOf("kf") < STORY.kf.length && !SA) out.push({ x: julie.x, z: julie.z, on: false, c: "#ff4fa3" });
+        if (lookKey() === "kf" && (stepOf("kf") < STORY.kf.length || replay != null) && !SA) out.push({ x: julie.x, z: julie.z, on: false, c: "#ff4fa3" });
         return out;
       },
       // câmera digital e filmadora
@@ -7585,7 +7598,9 @@ function toastC(t){$('toastC').textContent=t;$('toastC').style.display='block';c
 function dlg(on){dlgOn=on;$('dlg').classList.toggle('on',on);$('screen').classList.toggle('talking',on)}
 $('dlgOk').addEventListener('click',()=>{game.acceptMission();dlg(false);$('cv').focus()});$('dlgNo').addEventListener('click',()=>{dlg(false);$('cv').focus()});
 function drawStory(){const s=game.storyInfo();$('pickJulie').hidden=!s.julie;const k=s.kf;
-  $('storyTxt').textContent=k.next?`capítulo ${k.step+1} de ${k.total}: ${k.next}`+(look!=='kf'?' (jogue de K.F.)':''):'completa ✓ (fale com a Julie pra andar junto)';$('storyGo').hidden=!k.next||look!=='kf';$('cutGo').hidden=k.step<2||look!=='kf'}
+  $('storyTxt').textContent=k.next?`capítulo ${k.step+1} de ${k.total}: ${k.next}`+(look!=='kf'?' (jogue de K.F.)':''):'completa ✓ (fale com a Julie pra andar junto)';$('storyGo').hidden=!k.next||look!=='kf';$('cutGo').hidden=k.step<2||look!=='kf';$('replayBox').hidden=k.step<1||look!=='kf';for(const b of document.querySelectorAll('.pick.rp'))b.hidden=+b.dataset.rp>=Math.max(1,k.step)}
+for(const b of document.querySelectorAll('.pick.rp'))b.addEventListener('click',()=>{if(game.storyReplay(+b.dataset.rp)){go('free',true);toastC('Vá até a Julie na pista (bolinha rosa no mapa) ♡')}});
+$('storyZero').addEventListener('click',()=>{if(confirm('Zerar a história do K.F. com a Julie? A Julie volta a ficar bloqueada.')){game.storyReset();drawStory()}});
 $('cutGo').addEventListener('click',()=>{go('free',true);setTimeout(()=>game.playCut('game'),300)});
 $('storyGo').addEventListener('click',()=>{if(game.continueStory()){go('free',true)}});
 ui.mission=(ev,d)=>{
