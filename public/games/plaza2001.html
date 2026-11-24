@@ -204,7 +204,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <p id="ovP">Fim de tarde na praça e na cidade em volta. Encadeie manobras, ache os gaps, pegue latas de spray e grafite os pontos marcados (o mapinha mostra onde).</p>
     <div class="row" role="group" aria-label="Skatista"><b>Skatista:</b><button class="pick" data-look="kf" aria-pressed="true">K.F.</button><button class="pick" data-look="manu" aria-pressed="false">Manu</button><button class="pick" data-look="kaua" aria-pressed="false">Kauã</button><button class="pick" data-look="gabi" aria-pressed="false">Gabi</button><button class="pick" data-look="julie" aria-pressed="false" id="pickJulie" hidden>Julie ♡</button><button class="pick" data-look="kauane" aria-pressed="false">Kauane</button></div>
     <p class="radiohint" id="radioHint"></p>
-    <div class="row clima" role="group" aria-label="Hora do dia"><b>Hora:</b><button class="pick" data-time="tarde" aria-pressed="true">Fim de tarde</button><button class="pick" data-time="noite" aria-pressed="false">Noite</button><button class="pick" data-time="ciclo" aria-pressed="false">Passando o dia</button></div>
+    <div class="row clima" role="group" aria-label="Hora do dia"><b>Hora:</b><button class="pick" data-time="dia" aria-pressed="false">Dia</button><button class="pick" data-time="tarde" aria-pressed="true">Pôr do sol</button><button class="pick" data-time="noite" aria-pressed="false">Noite</button><button class="pick" data-time="ciclo" aria-pressed="false">Passando o dia</button></div>
     <div class="row clima" role="group" aria-label="Chuva"><b>Chuva:</b><button class="pick" data-rain="off" aria-pressed="true">Sem chuva</button><button class="pick" data-rain="on" aria-pressed="false">Chovendo</button><button class="pick" data-rain="auto" aria-pressed="false">Às vezes</button></div>
     <label class="row skf" id="skfRow"><input type="checkbox" id="skf"> Manu sempre de frente (não patina de costas)</label>
     <div class="row"><button class="btn" id="goS">Sessão de 3 min</button><button class="btn alt" id="goF">Treino livre</button><button class="btn ghost" id="goR">Só rolê</button><button class="btn ghost" id="mus">♪ Trocar música</button></div>
@@ -744,7 +744,7 @@ const ART = (() => {
     bill: [R(0, 1280, 512, 256), R(512, 1280, 512, 256)],
     poster: [0, 1, 2, 3].map((i) => R(i * 256, 1536, 256, 384)),
     // Itaberá: letreiros de loja, placas de rua, placa verde e porta de aço
-    town: [0, 1, 2, 3].map((i) => R(1024, 512 + i * 112, 512, 104)),
+    town: [...[0, 1, 2, 3].map((i) => R(1024, 512 + i * 112, 512, 104)), R(1152, 962, 384, 60)],
     shop: [...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => R(1024 + (i % 2) * 512, 1024 + Math.floor(i / 2) * 112, 512, 104)), R(1536, 1792, 512, 104), R(1024, 1920, 512, 104), R(1536, 1920, 512, 104)],
     plate: [0, 1, 2, 3].map((i) => R(1024 + (i % 2) * 512, 1472 + Math.floor(i / 2) * 96, 512, 88)),
     road: R(1024, 1664, 512, 256),
@@ -1150,6 +1150,13 @@ const ART = (() => {
       big(1024, 624, "ESTAÇÃO ITABERÁ", "#2f5a46", "#fff6d8", "#13261d");
       big(1024, 736, "MERCADO MUNICIPAL", "#9a2a22", "#ffe14d", "#4a0f0a");
       big(1024, 848, "POSTO TREVO", "#1fae5a", "#ffffff", "#0b4a22");
+      // placa da sorveteria (faixa pequena livre embaixo das placas)
+      {
+        const x = 1152, y = 962;
+        rr(x + 3, y + 3, 378, 54, 10); g.fillStyle = "#ffd6ec"; g.fill(); g.lineWidth = 5; g.strokeStyle = "#5a1a3a"; g.stroke();
+        g.textAlign = "center"; g.textBaseline = "middle"; fit("SORVETERIA PINGUIM", 330, 34);
+        g.lineWidth = 6; g.strokeStyle = "#5a1a3a"; g.strokeText("SORVETERIA PINGUIM", x + 192, y + 32); g.fillStyle = "#ff4fa3"; g.fillText("SORVETERIA PINGUIM", x + 192, y + 32);
+      }
       // bloquete (calçada) e petit-pavê (praça), 128 px = um ladrilho
       {
         const x = 1664, y = 1664;
@@ -1368,6 +1375,9 @@ const CHARS = (() => {
     { name: "Bia do posto", skin: 0xd8a47e, hair: 0x2a1a10, hairStyle: "long", top: 0x1fae5a, top2: 0xffffff, pants: 0x1b1a22, shoe: 0x1b1530, npc: { lash: 1, lips: 0xb83a5a, mouth: "smile" }, sleeve: "short" },
     { name: "Padre Antônio", skin: 0xf0c7a4, hair: 0x8a8a8a, hairStyle: "short", top: 0x1b1530, top2: 0x2a2440, pants: 0x1b1530, shoe: 0x111111, npc: { old: 1, glasses: 0x2a2a2a, mouth: "smile" } },
   ];
+  // variantes só pra cutscene: K.F. sem o fone grande (com fone de botão) e Julie com o outro lado do fone
+  LOOKS.kf_ear = Object.assign({}, LOOKS.kf, { earbud: true, walkman: false, name: "K.F." });
+  LOOKS.julie_ear = Object.assign({}, LOOKS.julie, { earbud: true, earSide: -1, name: "Julie" });
   TOWN.forEach((t, i) => (t.face = "npc" + i));
   TOWN.forEach((t, i) => (LOOKS["npc" + i] = Object.assign({ sleeve: "long", pantsR: 0.9, flare: 0.4, shoeToe: t.shoe, sole: 0x2a2630, lace: t.shoe, scale: t.kid ? 0.72 : t.old ? 0.88 : 0.92, headScale: t.kid ? 1.08 : 0.97, pantsR: 0.72, flare: 0.1 }, t)));
 
@@ -2431,7 +2441,12 @@ const CHARS = (() => {
       t.box(-0.34, 0.305, -0.09, -0.08, 0.33, 0.09, c(0xff4fa3), { m: FLAT });
     }
     // fones
-    if (L.walkman) {
+    if (L.earbud) {
+      // fone pequeno (de botão) só numa orelha, com o fio descendo — o outro lado tá com a Julie
+      const z = (L.earSide || 1) * (L.hairStyle === "afro" ? 0.255 : 0.14);
+      t.ball([0.03, 0.19, z], 0.03, c(0xf4f4f4), FLAT, 6, 4);
+      t.tube([0.03, 0.17, z], [0.07, -0.12, z * 0.55], 0.008, 0.008, 4, c(0xf4f4f4), FLAT);
+    } else if (L.walkman) {
       const big = L.hairStyle === "afro";
       const PZ = big ? 0.27 : 0.158, AY = big ? 0.3 : 0.27, AR = big ? 0.33 : 0.17, AZ = big ? 0.275 : 0.155;
       for (const s of [-1, 1]) {
@@ -2599,6 +2614,10 @@ const CHARS = (() => {
     kick: (t) => ({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.06, twist: 0.18 + Math.sin(t * 3) * 0.05, hy: -0.4 + Math.sin(t * 1.1) * 0.2, hp: 0.08, hF: [0.06, 0.96, 0.28], hB: [-0.04, 0.95, -0.27], fxF: Math.cos(t * 4) * 0.12, lf: 0.06 + Math.max(0, Math.sin(t * 4)) * 0.09, lb: 0 }),
     calm: (t) => ({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.04 + Math.sin(t * 1.1) * 0.02, twist: 0.12, hy: -0.35 + Math.sin(t * 0.6) * 0.18, hp: 0.14, hF: [0.06, 1.58, 0.17], hB: [0.02, 0.92, -0.25], lf: 0, lb: 0 }),
     boss: (t) => ({ stand: 1, px: 0, py: 0.93, pz: 0, lean: -0.05, twist: 0.28, hy: -0.55 + Math.sin(t * 0.9) * 0.08, hp: -0.12, hF: [-0.03, 0.98, 0.29], hB: [-0.03, 0.98, -0.29], lf: Math.max(0, Math.sin(t * 9)) * 0.05, lb: 0 }),
+    // sentado na cadeira de fio na calçada, olhando o movimento
+    sit: (t) => ({ stand: 0, px: -0.06, py: 0.6, pz: 0, lean: -0.1 + Math.sin(t * 0.7) * 0.015, twist: 0, hy: Math.sin(t * 0.37) * 0.45, hp: 0.04, hF: [0.3, 0.66, 0.2], hB: [0.3, 0.66, -0.2], lf: 0, lb: 0, fxF: 0.36, fxB: 0.36 }),
+    // conversando: mexe as mãos e a cabeça
+    chat: (t) => ({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.04, twist: 0.1 + Math.sin(t * 1.3) * 0.06, hy: Math.sin(t * 0.9) * 0.2, hp: 0.06 + Math.sin(t * 2.6) * 0.04, hF: [0.26 + Math.sin(t * 3.1) * 0.06, 1.18 + Math.sin(t * 2.3) * 0.08, 0.26], hB: [0.02, 0.97, -0.3], lf: 0, lb: 0 }),
     hips: (t) => ({ stand: 1, px: 0, py: 0.93, pz: 0, lean: 0.05, twist: 0.2, hy: -0.7, hp: 0, hF: [0.0, 0.98, 0.32], hB: [0.0, 0.98, -0.32], lf: 0, lb: 0 }),
   };
 
@@ -2737,7 +2756,7 @@ const CITY = (() => {
           if (face === "x") { z0 = a; z1 = b; x0 = fixed - depth; x1 = fixed; }
           if (face === "-x") { z0 = a; z1 = b; x0 = fixed; x1 = fixed + depth; }
           const dy = yAt ? yAt(a, b) : SW;
-          withY(dy, () => building(x0, z0, x1, z1, it.h || 7.4, face, { style: it.style, shop: it.shop, col: it.col }));
+          withY(dy, () => building(x0, z0, x1, z1, it.h || 7.4, face, { style: it.style, shop: it.shop, col: it.col, sign: it.sign }));
         }
         a = b;
       }
@@ -3116,7 +3135,21 @@ const CITY = (() => {
     // ---------- S: comércio + banco com escadaria ----------
     block(-38, 41, 36, Z1, "wne", "comércio", "#d8cbbb");
     row("-z", 44, -35, -6, 12, [{ w: 10, style: "loja", shop: 0, col: 0xf5f1e6 }, { w: 9, style: "loja", shop: 3 }, { w: 10, h: 10, col: 0xffd166 }]);
-    row("-z", 44, 10, 33, 12, [{ w: 11, h: 10.5, col: 0x9b7bff }, { w: 12, style: "loja", shop: 7 }]);
+    // sorveteria Pinguim (ponto de encontro com a Julie), do outro lado da rua da pista
+    row("-z", 44, 10, 33, 12, [{ w: 11, style: "loja", sign: RECT.town[4], col: 0xff9ccf, h: 7.6 }, { w: 12, style: "loja", shop: 7 }]);
+    // pontos de ônibus: banco + placa (o circular para aqui)
+    const STOPS = [[0, 43.55, 0], [-4, 111.0, 0], [-20, 399.3, -10]];
+    for (const [x, z, y] of STOPS) {
+      solid.box(x - 1.4, y + SW + 0.42, z - 0.25, x + 1.4, y + SW + 0.5, z + 0.25, hex(0x2457c8), { top: hex(0x3f7ae8) });
+      for (const dx of [-1.2, 1.2]) solid.box(x + dx - 0.05, y + SW, z - 0.2, x + dx + 0.05, y + SW + 0.42, z + 0.2, C.metal);
+      fbox(x - 1.4, z - 0.25, x + 1.4, z + 0.25, y + SW + 0.5);
+      rail([x - 1.3, y + SW + 0.5, z - 0.25], [x + 1.3, y + SW + 0.5, z - 0.25], "ledge", "banco do ponto");
+      solid.tube([x + 1.9, y + SW, z], [x + 1.9, y + SW + 2.6, z], 0.05, 0.05, 6, C.metal, 1);
+      solid.box(x + 1.55, y + SW + 2.1, z - 0.04, x + 2.25, y + SW + 2.7, z + 0.04, hex(0x2457c8), { top: hex(0x2457c8) });
+      deco.quad([x + 1.6, y + SW + 2.2, z - 0.05], [x + 2.2, y + SW + 2.2, z - 0.05], [x + 2.2, y + SW + 2.6, z - 0.05], [x + 1.6, y + SW + 2.6, z - 0.05], hex(0xffd23f), 2);
+      deco.quad([x + 2.2, y + SW + 2.2, z + 0.05], [x + 1.6, y + SW + 2.2, z + 0.05], [x + 1.6, y + SW + 2.6, z + 0.05], [x + 2.2, y + SW + 2.6, z + 0.05], hex(0xffd23f), 2);
+      OB.push({ x: x + 1.9, z, r: 0.08, y1: y + SW + 2.6 });
+    }
     row("x", 33, 56, Z1, 11, mix(44, 61, 0.5));
     row("-x", -35, 56, Z1, 11, mix(44, 62, 0.5));
     withY(SW, () => building(-6, 52, 10, 66, 9.6, "-z", { col: 0xeef3ff, shop: 10 }));
@@ -3616,7 +3649,7 @@ const CITY = (() => {
       { name: "ARQUIBANCADA ABAIXO", pts: 450, from: (s) => s.z > 79.9 && s.y > SW + 1.7, to: (s) => s.z < 73.6 && s.y < SW + 0.3 },
       { name: "TERRAÇO → RUA", pts: 350, from: (s) => s.x > -38 && s.x < -36 && s.y > 1.3, to: (s) => s.x < -40.5 && s.y < 0.3 },
     );
-    return { obstacles: OB, tags: TAGS, cans: CANS, gaps: GAPS, map: MAP, baseAt };
+    return { obstacles: OB, tags: TAGS, cans: CANS, gaps: GAPS, map: MAP, baseAt, sorveteria: [15.5, 42.4], stops: STOPS };
   }
   return { build, BOUNDS };
 })();
@@ -4010,7 +4043,7 @@ const LEVEL = (() => {
       const o2 = V.add(o, V.mul(n, 0.03));
       if (opt.style === "loja") {
         const nd = Math.max(1, Math.min(4, Math.floor((w - 1) / 3.6)));
-        const open = opt.shop != null;
+        const open = opt.shop != null || !!opt.sign;
         const PROD = [0xe0302b, 0xffd23f, 0x1fae5a, 0x3f63c8, 0xff8fc8, 0xff8a1f, 0xf5f1e6, 0x8c5cff];
         for (let i = 0; i < nd; i++) {
           const sx = -((nd - 1) / 2) * 3.6 + i * 3.6;
@@ -4040,7 +4073,8 @@ const LEVEL = (() => {
           shops.push({ x: pp[0], z: pp[2], nx: F.n[0], nz: F.n[2] });
         }
         fq(F, 0, 3.3, 5.7, 1.32, V.mul(col, 0.6), 0, 0.035);
-        if (opt.shop != null) fdecal(F, 0, 3.3, 5.4, 1.1, RECT.shop[opt.shop]);
+        if (opt.sign) fdecal(F, 0, 3.3, 5.6, 0.88, opt.sign);
+        else if (opt.shop != null) fdecal(F, 0, 3.3, 5.4, 1.1, RECT.shop[opt.shop]);
         windows(o2, r, [0, 1, 0], w, h, 3.75, Math.max(1, Math.floor((h - 4.6) / 2.6)), Math.max(2, Math.floor(w / 3)), true);
       } else {
         const floors = Math.floor((h - 4) / 2.6);
@@ -4261,6 +4295,47 @@ const LEVEL = (() => {
       const r = 2.5 + fr() * 3;
       far.ball([x, y + r * 0.9, z], r, V.lerp(hex(0x3f9a55), hex(0x5cb562), fr()), 0, 7, 4);
     }
+    // ---------- sudoeste paulista no horizonte: araucárias, eucaliptal, plantação e silos da cooperativa ----------
+    {
+      const arauc = (x, z, s) => {
+        const y = groundAt(x, z) - 0.3, h = (14 + fr() * 6) * s;
+        far.tube([x, y, z], [x, y + h, z], 0.35 * s, 0.22 * s, 6, hex(0x6a4a34));
+        const g1 = hex(0x2f6a3e), g2 = hex(0x3a7a48);
+        for (let k = 0; k < 4; k++) {
+          const yy = y + h - k * 1.1 * s, rr = (2.2 + k * 1.3) * s;
+          far.ball([x, yy, z], rr, k % 2 ? g1 : g2, 0, 9, 3, { sy: 0.22 });
+        }
+      };
+      for (let i = 0; i < 70; i++) {
+        const a = fr() * Math.PI * 2, d = 150 + fr() * 260, x = 6 + Math.cos(a) * d, z = 100 + Math.sin(a) * d;
+        if (inCity(x, z, 14)) continue;
+        arauc(x, z, 0.9 + fr() * 0.6);
+      }
+      // eucaliptal em fileiras (leste)
+      for (let r = 0; r < 7; r++) for (let c = 0; c < 18; c++) {
+        const x = 180 + c * 7 + fr() * 2, z = 250 + r * 9 + fr() * 2;
+        if (inCity(x, z, 14)) continue;
+        const y = groundAt(x, z), h = 15 + fr() * 5;
+        far.tube([x, y, z], [x, y + h, z], 0.25, 0.18, 5, hex(0xd8d0c0));
+        far.ball([x, y + h, z], 2.2, V.lerp(hex(0x6f9a7a), hex(0x5d8a6a), fr()), 0, 6, 4, { sy: 1.9 });
+      }
+      // plantação (milho e soja) em faixas perto da cooperativa
+      const fieldY = -0.01;
+      for (let i = 0; i < 26; i++) {
+        const x0 = -300 + i * 6, c = i % 2 ? hex(0xc9b45a) : hex(0x8fb85a);
+        far.quad([x0, fieldY, 120], [x0, fieldY, 260], [x0 + 6, fieldY, 260], [x0 + 6, fieldY, 120], c);
+      }
+      // silos e armazém da cooperativa
+      const SX = -205, SZ = 190;
+      for (let i = 0; i < 4; i++) {
+        const x = SX + i * 9, z = SZ, y = groundAt(x, z);
+        far.tube([x, y, z], [x, y + 16, z], 4, 4, 14, hex(0xd5dbe8));
+        far.tube([x, y + 16, z], [x, y + 19.5, z], 4.1, 0.4, 14, hex(0xbfc6d4));
+        for (let k = 1; k < 5; k++) far.tube([x, y + k * 3.2, z], [x, y + k * 3.2 + 0.25, z], 4.05, 4.05, 14, hex(0xa9b0be));
+      }
+      far.box(SX - 6, groundAt(SX, SZ + 14), SZ + 8, SX + 34, groundAt(SX, SZ + 14) + 9, SZ + 22, hex(0xe8dcc0), { top: hex(0xc94f3a) });
+      far.box(SX + 36, groundAt(SX, SZ), SZ - 3, SX + 40, groundAt(SX, SZ) + 30, SZ + 3, hex(0xd5dbe8));
+    }
     // a lona de circo do Complexo Esportivo (vista lá de cima do mirante), o ginásio e as antenas
     {
       const X = CXc, Z = CZc, Rr = 13, Hw = 6, Ht = 19, N = 20;
@@ -4367,7 +4442,7 @@ const LEVEL = (() => {
       ...CT.obstacles,
     ];
     const map = { ...B, rects: [{ x0: -38, z0: -32, x1: 36, z1: 32, c: "#d3ccdf", name: "praça" }, { x0: -38, z0: -14, x1: -20, z1: 14, c: "#e9dfcf" }, { x0: -14, z0: -31.5, x1: 14, z1: -24.8, c: "#3ec9d6" }, { x0: -14, z0: 24.8, x1: 14, z1: 31.5, c: "#3ec9d6" }, ...CT.map] };
-    return { shops, solid, flat, deco, far, clouds, rails, tags, cans, letters, gaps, heightAt, qpAt, RAD, TH, obstacles, map, lights, winC: C.win };
+    return { sorveteria: CT.sorveteria, stops: CT.stops, shops, solid, flat, deco, far, clouds, rails, tags, cans, letters, gaps, heightAt, qpAt, RAD, TH, obstacles, map, lights, winC: C.win };
   }
   return { build };
 })();
@@ -5054,7 +5129,7 @@ const STREET = (() => {
       const TOPS = [0x2457c8, 0xe0302b, 0x1fae5a, 0xffd23f, 0xff8fc8, 0x8c5cff, 0xf5f1e6, 0x1b1530, 0xff8a1f, 0x3fd0ff, 0x7a4a9a, 0x2a8a7a];
       const PANTS = [0x2b3a7a, 0x3a3a52, 0x5a4a3a, 0x1b1a22, 0x6a6a7a, 0xd8cbb0, 0x2f6fd8];
       const dk = (c) => (((c >> 16) & 255) * 0.78) << 16 | (((c >> 8) & 255) * 0.78) << 8 | ((c & 255) * 0.78);
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 52; i++) {
         const src = ART.LOOKS["npc" + ((i * 5 + 3) % 12)], top = TOPS[(i * 7 + 2) % TOPS.length];
         const old = src.npc && src.npc.old;
         ART.LOOKS["fig" + i] = Object.assign({}, src, {
@@ -5084,10 +5159,40 @@ const STREET = (() => {
       // atendentes nas portas das lojas abertas
       const IDL = ["calm", "hips", "boss", "peace", "shy"];
       (L.shops || []).slice(0, 12).forEach((sh, i) => NPC_DEF.push({ look: "fig" + (18 + i), at: [sh.x, sh.z], dir: [sh.nx, sh.nz], idle: IDL[i % IDL.length], extra: 1 }));
+      // vida de interior: gente sentada na cadeira de fio na calçada, rodinhas de conversa,
+      // criançada brincando e gente esperando o circular no ponto
+      let fi = 30;
+      const P = (at, dir, idle, chair) => NPC_DEF.push({ look: "fig" + (fi++ % 52), at, dir, idle, chair, extra: 1 });
+      P([-88, 43.2], [0, -1], "sit", 1); P([-86.9, 43.2], [0.3, -1], "sit", 1); P([-70, 43.2], [0, -1], "sit", 1);
+      P([-36.75, 320], [-1, 0], "sit", 1); P([-36.75, 321.1], [-1, 0.3], "sit", 1); P([-36.75, 352], [-1, 0], "sit", 1);
+      P([34.75, 330], [1, 0], "sit", 1); P([34.75, 362], [1, 0], "sit", 1);
+      P([-80, 398.8], [0, 1], "sit", 1); P([-78.9, 398.8], [-0.3, 1], "sit", 1); P([80, 398.8], [0, 1], "sit", 1);
+      P([-4.6, 130.6], [1, 0], "chat"); P([-3.0, 130.6], [-1, 0], "chat");
+      P([-0.8, 393.5], [1, 0.2], "chat"); P([0.7, 393.8], [-1, -0.1], "chat"); P([0, 392.6], [0, 1], "calm");
+      P([70, 141.5], [1, 0], "chat"); P([71.4, 141.5], [-1, 0], "chat");
+      P([-10, 377], [0, 1], "bounce"); P([-8.6, 377.4], [0, -1], "bounce"); P([2.6, 139.5], [-1, 0], "bounce"); P([-56, 43.0], [0, -1], "bounce");
+      for (const [x, z, y] of L.stops || []) { P([x - 2.6, z - 0.1], [0, z > 300 ? 1 : -1], "calm"); P([x + 0.4, z + 0.05], [0, z > 300 ? 1 : -1], "sit", 0); }
     }
+    // cadeira de fio (aquela de área, colorida)
+    const chairG = (() => {
+      const m = new Mesh(), fr = hex(0xc8ccd6), cols = [0xe0302b, 0x2457c8, 0xffd23f, 0x1fae5a].map(hex);
+      for (const sz of [-0.24, 0.24]) {
+        m.tube([0.22, 0, sz], [0.18, 0.42, sz], 0.018, 0.018, 4, fr);
+        m.tube([-0.22, 0, sz], [-0.2, 0.42, sz], 0.018, 0.018, 4, fr);
+        m.tube([0.18, 0.42, sz], [-0.2, 0.42, sz], 0.018, 0.018, 4, fr);
+        m.tube([-0.2, 0.42, sz], [-0.36, 0.95, sz], 0.018, 0.018, 4, fr);
+      }
+      for (let k = 0; k < 6; k++) { const x = 0.16 - k * 0.07; m.box(x - 0.02, 0.41, -0.24, x + 0.02, 0.435, 0.24, cols[k % 4]); }
+      for (let k = 0; k < 7; k++) { const t = k / 6, x = -0.2 - t * 0.16, y = 0.47 + t * 0.46; m.box(x - 0.015, y - 0.02, -0.24, x + 0.015, y + 0.02, 0.24, cols[(k + 1) % 4]); }
+      return Rn.upload(m);
+    })();
     const NPCS = NPC_DEF.map((d, i) => {
       const look = ART.LOOKS[d.look || "npc" + d.k], r = ART.makeRig(Rn, look), body = r.objs[0];
       objs.push(body);
+      if (d.chair) {
+        const yaw = Math.atan2(-d.dir[1], d.dir[0]), gy = H(d.at[0], d.at[1]);
+        add(chairG, M.mul(M.T(d.at[0] - Math.cos(yaw) * 0.04, gy, d.at[1] + Math.sin(yaw) * 0.04), M.RY(yaw)));
+      }
       let p0 = d.at || d.path[0];
       if (d.path && d.seg0 != null) { const A = d.path[d.seg0], B = d.path[(d.seg0 + 1) % d.path.length]; p0 = [A[0] + (B[0] - A[0]) * d.u0, A[1] + (B[1] - A[1]) * d.u0]; }
       const n = { d, look, rig: r, body, x: p0[0], z: p0[1], seg: d.seg0 || 0, u: d.u0 || 0, dirS: 1, ph: i * 1.7, yaw: 0, wait: 0, name: look.name };
@@ -5328,6 +5433,7 @@ const STREET = (() => {
         { title: "A garota da pista", line: "Ei, você do shape de tubarão. Até que você anda... Faz 2.000 pontos em 90 segundos que eu quero ver.", kind: "score", pts: 2000, time: 90 },
         { title: "Game de S.K.A.T.E. com a Julie", line: "Ok, ok, não foi ruim. Mas aguenta um game de S.K.A.T.E. comigo? 5 rodadas: eu mando, você repete, depois inverte. Errou, ganha letra. Uma tentativa só, hein!", kind: "skate" },
         { title: "Rolê com a Julie até a estação", line: "Tá bom, você anda bem. Bora dar um rolê? Me leva até a estação de trem, lá na cidade nova.", kind: "ride", to: [48, 112, 109, 160] },
+        { title: "Sorvete na pista", line: "Tá um calor, hein... me paga um sorvete? A Sorveteria Pinguim é ali do outro lado da rua. Depois a gente senta lá em cima da rampa.", kind: "ice" },
       ],
     };
     const JULIE_HOME = [8, 16];
@@ -5369,6 +5475,20 @@ const STREET = (() => {
       }
       julie.perf = { R, i: 0, t: 0 };
     }
+    // casquinhas de sorvete (flocos) e o fio do fone dividido
+    const coneG = Rn.upload((() => { const m = new Mesh(); m.tube([0, -0.16, 0], [0, 0, 0], 0.005, 0.045, 7, hex(0xd8a25a)); m.ball([0, 0.04, 0], 0.052, hex(0xf8f2e6), 0, 7, 5); m.ball([0.02, 0.07, 0.01], 0.012, hex(0x3a2418), 2, 4, 3); m.ball([-0.02, 0.05, -0.02], 0.01, hex(0x3a2418), 2, 4, 3); return m; })());
+    const cones = [add(coneG, M.I(), { hidden: true }), add(coneG, M.I(), { hidden: true })];
+    const cableG = Rn.upload(new Mesh().box(-0.0025, -0.0025, 0, 0.0025, 0.0025, 1, hex(0xf4f4f4), { m: 2 }), { outline: false });
+    const cable = [add(cableG, M.I(), { hidden: true }), add(cableG, M.I(), { hidden: true })];
+    const lineM = (a, b) => {
+      const z = V.sub(b, a), L0 = V.len ? V.len(z) : Math.hypot(z[0], z[1], z[2]), zn = V.mul(z, 1 / (L0 || 1));
+      let x = V.cross([0, 1, 0], zn); const xl = Math.hypot(x[0], x[1], x[2]) || 1; x = V.mul(x, 1 / xl);
+      const y = V.cross(zn, x);
+      return [x[0], x[1], x[2], 0, y[0], y[1], y[2], 0, z[0], z[1], z[2], 0, a[0], a[1], a[2], 1];
+    };
+    const handOf = (rig, look, side = "F") => { if (!rig.F) return null; const Lh = CHARS.lenOf(look); return M.pt(rig.F[CHARS.BONE["fore" + side]], [0, Lh.fore + 0.08, 0]); };
+    const coneAt = (o, p) => { o.hidden = !p; if (p) o.mo = M.mul(M.T(p[0], p[1] + 0.05, p[2]), M.RZ(0.25)); };
+    let EAR = null;
     const jSparks = Array.from({ length: 8 }, () => add(sparkG, M.I(), { hidden: true, v: [0, 0, 0], p: [0, 0, 0], life: 0 }));
     const jMark = add(Rn.upload((() => { const m = new Mesh(); m.box(-0.07, 0.25, -0.07, 0.07, 0.75, 0.07, hex(0xff4fa3), { m: 2 }); m.box(-0.07, 0, -0.07, 0.07, 0.14, 0.07, hex(0xff4fa3), { m: 2 }); return m; })()), M.I(), { hidden: true });
     let SA = null, soffer = null, replay = null;
@@ -5719,6 +5839,23 @@ const STREET = (() => {
         const [x0, x1, z0, z1] = SA.def.to;
         ui.mission && ui.mission("tick", { title: SA.def.title });
         if (S.x > x0 && S.x < x1 && S.z > z0 && S.z < z1 && Math.hypot(S.x - julie.x, S.z - julie.z) < 20) storyStepDone();
+      } else if (SA.def.kind === "ice") {
+        const sv = L.sorveteria || [15.5, 42.4];
+        if (!SA.phase) {
+          ui.mission && ui.mission("tick", { title: "Leve a Julie até a Sorveteria Pinguim" });
+          if (Math.hypot(S.x - sv[0], S.z - sv[1]) < 3.4 && S.speed < 5) { SA.phase = 1; say("DOIS DE FLOCOS, POR FAVOR! ♡", 2.4, true); sfx.can(); }
+        } else {
+          ui.mission && ui.mission("tick", { title: "Agora vai com ela até a rampa grande da pista" });
+          coneAt(cones[0], (() => { const h = handAndHead(); return h && h.hand; })());
+          coneAt(cones[1], handOf(julie.rig, julie.look, "F"));
+          if (Math.abs(S.x) < 12 && Math.abs(S.z) > 19 && Math.abs(S.z) < 27 && S.mode === "ground" && dPl < 22) {
+            const def = SA.def, rp = SA.replay;
+            SA = null;
+            ui.mission && ui.mission("hide");
+            cones.forEach((o) => (o.hidden = true));
+            if (!playCut("sorvete", () => { SA = { def, replay: rp }; storyStepDone(); })) { SA = { def, replay: rp }; storyStepDone(); }
+          }
+        }
       } else if (SA.def.kind === "score") {
         SA.left -= S.running ? dt : 0;
         ui.mission && ui.mission("tick", { title: SA.def.title, prog: `${fmt(SA.pts)}/${fmt(SA.def.pts)}`, left: SA.left });
@@ -5778,6 +5915,28 @@ const STREET = (() => {
         };
       },
     };
+    // sentados na borda da rampa grande, de frente pra pista (pôr do sol atrás da cidade)
+    const SIT = (o) => STD(Object.assign({ stand: 0, px: -0.04, py: 0.6, lean: -0.06, twist: 0, hy: 0, hp: 0.06, hF: [0.3, 0.66, 0.2], hB: [0.12, 0.62, -0.3], lf: -0.12, lb: -0.06, fxF: 0.44, fxB: 0.4 }, o));
+    SCENES.sorvete = () => {
+      const RAD = L.RAD || 3.2, ZC = 28.32, Y = RAD - 0.5;
+      return {
+        K: [-0.34, ZC], J: [0.34, ZC], d: [1, 0], ky: Y, jy: Y, kHead: Math.PI / 2, jHead: Math.PI / 2, ear: true, sit: true,
+        shots: [
+          { dur: 4.6, who: "Julie", text: "Flocos é o melhor sabor que existe. Nem tenta discutir.",
+            cam: (u) => ({ eye: [1.2 - u * 0.9, 1.5 + u * 0.2, 23.2], at: [0, RAD + 0.4, ZC], fov: 0.6 }), cones: 1,
+            kf: (t) => SIT({ hF: [0.24, 1.38 + Math.max(0, Math.sin(t * 2.2)) * 0.12, 0.1], hy: 0.15 }), ju: (t) => SIT({ hF: [0.24, 1.34 + Math.max(0, Math.sin(t * 2.6 + 1)) * 0.1, 0.08], hy: -0.2, hp: 0.1 }) },
+          { dur: 3.6, who: "K.F.", text: "Ei... escuta essa aqui.",
+            cam: (u) => ({ eye: [-0.9, RAD + 1.45, ZC - 1.6], at: [-0.34, RAD + 0.75, ZC], fov: 0.62 }), cones: 1,
+            kf: (t) => SIT({ hF: [0.02, 1.72 - Math.min(1, t / 1.6) * 0.5, 0.3 - Math.min(1, t / 1.6) * 0.1], hy: 0.35, hp: 0.12 }), ju: (t) => SIT({ hF: [0.24, 1.3, 0.08], hy: -0.35 }) },
+          { dur: 4.4, who: "Julie", text: "...ah, essa eu conheço.", kfEar: 1, juEar: 1, cable: 1, music: 1,
+            cam: (u) => ({ eye: [0.15, RAD + 1.0, ZC - 1.35], at: [0, RAD + 0.88, ZC + 0.05], fov: 0.64 }),
+            kf: (t) => SIT({ hB: [0.3, 0.66, -0.2], hF: [0.3 - Math.min(1, t / 1.2) * 0.1, 0.9, 0.32], hy: 0.45, hp: 0.12 }), ju: (t) => SIT({ hB: [0.02, 1.36, -0.24], hy: -0.3, hp: 0.15 }) },
+          { dur: 6.4, who: "", text: "♪ ♪ ♪", kfEar: 1, juEar: 1, cable: 1,
+            cam: (u) => ({ eye: [0.4 + u * 0.4, RAD + 1.6 + u * 0.9, ZC + 3.2 + u * 2.4], at: [0, RAD + 0.7, ZC - 4], fov: 0.86 }),
+            kf: (t) => SIT({ hy: 0.06, hp: 0.04, twist: 0.04 }), ju: (t) => { const k = Math.min(1, Math.max(0, (t - 0.8) / 1.4)); const e = k * k * (3 - 2 * k); return SIT({ roll: -0.46 * e, lean: -0.06 + 0.08 * e, hy: -0.55 * e, hp: 0.24 * e, hB: [0.2, 0.7, -0.25] }); } },
+        ],
+      };
+    };
     function playCut(key, onEnd) {
       if (CUT || !SCENES[key] || lookKey() !== "kf") return false;
       const sc = SCENES[key]();
@@ -5785,12 +5944,15 @@ const STREET = (() => {
       if (PH) photoOff();
       if (REC) recStop();
       julie.perf = null; julie.act = null; julie.follow = false;
-      Object.assign(S, { x: sc.K[0], z: sc.K[1], y: H(sc.K[0], sc.K[1]), speed: 0, mode: "ground", air: null, grind: null, man: null, hop: null, fakie: false, head: Math.atan2(sc.d[0], sc.d[1]) - Math.PI / 2 });
-      julie.x = sc.J[0]; julie.z = sc.J[1]; julie.head = Math.atan2(-sc.d[0], -sc.d[1]) - Math.PI / 2;
+      Object.assign(S, { x: sc.K[0], z: sc.K[1], y: sc.ky ?? H(sc.K[0], sc.K[1]), speed: 0, mode: "ground", air: null, grind: null, man: null, hop: null, fakie: false, head: sc.kHead ?? Math.atan2(sc.d[0], sc.d[1]) - Math.PI / 2 });
+      julie.x = sc.J[0]; julie.z = sc.J[1]; julie.head = sc.jHead ?? Math.atan2(-sc.d[0], -sc.d[1]) - Math.PI / 2;
+      if (sc.ear && !EAR) { EAR = { kf: ART.makeRig(Rn, ART.LOOKS.kf_ear), ju: ART.makeRig(Rn, ART.LOOKS.julie_ear), kfN: ART.makeRig(Rn, ART.LOOKS.kf) }; objs.push(EAR.kf.objs[0], EAR.ju.objs[0], EAR.kfN.objs[0]); }
+      if (EAR) EAR.kf.objs[0].hidden = EAR.ju.objs[0].hidden = EAR.kfN.objs[0].hidden = true;
+      if (sc.sit) rig.board.hidden = julie.rig.board.hidden = true;
       if (soffer) { soffer = null; }
       ui.mission && ui.mission("hide");
       ui.cut && ui.cut("start");
-      if (RADIO_ && RADIO_.special) RADIO_.special("juntos");
+      if (RADIO_ && RADIO_.special && !sc.ear) RADIO_.special("juntos");
       return true;
     }
     function endCut() {
@@ -5798,6 +5960,10 @@ const STREET = (() => {
       CUT = null;
       ui.cut && ui.cut("end");
       julie.state = "go";
+      if (EAR) EAR.kf.objs[0].hidden = EAR.ju.objs[0].hidden = EAR.kfN.objs[0].hidden = true;
+      rig.objs[0].hidden = false; rig.board.hidden = false; julie.rig.board.hidden = false;
+      cones.forEach((o) => (o.hidden = true)); cable.forEach((o) => (o.hidden = true));
+      if (c && c.sc.sit) { S.y = H(S.x, S.z); S.z -= 2.5; S.y = H(S.x, S.z); julie.z -= 2.5; }
       if (RADIO_ && RADIO_.special && !julie.follow) RADIO_.special(null);
       if (c && c.onEnd) c.onEnd();
     }
@@ -5812,6 +5978,21 @@ const STREET = (() => {
       const cv = sh.cam(u);
       C.eye = cv.eye; C.at = cv.at; C.fov = cv.fov;
       C.kfPose = sh.kf(lt);
+      const sc = C.sc;
+      if (sh.music && !C.musicOn) { C.musicOn = true; if (RADIO_ && RADIO_.special) RADIO_.special("juntos"); }
+      // K.F. com o fone de botão (rig só da cena) ou o normal
+      if (sc.sit && EAR) {
+        // cena sentada: K.F. é um boneco só da cena (com ou sem o fone grande)
+        rig.objs[0].hidden = true; rig.board.hidden = true;
+        const kr0 = sh.kfEar ? EAR.kf : EAR.kfN;
+        EAR.kf.objs[0].hidden = kr0 !== EAR.kf; EAR.kfN.objs[0].hidden = kr0 !== EAR.kfN;
+        C.kfCur = ART.lerpPose(C.kfCur || C.kfPose, C.kfPose, Math.min(1, dt * 12));
+        const kb = M.mul(M.T(S.x, S.y, S.z), M.RY(S.head));
+        kr0.pose(kb, C.kfCur, kb);
+      } else {
+        rig.objs[0].hidden = false; if (EAR) EAR.kf.objs[0].hidden = true;
+        if (sc.sit) rig.board.hidden = true;
+      }
       // Julie
       let jp = sh.ju(lt);
       const mv = sh.jmove && sh.jmove(lt);
@@ -5823,11 +6004,26 @@ const STREET = (() => {
         jp = Object.assign({}, ART.POSES.ride, julie.look.ride);
       }
       julie.cur = ART.lerpPose(julie.cur, jp || julie.cur, Math.min(1, dt * 12));
-      base = M.mul(M.T(julie.x, H(julie.x, julie.z), julie.z), M.RY(julie.head));
-      julie.rig.objs[0].hidden = julie.rig.board.hidden = false;
-      julie.rig.pose(base, julie.cur, base);
-      julie.rig.board.mo = base;
+      base = M.mul(M.T(julie.x, sc.jy ?? H(julie.x, julie.z), julie.z), M.RY(julie.head));
+      const jr = sh.juEar && EAR ? EAR.ju : julie.rig;
+      julie.rig.objs[0].hidden = jr !== julie.rig;
+      julie.rig.board.hidden = !!sc.sit;
+      if (EAR) EAR.ju.objs[0].hidden = jr === julie.rig;
+      jr.pose(base, julie.cur, base);
+      if (!sc.sit) julie.rig.board.mo = base;
       jMark.hidden = true;
+      // casquinhas nas mãos e o fio do fone ligando os dois
+      const kr = sc.sit && EAR ? (sh.kfEar ? EAR.kf : EAR.kfN) : rig, kl = look;
+      if (sh.cones) { coneAt(cones[0], handOf(kr, kl, "F")); coneAt(cones[1], handOf(jr, julie.look, "F")); }
+      else cones.forEach((o) => (o.hidden = true));
+      if (sh.cable && EAR && EAR.kf.F && EAR.ju.F) {
+        const ks = (ART.LOOKS.kf_ear.scale || 1), js = (julie.look.scale || 1);
+        const a = M.pt(EAR.kf.F[CHARS.BONE.head], [0.03 * ks, 0.19 * ks, 0.255 * ks]);
+        const b = M.pt(EAR.ju.F[CHARS.BONE.head], [0.03 * js, 0.19 * js, -0.14 * js]);
+        const mid = [(a[0] + b[0]) / 2, Math.min(a[1], b[1]) - 0.2, (a[2] + b[2]) / 2 - 0.1];
+        cable[0].mo = lineM(a, mid); cable[1].mo = lineM(mid, b);
+        cable.forEach((o) => (o.hidden = false));
+      } else cable.forEach((o) => (o.hidden = true));
     }
     function acceptStory() {
       if (!soffer) return false;
@@ -5843,7 +6039,7 @@ const STREET = (() => {
       const def = STORY.kf[o.step];
       SA = { def, pts: 0, left: def.time || 0, replay: replay != null };
       if (def.kind === "skate") SA.g = { round: 1, pl: 0, ju: 0, phase: "jprep", t: 1.5, att: null };
-      if (def.kind === "ride") { julie.follow = true; if (RADIO_ && RADIO_.special) RADIO_.special("juntos"); }
+      if (def.kind === "ride" || def.kind === "ice") { julie.follow = true; if (RADIO_ && RADIO_.special) RADIO_.special("juntos"); }
       sfx.beep();
       ui.mission && ui.mission("start", { title: def.title });
       return true;
@@ -5862,7 +6058,9 @@ const STREET = (() => {
       { t: 1.0, sun: [-0.45, 0.78, 0.42], top: 0x1f78ff, mid: 0x6cc4ff, hz: 0xffe2b0, fog: 0xf3e2cf, shade: 0x8f7fd6, amb: [1, 1, 1], night: 0 },
     ].map((k) => ({ ...k, sun: V.norm(k.sun), top: hex(k.top), mid: hex(k.mid), hz: hex(k.hz), fog: hex(k.fog), shade: hex(k.shade) }));
     const CYCLE = 480;
-    const ATM = { mode: opt.time || "tarde", rainMode: opt.rain || "off", tod: opt.time === "noite" ? 0.6 : 0, rain: 0, rainT: 0, raining: false, nextW: 40 };
+    // hora fixa de cada modo: dia, pôr do sol (dourado), noite
+    const TOD = { dia: 0.02, tarde: 0.25, noite: 0.6 };
+    const ATM = { mode: opt.time || "tarde", rainMode: opt.rain || "off", tod: TOD[opt.time || "tarde"] ?? 0.25, rain: 0, rainT: 0, raining: false, nextW: 40 };
     const lerpA = (a, b, k) => a.map((v, i) => v + (b[i] - v) * k);
     const allLights = L.lights;
     let lightT = 0;
@@ -5883,7 +6081,7 @@ const STREET = (() => {
     function atmos(dt, t) {
       if (ATM.mode === "ciclo") ATM.tod = (ATM.tod + dt / CYCLE) % 1;
       else {
-        const want = ATM.mode === "noite" ? 0.6 : 0;
+        const want = TOD[ATM.mode] ?? 0.25;
         ATM.tod += (want - ATM.tod) * Math.min(1, dt * 1.5);
       }
       // chuva às vezes: troca o tempo de tempos em tempos
@@ -6246,6 +6444,52 @@ const STREET = (() => {
         return Rn.upload(m);
       });
       const shG = Rn.upload(new Mesh().decal([0, 0.03, 0], [1, 0, 0], [0, 0, -1], 2.4, 4.6, ART.RECT.shadow, [1, 1, 1], 5), { outline: false });
+      const shBus = Rn.upload(new Mesh().decal([0, 0.03, 0], [1, 0, 0], [0, 0, -1], 3.2, 11.4, ART.RECT.shadow, [1, 1, 1], 5), { outline: false });
+      const wheel = (m, x, z, r = 0.45) => { const d = x > 0 ? 1 : -1; m.tube([x - d * 0.02, r, z], [x + d * 0.12, r, z], r, r, 8, hex(0x1b1a22)); };
+      // ônibus circular: branco com faixa azul e amarela, janelas escuras e letreiro aceso
+      const busG = (() => {
+        const m = new Mesh(), Lb = 10.4, Wb = 2.5, body = hex(0xf4f1e8), blue = hex(0x2457c8), yel = hex(0xffd23f), glass = hex(0x2b3a67);
+        m.box(-Wb / 2, 0.35, -Lb / 2, Wb / 2, 3.0, Lb / 2, body, { top: hex(0xdcd8cc) });
+        for (const sx of [-1, 1]) {
+          const x = sx * (Wb / 2 + 0.012);
+          const q = (y0, y1, z0, z1, c, mm = 0) => sx > 0 ? m.quad([x, y0, z1], [x, y0, z0], [x, y1, z0], [x, y1, z1], c, mm) : m.quad([x, y0, z0], [x, y0, z1], [x, y1, z1], [x, y1, z0], c, mm);
+          q(1.55, 2.6, -Lb / 2 + 0.4, Lb / 2 - 1.2, glass);
+          q(0.9, 1.2, -Lb / 2 + 0.1, Lb / 2 - 0.1, blue);
+          q(1.2, 1.32, -Lb / 2 + 0.1, Lb / 2 - 0.1, yel);
+          wheel(m, sx * Wb / 2, Lb / 2 - 1.8); wheel(m, sx * Wb / 2, -Lb / 2 + 2.2);
+        }
+        const f = Lb / 2 + 0.012;
+        m.quad([-1.1, 1.4, f], [1.1, 1.4, f], [1.1, 2.6, f], [-1.1, 2.6, f], glass);
+        m.quad([-0.9, 2.66, f], [0.9, 2.66, f], [0.9, 2.92, f], [-0.9, 2.92, f], hex(0xffb03a), 2);
+        for (const sx of [-0.9, 0.9]) {
+          m.quad([sx - 0.15, 0.6, f], [sx + 0.15, 0.6, f], [sx + 0.15, 0.8, f], [sx - 0.15, 0.8, f], hex(0xfff6d8), 2);
+          m.quad([sx + 0.15, 0.6, -f], [sx - 0.15, 0.6, -f], [sx - 0.15, 0.8, -f], [sx + 0.15, 0.8, -f], hex(0xe0302b), 2);
+        }
+        m.quad([1.1, 1.0, -f], [-1.1, 1.0, -f], [-1.1, 2.4, -f], [1.1, 2.4, -f], glass);
+        // para-choque traseiro (onde dá pra pegar rabeira)
+        m.box(-1.2, 0.35, -Lb / 2 - 0.18, 1.2, 0.55, -Lb / 2, hex(0x6a6a7a));
+        return Rn.upload(m);
+      })();
+      // Kombi da pamonha: saia e frente brancas, teto e meio verde, alto-falante no teto
+      const kombiG = (() => {
+        const m = new Mesh(), Lk = 4.4, Wk = 1.75, w = hex(0xf5f1e6), g = hex(0x3fae5c);
+        m.box(-Wk / 2, 0.3, -Lk / 2, Wk / 2, 1.05, Lk / 2, g, { top: g });
+        m.box(-Wk / 2, 1.05, -Lk / 2, Wk / 2, 1.95, Lk / 2, w, { top: w });
+        for (const sx of [-1, 1]) {
+          const x = sx * (Wk / 2 + 0.012);
+          const q = (y0, y1, z0, z1, c) => sx > 0 ? m.quad([x, y0, z1], [x, y0, z0], [x, y1, z0], [x, y1, z1], c) : m.quad([x, y0, z0], [x, y0, z1], [x, y1, z1], [x, y1, z0], c);
+          q(1.25, 1.75, -Lk / 2 + 0.3, Lk / 2 - 0.4, hex(0x2b3a67));
+          wheel(m, sx * Wk / 2, Lk / 2 - 0.7, 0.33); wheel(m, sx * Wk / 2, -Lk / 2 + 0.8, 0.33);
+        }
+        const f = Lk / 2 + 0.012;
+        m.quad([-0.8, 1.2, f], [0.8, 1.2, f], [0.8, 1.8, f], [-0.8, 1.8, f], hex(0x2b3a67));
+        m.quad([-0.2, 0.75, f], [0.2, 0.75, f], [0.2, 1.05, f], [-0.2, 1.05, f], hex(0xc0c6d2));
+        for (const sx of [-0.62, 0.62]) m.quad([sx - 0.13, 0.62, f], [sx + 0.13, 0.62, f], [sx + 0.13, 0.82, f], [sx - 0.13, 0.82, f], hex(0xfff6d8), 2);
+        m.box(-0.5, 1.95, -0.9, 0.5, 2.0, 0.9, hex(0x6a6a7a));
+        m.tube([0, 2.15, 0.2], [0, 2.15, 0.75], 0.12, 0.32, 8, hex(0xd5dbe8));
+        m.tube([0, 2.0, 0.2], [0, 2.15, 0.2], 0.05, 0.05, 5, hex(0x6a6a7a));
+        return Rn.upload(m);
+      })();
       // rotas: anel da cidade velha e anel da cidade nova, nos dois sentidos (mão direita)
       const RT = [
         [[-42.5, -36.5], [40.5, -36.5], [40.5, 36.5], [-42.5, 36.5]],
@@ -6280,19 +6524,50 @@ const STREET = (() => {
         return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, Math.atan2(b[0] - a[0], b[1] - a[1])];
       };
       const list = [];
+      // quem roda em cada pista: ônibus circular nos dois anéis, a Kombi da pamonha no anel velho
+      const PLAN = [["kombi", "car", "car"], ["bus", "car", "car"], ["bus", "car", "car"], ["car", "car", "car"]];
       lanes.forEach((ln, li) => {
-        const N = 3;
-        for (let i = 0; i < N; i++) {
-          const c = { ln, pos: (q) => at(ln, q), s: (ln.len * (i + (li % 2) * 0.5)) / N, v: 6, vmax: 6.5 + ((i * 3 + li) % 4) * 0.6, head: 0, x: 0, z: 0, wait: 0, honk: 0 };
-          c.o = add(carG[(li * 3 + i) % carG.length], M.I());
-          c.sh = add(shG, M.I());
-          c.obs = [{ x: 0, z: 0, r: 0.95, y1: 1.5 }, { x: 0, z: 0, r: 0.95, y1: 1.5 }];
+        const kinds = PLAN[li] || ["car", "car", "car"], N = kinds.length;
+        kinds.forEach((kind, i) => {
+          const len = kind === "bus" ? 10.4 : kind === "kombi" ? 4.4 : 3.9;
+          const c = { kind, len, ln, pos: (q) => at(ln, q), s: (ln.len * (i + (li % 2) * 0.5)) / N, v: 6, vmax: kind === "bus" ? 6.2 : kind === "kombi" ? 4.2 : 6.5 + ((i * 3 + li) % 4) * 0.6, head: 0, x: 0, z: 0, wait: 0, honk: 0, stopT: 0, served: -1 };
+          c.o = add(kind === "bus" ? busG : kind === "kombi" ? kombiG : carG[(li * 3 + i) % carG.length], M.I());
+          c.sh = add(kind === "bus" ? shBus : shG, M.I());
+          const n = kind === "bus" ? 4 : 2;
+          c.obs = Array.from({ length: n }, () => ({ x: 0, z: 0, r: kind === "bus" ? 1.3 : 0.95, y1: 1.5 }));
           OB.push(...c.obs);
+          // pontos de ônibus que essa pista passa perto
+          c.stops = [];
+          if (kind === "bus") for (const st of L.stops || []) {
+            let best = null;
+            for (let q = 0; q < ln.len; q += 0.5) { const p = at(ln, q), d = Math.hypot(p[0] - st[0], p[1] - st[1]); if (!best || d < best.d) best = { q, d }; }
+            if (best && best.d < 6.0) c.stops.push(best.q);
+          }
           list.push(c);
-        }
+        });
       });
       return list;
     })();
+    // rabeira: segura (L) no para-choque do ônibus e vai junto
+    let HITCH = null;
+    function hitchFrame(dt) {
+      if (!HITCH) {
+        if (!keys.grab || S.mode !== "ground" || CUT || PH) return;
+        for (const c of CARS) {
+          if (c.kind !== "bus" || c.v < 0.5) continue;
+          const fx = Math.sin(c.head), fz = Math.cos(c.head);
+          const bx = c.x - fx * (c.len / 2 + 0.9), bz = c.z - fz * (c.len / 2 + 0.9);
+          if (Math.hypot(S.x - bx, S.z - bz) < 1.6) { HITCH = { c }; say("RABEIRA NO CIRCULAR! (solte o L pra largar)", 2, true); sfx.bump(); break; }
+        }
+        return;
+      }
+      const c = HITCH.c, fx = Math.sin(c.head), fz = Math.cos(c.head);
+      if (!keys.grab || S.mode !== "ground") { HITCH = null; S.speed = Math.max(S.speed, c.v); say("SOLTOU!", 1); return; }
+      S.x = c.x - fx * (c.len / 2 + 0.75); S.z = c.z - fz * (c.len / 2 + 0.75);
+      S.y = H(S.x, S.z);
+      S.head = c.head; S.speed = c.v; S.fakie = false;
+      S.score += dt * c.v * 3;
+    }
     function carFrame(dt) {
       const e = cam.eye;
       for (const c of CARS) {
@@ -6304,12 +6579,23 @@ const STREET = (() => {
           const rx = px - x, rz = pz - z, along = rx * fx + rz * fz, lat = Math.abs(-rx * fz + rz * fx);
           return along > 1.2 && along < 8.5 && lat < 1.5 && (py == null || py < 2.5) ? along : 0;
         };
-        const pb = chk(S.x, S.z, S.y);
-        if (pb) { block = pb; byPlayer = true; }
-        for (const n of NPCS) { const b = chk(n.x, n.z); if (b && (!block || b < block)) block = b; }
+        const half = (c.len - 3.9) / 2;
+        const pb = HITCH && HITCH.c === c ? 0 : chk(S.x, S.z, S.y - H(S.x, S.z));
+        if (pb) { block = Math.max(0.01, pb - half); byPlayer = true; }
+        for (const n of NPCS) { let b = chk(n.x, n.z); if (b) { b = Math.max(0.01, b - half); if (!block || b < block) block = b; } }
         for (const o of CARS) if (o !== c && o.ln === c.ln) {
           let gap = ((o.s - c.s) % c.ln.len + c.ln.len) % c.ln.len;
-          if (gap > 0 && gap < 8.5 && (!block || gap < block)) block = gap;
+          gap -= (c.len + o.len) / 2 - 3.9;
+          if (gap > -3 && gap < 8.5 && (!block || gap < block)) block = Math.max(0.01, gap);
+        }
+        // ônibus encosta no ponto e espera um pouco
+        if (c.kind === "bus") {
+          for (const q of c.stops) {
+            const ahead = ((q - c.s) % c.ln.len + c.ln.len) % c.ln.len;
+            if (c.served === q) { if (ahead > 2 && ahead < c.ln.len - 20) c.served = -1; continue; }
+            if (ahead < 0.6 || ahead > c.ln.len - 1) { c.stopT += dt; block = 0.01; if (c.stopT > 4.5) { c.served = q; c.stopT = 0; } }
+            else if (ahead < 14) { const b = 2.6 + ahead; if (!block || b < block) block = b; }
+          }
         }
         const want = block ? Math.max(0, (block - 2.6) * 1.6) : c.vmax;
         c.v += (Math.min(want, c.vmax) - c.v) * Math.min(1, dt * (want < c.v ? 5 : 1.2));
@@ -6329,8 +6615,17 @@ const STREET = (() => {
         c.sh.mo = M.mul(M.T(x, y, z), M.mul(M.RY(hd), M.RX(-c.pitch)));
         const far = Math.hypot(x - e[0], z - e[2]) > 160;
         c.o.hidden = c.sh.hidden = far;
-        c.obs[0].x = x + fx * 1.0; c.obs[0].z = z + fz * 1.0; c.obs[0].y1 = y + 1.5;
-        c.obs[1].x = x - fx * 1.0; c.obs[1].z = z - fz * 1.0; c.obs[1].y1 = y + 1.5;
+        const nO = c.obs.length, span = c.len / 2 - (c.kind === "bus" ? 1.3 : 0.95);
+        c.obs.forEach((ob, k) => {
+          const a = nO > 1 ? -span + (2 * span * k) / (nO - 1) : 0;
+          ob.x = x + fx * a; ob.z = z + fz * a;
+          ob.y1 = HITCH && HITCH.c === c ? -99 : y + (c.kind === "bus" ? 3.0 : c.kind === "kombi" ? 1.95 : 1.5);
+        });
+        // Kombi da pamonha anunciando no alto-falante
+        if (c.kind === "kombi") {
+          c.ann = (c.ann || 6) - dt;
+          if (c.ann <= 0 && Math.hypot(S.x - x, S.z - z) < 26 && !CUT) { c.ann = 9; say(["🔊 PAMONHA FRESQUINHA, CURAU E BOLO DE MILHO!", "🔊 OLHA A PAMONHA! É DE MILHO VERDE, FREGUESA!", "🔊 PAMONHA DOCE, PAMONHA SALGADA!"][Math.floor(Math.random() * 3)], 2.6); }
+        }
       }
     }
     function blocked(x, z, y) {
@@ -7045,6 +7340,7 @@ const STREET = (() => {
       atmos(dt, t);
       npcFrame(dt, t);
       carFrame(dt);
+      hitchFrame(dt);
       NOW = t;
       missionFrame(dt, t);
       storyFrame(dt, t);
@@ -7294,6 +7590,7 @@ const STREET = (() => {
         const out = MISSIONS.map((m, i) => (mDone[i] || (MA && MA.m === m) ? null : { x: npcOf(m.k).x, z: npcOf(m.k).z, on: false })).filter(Boolean);
         if (MA && MA.m.deliver != null) { const n = npcOf(MA.m.deliver); out.push({ x: n.x, z: n.z, on: true }); }
         if (MA && MA.m.items) MA.m.items.forEach(([x, z], i) => { if (!MA.got[i]) out.push({ x, z, on: true }); });
+        if (SA && SA.def.kind === "ice" && !SA.phase && L.sorveteria) out.push({ x: L.sorveteria[0], z: L.sorveteria[1], on: true, c: "#ff4fa3" });
         if (lookKey() === "kf" && (stepOf("kf") < STORY.kf.length || replay != null) && !SA) out.push({ x: julie.x, z: julie.z, on: false, c: "#ff4fa3" });
         return out;
       },
@@ -7313,7 +7610,7 @@ const STREET = (() => {
       get playing() { return !!PLAY; },
       // clima: time = "tarde" | "noite" | "ciclo"; rain = "off" | "on" | "auto"
       setWeather(o) {
-        if (o.time) { ATM.mode = o.time; if (o.now) ATM.tod = o.time === "noite" ? 0.6 : 0; }
+        if (o.time) { ATM.mode = o.time; if (o.now) ATM.tod = TOD[o.time] ?? ATM.tod; }
         if (o.tod != null) ATM.tod = o.tod;
         if (o.rain) { ATM.rainMode = o.rain; if (o.rain === "auto") ATM.nextW = 20; if (o.now) ATM.rain = o.rain === "on" ? 1 : 0; }
       },
