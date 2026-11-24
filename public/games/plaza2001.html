@@ -204,6 +204,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <p id="ovP">Fim de tarde na praça e na cidade em volta. Encadeie manobras, ache os gaps, pegue latas de spray e grafite os pontos marcados (o mapinha mostra onde).</p>
     <div class="row" role="group" aria-label="Skatista"><b>Skatista:</b><button class="pick" data-look="kf" aria-pressed="true">K.F.</button><button class="pick" data-look="manu" aria-pressed="false">Manu</button><button class="pick" data-look="kaua" aria-pressed="false">Kauã</button><button class="pick" data-look="gabi" aria-pressed="false">Gabi</button><button class="pick" data-look="julie" aria-pressed="false" id="pickJulie" hidden>Julie ♡</button><button class="pick" data-look="kauane" aria-pressed="false">Kauane</button></div>
     <p class="radiohint" id="radioHint"></p>
+    <div id="cenasBox" style="margin:4px 0"><b>🎬 Cenas da Julie (prévia):</b> <button class="pick cena" data-cena="game" style="font-size:13px;min-height:32px;padding:3px 12px">Depois do game</button> <button class="pick cena" data-cena="sorvete" style="font-size:13px;min-height:32px;padding:3px 12px">Sorvete na rampa</button></div>
     <div class="row clima" role="group" aria-label="Hora do dia"><b>Hora:</b><button class="pick" data-time="dia" aria-pressed="false">Dia</button><button class="pick" data-time="tarde" aria-pressed="true">Pôr do sol</button><button class="pick" data-time="noite" aria-pressed="false">Noite</button><button class="pick" data-time="ciclo" aria-pressed="false">Passando o dia</button></div>
     <div class="row clima" role="group" aria-label="Chuva"><b>Chuva:</b><button class="pick" data-rain="off" aria-pressed="true">Sem chuva</button><button class="pick" data-rain="on" aria-pressed="false">Chovendo</button><button class="pick" data-rain="auto" aria-pressed="false">Às vezes</button></div>
     <label class="row skf" id="skfRow"><input type="checkbox" id="skf"> Manu sempre de frente (não patina de costas)</label>
@@ -5564,7 +5565,7 @@ const STREET = (() => {
             SA = null;
             ui.mission && ui.mission("hide");
             // cena dos dois e depois a comemoração do capítulo
-            setTimeout(() => { if (!playCut("game", () => { SA = { def, replay: rp }; storyStepDone(); })) { SA = { def, replay: rp }; storyStepDone(); } }, 1400);
+            setTimeout(() => { if (!CUT_IN_STORY || !playCut("game", () => { SA = { def, replay: rp }; storyStepDone(); })) { SA = { def, replay: rp }; storyStepDone(); } }, 1400);
             return;
           }
           say("A JULIE GANHOU! fala com ela pra revanche", 2.8, true); sfx.nocan();
@@ -5853,7 +5854,7 @@ const STREET = (() => {
             SA = null;
             ui.mission && ui.mission("hide");
             cones.forEach((o) => (o.hidden = true));
-            if (!playCut("sorvete", () => { SA = { def, replay: rp }; storyStepDone(); })) { SA = { def, replay: rp }; storyStepDone(); }
+            if (!CUT_IN_STORY || !playCut("sorvete", () => { SA = { def, replay: rp }; storyStepDone(); })) { SA = { def, replay: rp }; storyStepDone(); }
           }
         }
       } else if (SA.def.kind === "score") {
@@ -5864,6 +5865,8 @@ const STREET = (() => {
     }
     // ---------- cutscene (estilo PS1/PS2): barras pretas, cortes de câmera e poses mais vivas ----------
     let CUT = null;
+    // por enquanto as cenas só passam pelo menu (pra revisar); true = voltam a tocar dentro da história
+    const CUT_IN_STORY = false;
     const ez = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
     const STD = (o) => Object.assign({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.02, twist: 0.05, hy: 0, hp: 0.02, hF: [0.02, 0.97, 0.3], hB: [0.02, 0.97, -0.3], lf: 0, lb: 0 }, o);
     // poses do K.F. e da Julie (peito pra +x; mão da frente em +z)
@@ -7578,6 +7581,7 @@ const STREET = (() => {
       acceptMission, dropMission() { if (MA) { MA = null; items.forEach((o) => (o.hidden = true)); ui.mission && ui.mission("hide"); } },
       get offering() { return (!!offer && !MA) || !!soffer; },
       playCut: (k) => playCut(k || "game"),
+      cutList: () => [{ k: "game", n: "Depois do game de S.K.A.T.E." }, { k: "sorvete", n: "Sorvete em cima da rampa" }],
       cutSkip() { if (CUT) endCut(); },
       get cutOn() { return !!CUT; },
       storyInfo: () => ({ kf: { step: stepOf("kf"), total: STORY.kf.length, next: STORY.kf[stepOf("kf")] ? STORY.kf[stepOf("kf")].title : null }, julie: julieOn, active: SA ? SA.def.title : null }),
@@ -7898,6 +7902,7 @@ function drawStory(){const s=game.storyInfo();$('pickJulie').hidden=!s.julie;con
   $('storyTxt').textContent=k.next?`capítulo ${k.step+1} de ${k.total}: ${k.next}`+(look!=='kf'?' (jogue de K.F.)':''):'completa ✓ (fale com a Julie pra andar junto)';$('storyGo').hidden=!k.next||look!=='kf';$('cutGo').hidden=k.step<2||look!=='kf';$('replayBox').hidden=k.step<1||look!=='kf';for(const b of document.querySelectorAll('.pick.rp'))b.hidden=+b.dataset.rp>=Math.max(1,k.step)}
 for(const b of document.querySelectorAll('.pick.rp'))b.addEventListener('click',()=>{if(game.storyReplay(+b.dataset.rp)){go('free',true);toastC('Vá até a Julie na pista (bolinha rosa no mapa) ♡')}});
 $('storyZero').addEventListener('click',()=>{if(confirm('Zerar a história do K.F. com a Julie? A Julie volta a ficar bloqueada.')){game.storyReset();drawStory()}});
+for(const b of document.querySelectorAll('.pick.cena'))b.addEventListener('click',()=>{const kf=document.querySelector('.pick[data-look=kf]');if(look!=='kf')kf.click();go('free',true);setTimeout(()=>game.playCut(b.dataset.cena),300)});
 $('cutGo').addEventListener('click',()=>{go('free',true);setTimeout(()=>game.playCut('game'),300)});
 $('storyGo').addEventListener('click',()=>{if(game.continueStory()){go('free',true)}});
 ui.mission=(ev,d)=>{
