@@ -2891,9 +2891,9 @@ const CITY = (() => {
     fim(BOUNDS.x0 - 0.6, 32, BOUNDS.x0, 41, [1, 0, 0], 5);
     fim(BOUNDS.x1, -41, BOUNDS.x1 + 0.6, -32, [-1, 0, 0], 7);
     fim(BOUNDS.x1, 32, BOUNDS.x1 + 0.6, 41, [-1, 0, 0], 0);
-    fim(-47, BOUNDS.z0 - 0.6, -38, BOUNDS.z0, [0, 0, 1], 3);
-    fim(36, BOUNDS.z0 - 0.6, 45, BOUNDS.z0, [0, 0, 1], 6);
-    // (as duas ruas norte-sul agora continuam descendo pro bairro da Ladeira)
+    // (no sul as duas ruas continuam descendo pro bairro da Ladeira; no norte terminam no muro)
+    fim(-47, BOUNDS.z1, -38, BOUNDS.z1 + 0.6, [0, 0, -1], 1);
+    fim(36, BOUNDS.z1, 45, BOUNDS.z1 + 0.6, [0, 0, -1], 4);
 
     // ---------- NO: casinhas ----------
     block(BOUNDS.x0, BOUNDS.z0, -47, -41, "se", "casas");
@@ -3141,7 +3141,7 @@ const CITY = (() => {
     // sorveteria Pinguim (ponto de encontro com a Julie), do outro lado da rua da pista
     row("-z", 44, 10, 33, 12, [{ w: 11, style: "loja", sign: RECT.town[4], col: 0xff9ccf, h: 7.6 }, { w: 12, style: "loja", shop: 7 }]);
     // pontos de ônibus: banco + placa (o circular para aqui)
-    const STOPS = [[0, 43.55, 0], [-4, 111.0, 0], [-20, 399.3, -10]];
+    const STOPS = [[0, 43.55, 0], [-4, 111.0, 0], [-20, -199.3, -10]];
     for (const [x, z, y] of STOPS) {
       solid.box(x - 1.4, y + SW + 0.42, z - 0.25, x + 1.4, y + SW + 0.5, z + 0.25, hex(0x2457c8), { top: hex(0x3f7ae8) });
       for (const dx of [-1.2, 1.2]) solid.box(x + dx - 0.05, y + SW, z - 0.2, x + dx + 0.05, y + SW + 0.42, z + 0.2, C.metal);
@@ -3519,6 +3519,10 @@ const CITY = (() => {
     // ---------- bairro da Ladeira (z 300 a 440): ruas descendo o morro, escadaria com corrimão,
     // casinhas em degraus, praça lá embaixo e o canal (valetão de concreto que dá pra andar) ----------
     // =====================================================================================
+    // o bairro é montado nas coordenadas "de cima" (z 300 a 440) e depois espelhado pro sul da cidade
+    // (z' = 200 - z: vai de -100 a -240), assim a pista fica no meio do mapa
+    const LMZ = 200;
+    const mk = { s: solid.v.length, f: flat.v.length, d: deco.v.length, feats: feats.length, OB: OB.length, MAP: MAP.length, GAPS: GAPS.length, CANS: CANS.length, lights: lights.length, rails: X.rails ? X.rails.length : 0, shops: X.shops ? X.shops.length : 0 };
     const LZ0 = 300, LZ1 = 440, DROP = 10;
     const ez = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
     const baseAt = (x, z) => {
@@ -3627,7 +3631,34 @@ const CITY = (() => {
       );
       CANS.push([0, baseAt(0, 340) + 1.6, 340], [-24, BY + 1.4, 386], [0, -12.4 + 1.2, 425], [70, baseAt(70, 340) + 1.4, 340]);
     }
-    BOUNDS.z1 = LZ1;
+    // espelha tudo que o bairro criou
+    {
+      const mirror = (m, from) => {
+        const v = m.v;
+        for (let i = from; i < v.length; i += 36) {
+          for (let k = 0; k < 3; k++) { const o = i + k * 12; v[o + 2] = LMZ - v[o + 2]; v[o + 5] = -v[o + 5]; }
+          for (let j = 0; j < 12; j++) { const a = i + 12 + j, b = i + 24 + j, t = v[a]; v[a] = v[b]; v[b] = t; }
+          if (v[i + 9] === 4) {
+            // decalque (placas, grafite): espelha o u pra o texto não ficar ao contrário
+            let u0 = Infinity, u1 = -Infinity;
+            for (let k = 0; k < 3; k++) { const u = v[i + k * 12 + 10]; u0 = Math.min(u0, u); u1 = Math.max(u1, u); }
+            for (let k = 0; k < 3; k++) { const o = i + k * 12 + 10; v[o] = u0 + u1 - v[o]; }
+          }
+        }
+      };
+      mirror(solid, mk.s); mirror(flat, mk.f); mirror(deco, mk.d);
+      for (let i = mk.feats; i < feats.length; i++) { const f = feats[i], g = f.f; feats[i] = Object.assign({}, f, { z0: LMZ - f.z1, z1: LMZ - f.z0, f: (x, z) => g(x, LMZ - z) }); }
+      if (X.rails) for (let i = mk.rails; i < X.rails.length; i++) { const r = X.rails[i]; r.a = [r.a[0], r.a[1], LMZ - r.a[2]]; r.b = [r.b[0], r.b[1], LMZ - r.b[2]]; }
+      for (let i = mk.OB; i < OB.length; i++) { const o = OB[i]; if (o.z != null) o.z = LMZ - o.z; if (o.z0 != null) { const a = LMZ - o.z1, b = LMZ - o.z0; o.z0 = a; o.z1 = b; } }
+      for (let i = mk.MAP; i < MAP.length; i++) { const m = MAP[i], a = LMZ - m.z1, b = LMZ - m.z0; m.z0 = a; m.z1 = b; }
+      const W = (fn) => fn && ((st) => fn(Object.assign({}, st, { z: LMZ - st.z })));
+      for (let i = mk.GAPS; i < GAPS.length; i++) { const g = GAPS[i]; GAPS[i] = Object.assign({}, g, { from: W(g.from), to: W(g.to), cond: W(g.cond) }); }
+      for (let i = mk.CANS; i < CANS.length; i++) CANS[i] = [CANS[i][0], CANS[i][1], LMZ - CANS[i][2]];
+      for (let i = mk.lights; i < lights.length; i++) lights[i] = [lights[i][0], lights[i][1], LMZ - lights[i][2]];
+      if (X.shops) for (let i = mk.shops; i < X.shops.length; i++) { const sh = X.shops[i]; sh.z = LMZ - sh.z; sh.nz = -sh.nz; }
+    }
+    BOUNDS.z0 = LMZ - LZ1;
+    var baseAtW = (x, z) => (z >= LMZ - LZ0 ? 0 : baseAt(x, LMZ - z));
 
     // ---------- grafites, latas e gaps da cidade ----------
     TAGS.push(
@@ -3652,7 +3683,7 @@ const CITY = (() => {
       { name: "ARQUIBANCADA ABAIXO", pts: 450, from: (s) => s.z > 79.9 && s.y > SW + 1.7, to: (s) => s.z < 73.6 && s.y < SW + 0.3 },
       { name: "TERRAÇO → RUA", pts: 350, from: (s) => s.x > -38 && s.x < -36 && s.y > 1.3, to: (s) => s.x < -40.5 && s.y < 0.3 },
     );
-    return { obstacles: OB, tags: TAGS, cans: CANS, gaps: GAPS, map: MAP, baseAt, sorveteria: [15.5, 42.4], stops: STOPS };
+    return { obstacles: OB, tags: TAGS, cans: CANS, gaps: GAPS, map: MAP, baseAt: baseAtW, sorveteria: [15.5, 42.4], stops: STOPS };
   }
   return { build, BOUNDS };
 })();
@@ -4232,7 +4263,7 @@ const LEVEL = (() => {
       }
       return r;
     };
-    const CT = CITY.build({ solid, flat, deco, feats, fbox, framp, rail, building, poste, fio, palm, tree, withY, C, CASA, TELHA, RECT, V, hex, billboard, lights });
+    const CT = CITY.build({ rails, shops, solid, flat, deco, feats, fbox, framp, rail, building, poste, fio, palm, tree, withY, C, CASA, TELHA, RECT, V, hex, billboard, lights });
     const B = CITY.BOUNDS;
     for (const [x, z] of [[30, -24], [30.8, -23.2], [-10, 12.5]]) {
       solid.tube([x, 0, z], [x, 0.7, z], 0.2, 0.03, 7, hex(0xff7a1a));
@@ -5148,9 +5179,9 @@ const STREET = (() => {
         [[-48.6, -98], [-48.6, 298]],
         [[-98, 42.6], [-50, 42.6]],
         [[110, 110.4], [36, 110.4]],
-        [[-37.2, 302], [-37.2, 398.6], [34.8, 398.6], [34.8, 302]],
-        [[-98, 399.2], [-49, 399.2]],
-        [[4.2, 304], [4.2, 371]],
+        [[-37.2, -102], [-37.2, -198.6], [34.8, -198.6], [34.8, -102]],
+        [[-98, -199.2], [-49, -199.2]],
+        [[4.2, -104], [4.2, -171]],
       ];
       const plan = [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 3, 3, 6, 6, 6, 7, 8];
       plan.forEach((w, i) => {
@@ -5166,14 +5197,16 @@ const STREET = (() => {
       // criançada brincando e gente esperando o circular no ponto
       let fi = 30;
       const P = (at, dir, idle, chair) => NPC_DEF.push({ look: "fig" + (fi++ % 52), at, dir, idle, chair, extra: 1 });
+      // Ladeira: posições escritas como no projeto (z 300..440) e espelhadas pro sul (z' = 200 - z)
+      const PL = (at, dir, idle, chair) => P([at[0], 200 - at[1]], [dir[0], -dir[1]], idle, chair);
       P([-88, 43.2], [0, -1], "sit", 1); P([-86.9, 43.2], [0.3, -1], "sit", 1); P([-70, 43.2], [0, -1], "sit", 1);
-      P([-36.75, 320], [-1, 0], "sit", 1); P([-36.75, 321.1], [-1, 0.3], "sit", 1); P([-36.75, 352], [-1, 0], "sit", 1);
-      P([34.75, 330], [1, 0], "sit", 1); P([34.75, 362], [1, 0], "sit", 1);
-      P([-80, 398.8], [0, 1], "sit", 1); P([-78.9, 398.8], [-0.3, 1], "sit", 1); P([80, 398.8], [0, 1], "sit", 1);
+      PL([-36.75, 320], [-1, 0], "sit", 1); PL([-36.75, 321.1], [-1, 0.3], "sit", 1); PL([-36.75, 352], [-1, 0], "sit", 1);
+      PL([34.75, 330], [1, 0], "sit", 1); PL([34.75, 362], [1, 0], "sit", 1);
+      PL([-80, 398.8], [0, 1], "sit", 1); PL([-78.9, 398.8], [-0.3, 1], "sit", 1); PL([80, 398.8], [0, 1], "sit", 1);
       P([-4.6, 130.6], [1, 0], "chat"); P([-3.0, 130.6], [-1, 0], "chat");
-      P([-0.8, 393.5], [1, 0.2], "chat"); P([0.7, 393.8], [-1, -0.1], "chat"); P([0, 392.6], [0, 1], "calm");
+      PL([-0.8, 393.5], [1, 0.2], "chat"); PL([0.7, 393.8], [-1, -0.1], "chat"); PL([0, 392.6], [0, 1], "calm");
       P([70, 141.5], [1, 0], "chat"); P([71.4, 141.5], [-1, 0], "chat");
-      P([-10, 377], [0, 1], "bounce"); P([-8.6, 377.4], [0, -1], "bounce"); P([2.6, 139.5], [-1, 0], "bounce"); P([-56, 43.0], [0, -1], "bounce");
+      PL([-10, 377], [0, 1], "bounce"); PL([-8.6, 377.4], [0, -1], "bounce"); P([2.6, 139.5], [-1, 0], "bounce"); P([-56, 43.0], [0, -1], "bounce");
       for (const [x, z, y] of L.stops || []) { P([x - 2.6, z - 0.1], [0, z > 300 ? 1 : -1], "calm"); P([x + 0.4, z + 0.05], [0, z > 300 ? 1 : -1], "sit", 0); }
     }
     // cadeira de fio (aquela de área, colorida)
@@ -5216,7 +5249,10 @@ const STREET = (() => {
           const P = d.path, a = P[n.seg], b = P[(n.seg + 1) % P.length];
           const L2 = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, dx = (b[0] - a[0]) / L2, dz = (b[1] - a[1]) / L2;
           const fx = n.dirS * dx, fz = n.dirS * dz;
-          const close = Math.hypot(S.x - n.x - fx * 0.9, S.z - n.z - fz * 0.9) < 1.1;
+          // morador com missão para quando você chega perto devagar (pra dar pra conversar)
+          const talk = d.k != null && !d.extra && Math.hypot(S.x - n.x, S.z - n.z) < 3.6 && S.speed < 4.5;
+          const close = talk || Math.hypot(S.x - n.x - fx * 0.9, S.z - n.z - fz * 0.9) < 1.1;
+          n.talk = talk;
           if (!close) {
             n.u += (d.sp * dt * n.dirS) / L2;
             n.ph += d.sp * dt * 5.2;
@@ -5226,7 +5262,7 @@ const STREET = (() => {
           const A = P[n.seg], B = P[(n.seg + 1) % P.length];
           n.x = A[0] + (B[0] - A[0]) * n.u;
           n.z = A[1] + (B[1] - A[1]) * n.u;
-          const want = Math.atan2(-fz, fx);
+          const want = n.talk ? Math.atan2(-(S.z - n.z), S.x - n.x) : Math.atan2(-fz, fx);
           let dd = want - n.yaw;
           while (dd > Math.PI) dd -= Math.PI * 2;
           while (dd < -Math.PI) dd += Math.PI * 2;
@@ -5281,38 +5317,38 @@ const STREET = (() => {
       kf: [
         { t: "Some 4.000 pontos em 60 s", hint: "emende manobras: cada combo soma", score: 4000, win: 60 },
         { t: "Grave um vídeo com 4 manobras diferentes", hint: "R liga a filmadora · R de novo salva", ok: (e) => e.type === "clip" && distinctTricks(e.clip) >= 4, prog: () => (REC ? [recTricks(), 4] : null) },
-        { t: "Filme um gap na cidade nova", hint: "R grava · escadaria da prefeitura, chafariz, vagão", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.z > 100) },
-        { t: "Selfie à noite em frente à prefeitura", hint: "Hora: Noite (menu) · F abre a câmera · Espaço tira", ok: (e) => e.type === "photo" && e.night > 0.5 && e.view === "selfie" && near(e, -1, 155, 30) },
+        { t: "Filme um gap na cidade nova", at: [0, 163], hint: "R grava · escadaria da prefeitura, chafariz, vagão", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.z > 100) },
+        { t: "Selfie à noite em frente à prefeitura", at: [-1, 150], hint: "Hora: Noite (menu) · F abre a câmera · Espaço tira", ok: (e) => e.type === "photo" && e.night > 0.5 && e.view === "selfie" && near(e, -1, 155, 30) },
         { t: "Tire 4 selfies com a Julie, cada uma com uma pose", hint: "pare perto dela e aperte F · cada foto ela muda a pose", ok: (e) => e.type === "photo" && e.julie && jSelfies >= 4, prog: () => [Math.min(4, jSelfies), 4] },
       ],
       manu: [
         { t: "Some 3.500 pontos em 60 s", hint: "manobras na rampa rendem mais", score: 3500, win: 60 },
-        { t: "Grave uma Parada de Mão na rampa", hint: "R grava · no alto da rampa segure L", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "trick" && v.name === "Parada de Mão") },
-        { t: "Grave um grind na borda do chafariz", hint: "R grava · K em cima da borda do chafariz", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "borda do chafariz") },
-        { t: "Selfie no meio da feira", hint: "F abre a câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && near(e, -4, 226, 22) },
+        { t: "Grave uma Parada de Mão na rampa", at: [0, -23], hint: "R grava · no alto da rampa segure L", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "trick" && v.name === "Parada de Mão") },
+        { t: "Grave um grind na borda do chafariz", at: [-1, 136], hint: "R grava · K em cima da borda do chafariz", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "borda do chafariz") },
+        { t: "Selfie no meio da feira", at: [-4, 226], hint: "F abre a câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && near(e, -4, 226, 22) },
       ],
       kaua: [
         { t: "Some 5.000 pontos em 60 s", hint: "flip + grind + manual no mesmo combo", score: 5000, win: 60 },
         { t: "Grave um flip e um grind no mesmo vídeo", hint: "R grava · J flip · K grind", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind") && clipHas(e.clip, (v) => v.type === "trick" && baseFlip(v.name)) },
-        { t: "Foto de amigo no campo de várzea", hint: "F câmera · V troca pra AMIGO · Espaço tira", ok: (e) => e.type === "photo" && e.view === "amigo" && near(e, -75, 154, 32) },
+        { t: "Foto de amigo no campo de várzea", at: [-75, 154], hint: "F câmera · V troca pra AMIGO · Espaço tira", ok: (e) => e.type === "photo" && e.view === "amigo" && near(e, -75, 154, 32) },
       ],
       gabi: [
-        { t: "Foto no campo de várzea com o céu de tarde", hint: "Hora: Fim de tarde · F câmera · Espaço tira", ok: (e) => e.type === "photo" && near(e, -75, 154, 32) && e.night < 0.4 },
-        { t: "Grave um grind no trilho do trem", hint: "R grava · K no trilho, na estação", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "trilho do trem") },
+        { t: "Foto no campo de várzea com o céu de tarde", at: [-75, 154], hint: "Hora: Fim de tarde · F câmera · Espaço tira", ok: (e) => e.type === "photo" && near(e, -75, 154, 32) && e.night < 0.4 },
+        { t: "Grave um grind no trilho do trem", at: [78, 130.5], hint: "R grava · K no trilho, na estação", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "grind" && v.rail === "trilho do trem") },
         { t: "Grave 20 segundos de rolê sem cair", hint: "R grava · se cair, recomeça", ok: (e) => e.type === "clip" && e.clip.len >= 20 && !clipHas(e.clip, (v) => v.type === "bail"), prog: () => (REC ? [REC.events.some((v) => v.type === "bail") ? 0 : Math.floor(REC.t), 20, "s"] : null) },
         { t: "Some 3.000 pontos em 60 s", hint: "sem pressa, só não para", score: 3000, win: 60 },
       ],
       kauane: [
         { t: "Some 5.000 pontos em 45 s", hint: "rápido e sem cair", score: 5000, win: 45 },
-        { t: "Filme a escadaria da prefeitura", hint: "R grava · desça a escadaria pulando", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.name === "ESCADARIA DA PREFEITURA") },
+        { t: "Filme a escadaria da prefeitura", at: [0, 163], hint: "R grava · desça a escadaria pulando", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.name === "ESCADARIA DA PREFEITURA") },
         { t: "Selfie debaixo de chuva", hint: "Chuva: Chovendo (menu) · F câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && e.rain > 0.4 },
       ],
       julie: [
         { t: "Mande um Hardflip", hint: "no ar: J + W", ok: (e) => e.type === "trick" && baseFlip(e.name) === "Hardflip" },
-        { t: "Grind no corrimão da prefeitura", hint: "K em cima do corrimão da escadaria", ok: (e) => e.type === "grind" && (e.rail === "corrimão da prefeitura" || e.rail === "corrimão do meio") },
+        { t: "Grind no corrimão da prefeitura", at: [0, 163], hint: "K em cima do corrimão da escadaria", ok: (e) => e.type === "grind" && (e.rail === "corrimão da prefeitura" || e.rail === "corrimão do meio") },
         { t: "Some 6.000 pontos em 60 s", hint: "combo grande ou vários seguidos", score: 6000, win: 60 },
         { t: "Filme um Varial Kickflip", hint: "R grava · no ar: J + A", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "trick" && baseFlip(v.name) === "Varial Kickflip") },
-        { t: "Selfie à noite na estação", hint: "Hora: Noite (menu) · F câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && e.night > 0.5 && e.x > 46 && e.z > 115 && e.z < 162 },
+        { t: "Selfie à noite na estação", at: [70, 141], hint: "Hora: Noite (menu) · F câmera · Espaço tira", ok: (e) => e.type === "photo" && e.view === "selfie" && e.night > 0.5 && e.x > 46 && e.z > 115 && e.z < 162 },
       ],
     };
     for (const k in DESAFIOS) for (const c of DESAFIOS[k]) if (c.score) {
@@ -5374,7 +5410,12 @@ const STREET = (() => {
       ui.mission && ui.mission("done", { title: m.title, who: npcOf(m.k).name });
       MA = null;
     }
+    const curChal = () => { const key = lookKey(), list = DESAFIOS[key] || []; const i = list.findIndex((_, j) => !dDone[key + j]); return i < 0 ? null : list[i]; };
+    const cMark = add(Rn.upload((() => { const m = new Mesh(); m.box(-0.09, 0.3, -0.09, 0.09, 0.95, 0.09, hex(0xff4fa3), { m: 2 }); m.box(-0.09, 0, -0.09, 0.09, 0.18, 0.09, hex(0xff4fa3), { m: 2 }); return m; })()), M.I(), { hidden: true });
     function trackFrame() {
+      const cc = curChal();
+      cMark.hidden = !(cc && cc.at) || !!CUT || !!PH;
+      if (!cMark.hidden) cMark.mo = M.mul(M.T(cc.at[0], H(cc.at[0], cc.at[1]) + 2.6 + Math.sin(NOW * 3) * 0.12, cc.at[1]), M.RY(NOW * 2));
       const key = lookKey(), list = DESAFIOS[key] || [];
       const i = list.findIndex((_, j) => !dDone[key + j]);
       if (i < 0) return ui.track && ui.track(null);
@@ -5390,7 +5431,7 @@ const STREET = (() => {
       });
       if (!MA && !SA && !soffer && S.running && !PH && !REC) {
         let best = null;
-        MISSIONS.forEach((m, i) => { if (mDone[i]) return; const n = npcOf(m.k), d = Math.hypot(n.x - S.x, n.z - S.z); if (d < 2.6 && (!best || d < best.d)) best = { m, n, d }; });
+        MISSIONS.forEach((m, i) => { if (mDone[i]) return; const n = npcOf(m.k), d = Math.hypot(n.x - S.x, n.z - S.z); if (d < 3.2 && Math.abs(S.y - H(n.x, n.z)) < 1.6 && (!best || d < best.d)) best = { m, n, d }; });
         if (best && S.speed < 4 && (!offer || offer.m !== best.m)) { offer = best; ui.mission && ui.mission("offer", { who: best.n.name, line: best.m.line, title: best.m.title }); }
         if (offer && (!best || best.m !== offer.m)) { offer = null; ui.mission && ui.mission("hide"); }
       }
@@ -6509,8 +6550,8 @@ const STREET = (() => {
       })();
       // rotas: anel da cidade velha e anel da cidade nova, nos dois sentidos (mão direita)
       const RT = [
-        [[-42.5, -36.5], [40.5, -36.5], [40.5, 36.5], [-42.5, 36.5]],
-        [[-42.5, 104.5], [40.5, 104.5], [40.5, 404.5], [-42.5, 404.5]],
+        [[-42.5, -204.5], [40.5, -204.5], [40.5, 36.5], [-42.5, 36.5]],
+        [[-42.5, 104.5], [40.5, 104.5], [40.5, 204.5], [-42.5, 204.5]],
       ];
       const lanes = [];
       for (const P0 of RT) for (const rev of [false, true]) {
@@ -6542,7 +6583,13 @@ const STREET = (() => {
       };
       const list = [];
       // quem roda em cada pista: ônibus circular nos dois anéis, a Kombi da pamonha no anel velho
-      const PLAN = [["kombi", "car", "car"], ["bus", "car", "car"], ["bus", "car", "car"], ["car", "car", "car"]];
+      const stopsNear = (ln) => (L.stops || []).filter((st) => { for (let q = 0; q < ln.len; q += 1) { const p = at(ln, q); if (Math.hypot(p[0] - st[0], p[1] - st[1]) < 6) return true; } return false; }).length;
+      const sc = lanes.map(stopsNear), PLAN = [];
+      for (let r = 0; r < lanes.length; r += 2) {
+        const busL = sc[r + 1] > sc[r] ? r + 1 : r;
+        PLAN[busL] = ["bus", "car", "car"];
+        PLAN[busL === r ? r + 1 : r] = r === 0 ? ["kombi", "car", "car"] : ["car", "car", "car"];
+      }
       lanes.forEach((ln, li) => {
         const kinds = PLAN[li] || ["car", "car", "car"], N = kinds.length;
         kinds.forEach((kind, i) => {
@@ -7566,11 +7613,14 @@ const STREET = (() => {
     requestAnimationFrame(frame);
     addEventListener("resize", () => Rn.size());
 
+    // cada um começa onde é a primeira missão da sua história
+    const SPAWN = { kf: [0, 14, Math.PI], julie: [15.5, 39.4, Math.PI], manu: [76, -48.5, Math.PI], gabi: [-1, 124.5, 0], kaua: [64, 213.5, 0], kauane: [0, -176, Math.PI] };
+    const SPW = () => SPAWN[lookKey()] || SPAWN.kf;
     function reset(run) {
       if (soffer) ui.mission && ui.mission("hide");
       SA = null; soffer = null; julie.follow = false;
       Object.assign(S, {
-        mode: "ground", x: 0, y: 0, z: 14, head: Math.PI, camYaw: Math.PI, speed: 0, vy: 0, fakie: false, air: null, grind: null, man: null, hop: null,
+        mode: "ground", x: SPW()[0], y: H(SPW()[0], SPW()[1]), z: SPW()[1], head: SPW()[2], camYaw: SPW()[2], speed: 0, vy: 0, fakie: false, air: null, grind: null, man: null, hop: null,
         combo: [], grace: 0, score: 0, time: 180, run, running: true, over: false, endWait: 0, cans: 2, tags: 0, letters: [], gapsFound: {},
         special: 0, specialOn: false, bestCombo: 0, charge: 0, charging: false,
       });
@@ -7608,6 +7658,8 @@ const STREET = (() => {
         const out = MISSIONS.map((m, i) => (mDone[i] || (MA && MA.m === m) ? null : { x: npcOf(m.k).x, z: npcOf(m.k).z, on: false })).filter(Boolean);
         if (MA && MA.m.deliver != null) { const n = npcOf(MA.m.deliver); out.push({ x: n.x, z: n.z, on: true }); }
         if (MA && MA.m.items) MA.m.items.forEach(([x, z], i) => { if (!MA.got[i]) out.push({ x, z, on: true }); });
+        const cc = curChal();
+        if (cc && cc.at) out.push({ x: cc.at[0], z: cc.at[1], on: false, c: "#ff4fa3" });
         if (SA && SA.def.kind === "ice" && !SA.phase && L.sorveteria) out.push({ x: L.sorveteria[0], z: L.sorveteria[1], on: true, c: "#ff4fa3" });
         if (lookKey() === "kf" && (stepOf("kf") < STORY.kf.length || replay != null) && !SA) out.push({ x: julie.x, z: julie.z, on: false, c: "#ff4fa3" });
         return out;
