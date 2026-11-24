@@ -153,6 +153,20 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .cutO .fade{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .35s}
 .cut .hud>*:not(.cutO):not(.win):not(.flash){visibility:hidden}.cut #mmBox,.cut .dm{visibility:hidden}
 .cut #cv{filter:contrast(1.08) saturate(1.18) sepia(.1)}
+.place{position:absolute;inset:0;display:none;place-items:center;z-index:9;background:rgba(14,10,26,.72)}.place.on{display:grid}
+.pcard{width:min(94%,640px);max-height:94%;overflow:auto;background:#fff8e6;border:4px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);font:600 13px Rubik,sans-serif;color:var(--ink)}
+.pcard.lan{background:#14112a;color:#dff6ff;border-color:#3fd0ff;box-shadow:6px 6px 0 #3fd0ff}
+.phead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-bottom:3px solid currentColor}.phead b{font:900 18px Rubik,sans-serif}.phead span{flex:1;min-width:160px;opacity:.85}
+.px{font:800 12px Rubik,sans-serif;border:2px solid currentColor;border-radius:999px;padding:4px 10px;background:transparent;color:inherit;cursor:pointer}
+.pbody{padding:10px 14px}.games{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.gbtn{flex:1;min-width:120px;font:800 14px Rubik,sans-serif;background:#2b2450;color:#fff;border:2px solid #3fd0ff;border-radius:10px;padding:8px;cursor:pointer}.gbtn small{display:block;font-weight:600;opacity:.7;font-size:11px}.gbtn[aria-pressed=true]{background:#3fd0ff;color:#14112a}
+#mg{display:block;width:100%;image-rendering:pixelated;background:#000;border:3px solid #3fd0ff;border-radius:8px}.mgInfo{margin-top:6px;text-align:center;opacity:.85}
+.dbody{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}.albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;max-height:300px;overflow:auto}
+.alb{aspect-ratio:1;border:3px solid var(--ink);border-radius:6px;cursor:pointer;display:flex;align-items:flex-end;padding:5px;font:900 11px Rubik,sans-serif;color:#fff;text-shadow:0 1px 0 #000,0 0 4px #000;background-size:cover;background-position:center;text-align:left}
+.alb[aria-pressed=true]{outline:3px solid #ff4fa3;outline-offset:2px}.tracks{max-height:300px;overflow:auto}.tracks h4{margin:0 0 6px;font:900 15px Rubik,sans-serif}
+.tk{display:flex;gap:6px;align-items:center;width:100%;text-align:left;font:700 13px Rubik,sans-serif;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:6px 8px;margin-bottom:5px;cursor:pointer}.tk.on{background:#ffd23f}
+.nowp{padding:8px 14px;border-top:3px solid var(--ink);font:800 13px Rubik,sans-serif;display:flex;gap:8px;align-items:center}.nowp button{margin-left:auto}
+@media (max-width:560px){.dbody{grid-template-columns:1fr}}
 .win{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;z-index:8}.win.on{display:grid}
 .winC{position:relative;background:#fff8e6;border:4px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:14px 30px 16px;text-align:center;max-width:78%;animation:winIn .5s cubic-bezier(.2,1.6,.4,1)}
 .win.out .winC{animation:winOut .35s ease-in forwards}
@@ -194,6 +208,14 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="toastC" id="toastC"></div>
     <div class="trk" id="trk"><span class="trkN" id="trkN"></span><b id="trkT"></b><span class="trkP" id="trkP"></span><i class="trkBar"><i id="trkBar"></i></i><small id="trkH"></small></div>
     <div class="cutO" id="cutO" aria-live="polite"><i class="lb lbT"></i><i class="lb lbB"></i><div class="grain"></div><div class="sub" id="cutSub"><b id="cutW"></b><span id="cutL"></span></div><div class="skip">Enter pula a cena</div></div>
+    <div class="place" id="lanO" role="dialog" aria-label="Lan house"><div class="pcard lan">
+      <div class="phead"><b>LAN HOUSE MEGABYTE</b><span>Dudu: <i id="lanSay">“Escolhe aí, mano. Ficha por minha conta!”</i></span><button class="px" data-close>Sair (Esc)</button></div>
+      <div class="pbody"><div class="games"><button class="gbtn" data-g="rush">🛹 Skate Rush<small>Espaço pula</small></button><button class="gbtn" data-g="snake">🐍 Cobrinha 2001<small>setas</small></button><button class="gbtn" data-g="inv">👾 Invasores<small>← → e Espaço</small></button></div>
+      <canvas id="mg" width="480" height="270" aria-label="minigame"></canvas><div class="mgInfo" id="mgInfo">Escolha um jogo</div></div></div></div>
+    <div class="place" id="discoO" role="dialog" aria-label="Loja de discos"><div class="pcard disco">
+      <div class="phead"><b>DISCOS & CDs</b><span>Seu Vavá: <i>“Escolhe um disco e põe na cabine.”</i></span><button class="px" data-close>Sair (Esc)</button></div>
+      <div class="pbody dbody"><div class="albums" id="albums"></div><div class="tracks" id="tracks"><p>Clique num disco pra ver as faixas.</p></div></div>
+      <div class="nowp" id="nowp">Cabine livre</div></div></div>
     <div class="win" id="win" aria-live="polite"><div class="winC"><span class="winK" id="winK"></span><b id="winT"></b><small id="winS"></small><span class="winOk">✓</span></div><div class="conf" id="conf"></div></div>
     <div class="dlg" id="dlg" role="dialog" aria-live="polite"><b id="dlgW"></b><p id="dlgL"></p><span class="mt" id="dlgT"></span><div class="row"><button class="ok" id="dlgOk">Aceitar (Enter)</button><button id="dlgNo">Agora não</button></div></div>
     <div class="mm" id="mmBox" aria-hidden="true"><canvas id="mm" width="318" height="300"></canvas></div>
@@ -212,7 +234,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div id="storyBox"><b>História do K.F.</b> <span id="storyTxt"></span> <button class="pick" id="storyGo" style="font-size:13px;min-height:32px;padding:3px 12px">Continuar ▸</button> <button class="pick" id="cutGo" style="font-size:13px;min-height:32px;padding:3px 12px" hidden>🎬 Ver cena do game</button>
       <div id="replayBox" style="margin-top:4px;font-size:13px" hidden>Jogar de novo com a Julie: <button class="pick rp" data-rp="0" style="font-size:12px;min-height:30px;padding:2px 10px">Cap. 1 · 2.000 pontos</button> <button class="pick rp" data-rp="1" style="font-size:12px;min-height:30px;padding:2px 10px">Cap. 2 · S.K.A.T.E.</button> <button class="pick rp" data-rp="2" style="font-size:12px;min-height:30px;padding:2px 10px">Cap. 3 · rolê</button> <button class="pick" id="storyZero" style="font-size:12px;min-height:30px;padding:2px 10px">Zerar história</button></div></div>
     <b>Desafios do skatista</b><ul class="mlist" id="chal"></ul>
-    <b>Missões dos moradores</b> <small>(procure o <b style="color:#c99a00">!</b> amarelo no mapinha)</small><ul class="mlist" id="mlist"></ul>
+    <b>Missões dos moradores</b> <small>(procure o <b style="color:#c99a00">!</b> amarelo no mapinha)</small><ul class="mlist" id="mlist"></ul><button class="pick" id="dropM" style="font-size:12px;min-height:30px;padding:2px 10px" hidden>Largar a missão atual</button>
     <div id="mediaBox" style="display:none"><b>Álbum e fitas</b><div class="media" id="media"></div></div>
     <b>Metas</b><ul class="goals" id="goals"></ul>
   </div></div>
@@ -745,7 +767,7 @@ const ART = (() => {
     bill: [R(0, 1280, 512, 256), R(512, 1280, 512, 256)],
     poster: [0, 1, 2, 3].map((i) => R(i * 256, 1536, 256, 384)),
     // Itaberá: letreiros de loja, placas de rua, placa verde e porta de aço
-    town: [...[0, 1, 2, 3].map((i) => R(1024, 512 + i * 112, 512, 104)), R(1152, 962, 384, 60)],
+    town: [...[0, 1, 2, 3].map((i) => R(1024, 512 + i * 112, 512, 104)), R(1152, 962, 384, 60), R(768, 1922, 256, 60), R(768, 1986, 256, 60)],
     shop: [...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => R(1024 + (i % 2) * 512, 1024 + Math.floor(i / 2) * 112, 512, 104)), R(1536, 1792, 512, 104), R(1024, 1920, 512, 104), R(1536, 1920, 512, 104)],
     plate: [0, 1, 2, 3].map((i) => R(1024 + (i % 2) * 512, 1472 + Math.floor(i / 2) * 96, 512, 88)),
     road: R(1024, 1664, 512, 256),
@@ -1151,6 +1173,13 @@ const ART = (() => {
       big(1024, 624, "ESTAÇÃO ITABERÁ", "#2f5a46", "#fff6d8", "#13261d");
       big(1024, 736, "MERCADO MUNICIPAL", "#9a2a22", "#ffe14d", "#4a0f0a");
       big(1024, 848, "POSTO TREVO", "#1fae5a", "#ffffff", "#0b4a22");
+      // placas da lan house e da loja de discos (cantinho livre do atlas)
+      for (const [y, txt, bg, fg, ln] of [[1922, "LAN HOUSE", "#1b1530", "#3fd0ff", "#3fd0ff"], [1986, "DISCOS & CDs", "#ffd23f", "#1b1530", "#8a2a3a"]]) {
+        const x = 768;
+        rr(x + 3, y + 3, 250, 54, 10); g.fillStyle = bg; g.fill(); g.lineWidth = 5; g.strokeStyle = ln; g.stroke();
+        g.textAlign = "center"; g.textBaseline = "middle"; fit(txt, 220, 34);
+        g.lineWidth = 6; g.strokeStyle = "#000"; g.strokeText(txt, x + 128, y + 32); g.fillStyle = fg; g.fillText(txt, x + 128, y + 32);
+      }
       // placa da sorveteria (faixa pequena livre embaixo das placas)
       {
         const x = 1152, y = 962;
@@ -1312,6 +1341,7 @@ const CHARS = (() => {
   const R = (x, y, w, h) => [x / AW, y / AH, (x + w) / AW, (y + h) / AH];
   const FACE = { kf: [1024, 0], kaua: [1280, 0], manu: [1536, 0], gabi: [1792, 0], kauane: [1024, 256], julie: [1280, 256] };
   for (let i = 0; i < 12; i++) FACE["npc" + i] = [1536 + (i % 4) * 128, 640 + Math.floor(i / 4) * 128, 128];
+  FACE.dudu = [1920, 512, 128];
   const SPR = { cloud: R(1920, 256, 128, 128), dollar: R(1920, 384, 128, 128), checker: R(1024, 960, 64, 64), cat: R(1088, 960, 64, 64), nerd: R(512, 1920, 128, 128), shark: R(1536, 256, 128, 384), lion: R(1664, 256, 128, 384), crown: R(1792, 256, 128, 384) };
 
   const LOOKS = {
@@ -1379,6 +1409,9 @@ const CHARS = (() => {
   // variantes só pra cutscene: K.F. sem o fone grande (com fone de botão) e Julie com o outro lado do fone
   LOOKS.kf_ear = Object.assign({}, LOOKS.kf, { earbud: "one", name: "K.F." });
   LOOKS.julie_ear = Object.assign({}, LOOKS.julie, { earbud: true, earSide: -1, name: "Julie" });
+  // Dudu da lan house: 24 anos, eterno moleque, anda de skate nas horas vagas e é o brother da turma
+  LOOKS.dudu = { name: "Dudu da Lan", face: "dudu", skin: 0xf0c49c, hair: 0xd8702a, hairStyle: "spiky", top: 0x2ab0e8, top2: 0x1f86b8, pants: 0x8a7a5a, shoe: 0x1b1530, shoeToe: 0xffffff, sole: 0xf4f1ea, lace: 0xffffff,
+    sleeve: "short", pantsR: 0.78, flare: 0.2, scale: 1.0, headScale: 0.95, npc: { freckles: 1, mouth: "smile", brow: 0xb85a20, iris: "#3a6a8a" } };
   TOWN.forEach((t, i) => (t.face = "npc" + i));
   TOWN.forEach((t, i) => (LOOKS["npc" + i] = Object.assign({ sleeve: "long", pantsR: 0.9, flare: 0.4, shoeToe: t.shoe, sole: 0x2a2630, lace: t.shoe, scale: t.kid ? 0.72 : t.old ? 0.88 : 0.92, headScale: t.kid ? 1.08 : 0.97, pantsR: 0.72, flare: 0.1 }, t)));
 
@@ -2759,7 +2792,7 @@ const CITY = (() => {
           if (face === "x") { z0 = a; z1 = b; x0 = fixed - depth; x1 = fixed; }
           if (face === "-x") { z0 = a; z1 = b; x0 = fixed; x1 = fixed + depth; }
           const dy = yAt ? yAt(a, b) : SW;
-          withY(dy, () => building(x0, z0, x1, z1, it.h || 7.4, face, { style: it.style, shop: it.shop, col: it.col, sign: it.sign }));
+          withY(dy, () => building(x0, z0, x1, z1, it.h || 7.4, face, { style: it.style, shop: it.shop, col: it.col, sign: it.sign, signW: it.signW, signA: it.signA }));
         }
         a = b;
       }
@@ -2844,6 +2877,8 @@ const CITY = (() => {
       const pts = [];
       for (let a = a0; a <= a1 + 0.01; a += step) {
         const x = ax === "x" ? a : fixed, z = ax === "x" ? fixed : a;
+        // não deixa poste cair no meio da rua (onde a fileira cruza um cruzamento)
+        if ((x > -47.6 && x < -37.4) || (x > 35.4 && x < 45.6) || [[-41, -32], [32, 41], [100, 109], [200, 209]].some(([z0, z1]) => z > z0 - 0.6 && z < z1 + 0.6)) continue;
         const y = yAt(x, z);
         pts.push(poste(x, z, y, { ax: ax === "x" ? "z" : "x", arm: armDir, trafo: R() < 0.25 }));
         ob(x, z, 0.17, y + 8.6);
@@ -3131,7 +3166,8 @@ const CITY = (() => {
     const yAv = (a) => yr(a) + SW;
     row("-z", -29, 48, BOUNDS.x1, 11, mix(64, 51, 0.5));
     row("z", 29, 48, BOUNDS.x1, 11, mix(64, 52, 0.5));
-    row("z", -7, 48, AX1, 11, [{ w: 8, style: "loja", shop: 4 }, { w: 8, style: "casas" }, { w: 7, style: "loja", shop: 7 }, { w: 8, style: "casas" }, { w: 9, style: "loja", shop: 5 }, { w: 6, style: "casas" }, { w: 6, style: "casas" }], (a) => yAv(a));
+    // lan house (do Dudu) e loja de discos na avenida, do lado da pista
+    row("z", -7, 48, AX1, 11, [{ w: 8, style: "loja", sign: RECT.town[5], signW: 4.6, signA: 4.27, col: 0x2b2a55 }, { w: 8, style: "casas" }, { w: 7, style: "loja", sign: RECT.town[6], signW: 4.6, signA: 4.27, col: 0xf2c14e }, { w: 8, style: "casas" }, { w: 9, style: "loja", shop: 5 }, { w: 6, style: "casas" }, { w: 6, style: "casas" }], (a) => yAv(a));
     row("-z", 7, 48, AX1, 11, [{ w: 7, style: "casas" }, { w: 9, style: "loja", shop: 2 }, { w: 8, style: "casas" }, { w: 8, style: "loja", shop: 1 }, { w: 7, style: "casas" }, { w: 7, style: "loja", shop: 6 }, { w: 6, style: "casas" }], (a) => yAv(a));
     withY(AH + SW, () => { building(AX1, -18, BOUNDS.x1, -7, 7.4, "z", { style: "casas" }); building(AX1, 7, BOUNDS.x1, 18, 7.4, "-z", { style: "casas" }); });
 
@@ -3275,18 +3311,18 @@ const CITY = (() => {
       pave(-35, 112, 33, 166, SW + 0.006, RECT.petit, 2);
       // chafariz redondo: borda dá grind (octógono), água por dentro
       {
-        const cx = -1, cz = 136, R1 = 4.2, Hc = SW + 0.62;
+        // baixo e menor que antes pra dar pra pular por cima: só a borda e um bico no meio; o jato d'água não bate
+        const cx = -1, cz = 136, R1 = 2.4, Hc = SW + 0.42;
         solid.tube([cx, SW, cz], [cx, Hc, cz], R1, R1, 16, hex(0xe9e2d2), 0, { capCol: hex(0xe9e2d2) });
         solid.tube([cx, Hc - 0.18, cz], [cx, Hc - 0.16, cz], R1 - 0.35, R1 - 0.35, 16, hex(0x4fb6e8), 3, { capCol: hex(0x6cc8f2) });
-        solid.tube([cx, Hc - 0.2, cz], [cx, Hc + 1.6, cz], 0.35, 0.22, 8, hex(0xe9e2d2));
-        solid.tube([cx, Hc + 1.6, cz], [cx, Hc + 1.75, cz], 1.1, 1.1, 10, hex(0xe9e2d2));
-        solid.ball([cx, Hc + 2.1, cz], 0.32, hex(0x9ad8f5), 3, 8, 5);
-        feats.push({ x0: cx - R1, z0: cz - R1, x1: cx + R1, z1: cz + R1, f: (x, z) => { const d = Math.hypot(x - cx, z - cz); return d > R1 ? 0 : d > R1 - 0.4 ? Hc : d < 0.45 ? 60 : Hc - 0.18; } });
+        solid.tube([cx, Hc - 0.2, cz], [cx, Hc + 0.3, cz], 0.45, 0.32, 8, hex(0xe9e2d2));
+        deco.tube([cx, Hc + 0.3, cz], [cx, Hc + 1.5, cz], 0.07, 0.03, 6, hex(0xbfeaff), 2);
+        for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; deco.tube([cx, Hc + 1.45, cz], [cx + Math.cos(a) * 0.9, Hc + 0.2, cz + Math.sin(a) * 0.9], 0.03, 0.02, 4, hex(0x9ad8f5), 2); }
+        feats.push({ x0: cx - R1, z0: cz - R1, x1: cx + R1, z1: cz + R1, f: (x, z) => { const d = Math.hypot(x - cx, z - cz); return d > R1 ? 0 : d > R1 - 0.4 ? Hc : d < 0.5 ? Hc + 0.3 : Hc - 0.18; } });
         for (let i = 0; i < 8; i++) {
           const a0 = (i / 8) * Math.PI * 2 + Math.PI / 8, a1 = ((i + 1) / 8) * Math.PI * 2 + Math.PI / 8;
           rail([cx + Math.cos(a0) * (R1 - 0.12), Hc, cz + Math.sin(a0) * (R1 - 0.12)], [cx + Math.cos(a1) * (R1 - 0.12), Hc, cz + Math.sin(a1) * (R1 - 0.12)], "ledge", "borda do chafariz");
         }
-        OB.push({ x: cx, z: cz, r: 0.5, y1: Hc + 2.4 });
       }
       // canteiros com palmeira e bancos (ledges)
       for (const [x, z] of [[-24, 122], [22, 122], [-24, 150], [22, 150]]) {
@@ -3386,6 +3422,24 @@ const CITY = (() => {
         solid.tube([78, y0 + 2.75, 139.4], [78, y0 + 2.75, 139.6], 0.38, 0.38, 12, C.white, 0, { capCol: hex(0xfff8e6) });
         deco.decal([78, y0 + 4.5, z0 - 0.06], [-1, 0, 0], [0, 1, 0], 9, 1.8, RECT.town[1]);
         MAP.push({ x0, z0, x1, z1, c: "#e8c36a", name: "estação" });
+      }
+      // viaduto (pontilhão) passando por cima da linha do trem, no fim da quadra da estação
+      {
+        const VX0 = 105.6, VX1 = 111.4, VH = SW + 5.2, A = 111.6, B = 124, C2 = 137, D = 149.4;
+        const CON = hex(0xa8a4b4), CON2 = hex(0x8f8aa0);
+        wedge(VX0, A, VX1, B, SW, VH, "z", ASF, CON, SW);
+        framp(VX0, A, VX1, B, SW, VH, "z");
+        solid.box(VX0, VH - 0.7, B, VX1, VH, C2, CON, { top: ASF });
+        fbox(VX0, B, VX1, C2, VH);
+        wedge(VX0, C2, VX1, D, VH, SW, "z", ASF, CON, SW);
+        framp(VX0, C2, VX1, D, VH, SW, "z");
+        for (const z of [127.2, 133.8]) for (const x of [VX0 + 0.8, VX1 - 0.8]) { solid.box(x - 0.38, 0, z - 0.38, x + 0.38, VH - 0.7, z + 0.38, CON2); OB.push({ x, z, r: 0.48, y1: VH - 0.7 }); }
+        const gv = (x, z) => (z < B ? SW + ((z - A) / (B - A)) * (VH - SW) : z > C2 ? VH - ((z - C2) / (D - C2)) * (VH - SW) : VH);
+        for (const x of [VX0 + 0.15, VX1 - 0.15])
+          for (const [za, zb] of [[A + 0.6, B], [B, C2], [C2, D - 0.6]]) handrail([x, gv(x, za) + 0.85, za], [x, gv(x, zb) + 0.85, zb], "guarda-corpo do viaduto", gv, C.metal);
+        for (let z = A + 1; z < D - 1; z += 3) { const y0 = gv(0, z) + 0.02, y1 = gv(0, z + 1.5) + 0.02; deco.quad([108.38, y0, z], [108.38, y1, z + 1.5], [108.62, y1, z + 1.5], [108.62, y0, z], YEL); }
+        MAP.push({ x0: VX0, z0: A, x1: VX1, z1: D, c: "#6f6a80", name: "viaduto" });
+        GAPS.push({ name: "PULOU DO VIADUTO", pts: 700, from: (s) => s.x > VX0 && s.x < VX1 && s.z > B && s.z < C2 && s.y > VH - 0.3, to: (s) => (s.x < VX0 - 0.5 || s.z < A || s.z > D) && s.y < SW + 0.4 });
       }
       // vagão antigo parado no trilho (dá pra subir no teto)
       {
@@ -3511,7 +3565,8 @@ const CITY = (() => {
       GAPS.push(
         { name: "ESCADARIA DA PREFEITURA", pts: 500, from: (s) => s.z > 166 && s.y > TH - 0.2 && Math.abs(s.x + 1) < 9, to: (s) => s.z < 163.6 && s.y < TH - 0.6 },
         { name: "PLATAFORMA → TRILHO", pts: 350, from: (s) => s.z > 136 && s.y > PH - 0.2 && s.x > 52 && s.x < 104, to: (s) => s.z < 134 && s.y < SW + 0.4 },
-        { name: "SOBRE O CHAFARIZ", pts: 450, from: (s) => s.z < 131.5 && Math.abs(s.x + 1) < 2, to: (s) => s.z > 140.5, cond: (s) => Math.abs(s.x + 1) < 2.5 },
+        { name: "SOBRE O CHAFARIZ", pts: 450, from: (s) => s.z < 133.5 && s.z > 129.5 && Math.abs(s.x + 1) < 2.2, to: (s) => s.z > 137.9, cond: (s) => Math.abs(s.x + 1) < 2.8 },
+        { name: "SOBRE O CHAFARIZ", pts: 450, from: (s) => s.z > 138.5 && s.z < 142.5 && Math.abs(s.x + 1) < 2.2, to: (s) => s.z < 134.1, cond: (s) => Math.abs(s.x + 1) < 2.8 },
         { name: "TETO DO VAGÃO", pts: 300, from: (s) => s.y > SW + 3.1 && s.x > 64 && s.x < 82 && s.z > 129 && s.z < 132, to: (s) => s.y < SW + 0.4 },
       );
     }
@@ -4107,7 +4162,7 @@ const LEVEL = (() => {
           shops.push({ x: pp[0], z: pp[2], nx: F.n[0], nz: F.n[2] });
         }
         fq(F, 0, 3.3, 5.7, 1.32, V.mul(col, 0.6), 0, 0.035);
-        if (opt.sign) fdecal(F, 0, 3.3, 5.6, 0.88, opt.sign);
+        if (opt.sign) fdecal(F, 0, 3.3, opt.signW || 5.6, (opt.signW || 5.6) / (opt.signA || 6.4), opt.sign);
         else if (opt.shop != null) fdecal(F, 0, 3.3, 5.4, 1.1, RECT.shop[opt.shop]);
         windows(o2, r, [0, 1, 0], w, h, 3.75, Math.max(1, Math.floor((h - 4.6) / 2.6)), Math.max(2, Math.floor(w / 3)), true);
       } else {
@@ -4880,6 +4935,11 @@ const RADIO = (() => {
     },
   };
   // música dos momentos juntos (história do K.F. com a Julie)
+  // ---------- loja de discos ----------
+  // Pra colocar um álbum de verdade, é só acrescentar aqui:
+  // { a: "Artista", t: "Nome do álbum", y: 2001, cor: "#hex", capa: "url opcional da foto", faixas: [{ id: "idDoYouTube", t: "Música" }] }
+  // Enquanto não chegam os álbuns, a loja monta as prateleiras com as músicas das rádios (agrupadas por artista).
+  const ALBUNS = [];
   const SPECIAL = { juntos: { id: "iGbPR36zGx4", t: "Wherever You Will Go", a: "The Calling", s: 0 } };
   let spec = null;
   const VOLUME = 60;
@@ -4938,7 +4998,11 @@ const RADIO = (() => {
     if (s === 1) {
       errors = 0;
       emit("playing", track(), st);
-    } else if (s === 0) { if (spec) play(); else next(); }
+    } else if (s === 0) {
+      // faixa da loja com fila (álbum): passa pra próxima; senão repete a especial ou segue a rádio
+      if (spec) { if (spec.q && spec.q.length) spec = Object.assign({}, spec.q[0], { q: spec.q.slice(1) }); play(); }
+      else next();
+    }
   }
   // vídeo fora do ar ou que não deixa tocar fora do YouTube: pula
   function onError() {
@@ -5020,6 +5084,24 @@ const RADIO = (() => {
       return true;
     },
     get specialOn() { return !!spec; },
+    // loja de discos: toca uma faixa escolhida (repete até trocar); stopTrack volta pra rádio
+    playTrack(t) {
+      spec = Object.assign({ s: 0 }, t);
+      if (!on) { st = st || STATIONS.kf; order = order.length ? order : shuffle(st.tracks.length); on = true; emit("insert", null, st); }
+      paused = false;
+      ensurePlayer().then(() => { if (spec) play(); if (!muted) player.playVideo(); }).catch(() => emit("failed", null, st));
+      return true;
+    },
+    stopTrack() { if (spec) { spec = null; if (player && on) next(); } },
+    albums() {
+      if (ALBUNS.length) return ALBUNS;
+      const by = {};
+      for (const k in STATIONS) for (const tr of STATIONS[k].tracks) {
+        const a = tr.a.split(/ feat\.| & | e /)[0].trim();
+        (by[a] = by[a] || { a, t: "Seleção da loja", faixas: [], cor: STATIONS[k].band }).faixas.some((f) => f.id === tr.id) || by[a].faixas.push({ id: tr.id, t: tr.t, s: tr.s || 0 });
+      }
+      return Object.values(by).sort((x, y) => y.faixas.length - x.faixas.length || x.a.localeCompare(y.a));
+    },
     pause(v) {
       paused = v;
       if (!player || !on) return;
@@ -5207,6 +5289,9 @@ const STREET = (() => {
       PL([-0.8, 393.5], [1, 0.2], "chat"); PL([0.7, 393.8], [-1, -0.1], "chat"); PL([0, 392.6], [0, 1], "calm");
       P([70, 141.5], [1, 0], "chat"); P([71.4, 141.5], [-1, 0], "chat");
       PL([-10, 377], [0, 1], "bounce"); PL([-8.6, 377.4], [0, -1], "bounce"); P([2.6, 139.5], [-1, 0], "bounce"); P([-56, 43.0], [0, -1], "bounce");
+      // Dudu na porta da lan house e o Seu Vavá na loja de discos
+      NPC_DEF.push({ look: "dudu", at: [54.2, -5.3], dir: [0, 1], idle: "bounce", extra: 1 });
+      NPC_DEF.push({ look: "fig" + 51, at: [69.3, -5.3], dir: [0, 1], idle: "calm", extra: 1 });
       for (const [x, z, y] of L.stops || []) { P([x - 2.6, z - 0.1], [0, z > 300 ? 1 : -1], "calm"); P([x + 0.4, z + 0.05], [0, z > 300 ? 1 : -1], "sit", 0); }
     }
     // cadeira de fio (aquela de área, colorida)
@@ -5429,11 +5514,12 @@ const STREET = (() => {
         o.hidden = !!mDone[i] || n.body.hidden || (MA && MA.m === m && !m.deliver);
         if (!o.hidden) o.mo = M.mul(M.T(n.x, H(n.x, n.z) + 2.05 * (n.look.scale || 1) + Math.sin(t * 3 + i) * 0.08, n.z), M.RY(t * 2));
       });
-      if (!MA && !SA && !soffer && S.running && !PH && !REC) {
+      // dá pra conversar com qualquer morador do "!" amarelo, mesmo no meio de outra missão (aí troca)
+      if (!SA && !soffer && S.running && !PH && !REC && !CUT) {
         let best = null;
-        MISSIONS.forEach((m, i) => { if (mDone[i]) return; const n = npcOf(m.k), d = Math.hypot(n.x - S.x, n.z - S.z); if (d < 3.2 && Math.abs(S.y - H(n.x, n.z)) < 1.6 && (!best || d < best.d)) best = { m, n, d }; });
-        if (best && S.speed < 4 && (!offer || offer.m !== best.m)) { offer = best; ui.mission && ui.mission("offer", { who: best.n.name, line: best.m.line, title: best.m.title }); }
-        if (offer && (!best || best.m !== offer.m)) { offer = null; ui.mission && ui.mission("hide"); }
+        MISSIONS.forEach((m, i) => { if (mDone[i] || (MA && MA.m === m)) return; const n = npcOf(m.k), d = Math.hypot(n.x - S.x, n.z - S.z); if (d < 3.2 && Math.abs(S.y - H(n.x, n.z)) < 1.6 && (!best || d < best.d)) best = { m, n, d }; });
+        if (best && S.speed < 4 && (!offer || offer.m !== best.m)) { offer = best; ui.mission && ui.mission("offer", { who: best.n.name, line: best.m.line, title: best.m.title + (MA ? " (troca a missão atual)" : "") }); }
+        if (offer && (!best || best.m !== offer.m)) { offer = null; ui.mission && ui.mission("hide"); if (MA) ui.mission && ui.mission("start", { title: MA.m.title }); }
       }
       if (!MA) return;
       const m = MA.m;
@@ -5458,9 +5544,23 @@ const STREET = (() => {
       }
       ui.mission && ui.mission("tick", { title: m.title, left: m.time ? MA.left : null, prog: m.items ? `${MA.got.filter(Boolean).length}/5` : m.score ? `${fmt(MA.pts)}/${fmt(m.score)}` : null });
     }
+    // lugares onde dá pra entrar: lan house (minigames) e loja de discos (ouvir álbuns)
+    const PLACES = [
+      { id: "lan", at: [52, -5.3], who: "Dudu da Lan", line: "E aí, mano! Bora jogar um pouco? Pra vocês a ficha é por minha conta... só não conta pro meu chefe, kkkk.", title: "Entrar na Lan House" },
+      { id: "discos", at: [67.5, -5.3], who: "Seu Vavá dos Discos", line: "Chegou coisa nova! Pode escutar à vontade na cabine, só não risca meus vinis, hein.", title: "Entrar na loja de discos" },
+    ];
+    let poffer = null;
+    function placeFrame() {
+      if (SA || soffer || PH || REC || CUT || offer) { if (poffer && (offer || soffer)) poffer = null; return; }
+      const p = PLACES.find((q) => Math.hypot(S.x - q.at[0], S.z - q.at[1]) < 2.4) || null;
+      if (p && S.speed < 4 && poffer !== p) { poffer = p; ui.mission && ui.mission("offer", { who: p.who, line: p.line, title: p.title, place: 1 }); }
+      if (!p && poffer) { poffer = null; ui.mission && ui.mission("hide"); if (MA) ui.mission && ui.mission("start", { title: MA.m.title }); }
+    }
     function acceptMission() {
       if (soffer) return acceptStory();
-      if (!offer || MA) return false;
+      if (poffer) { const p = poffer; poffer = null; ui.mission && ui.mission("hide"); ui.place && ui.place(p.id); return true; }
+      if (!offer) return false;
+      if (MA) { items.forEach((o) => (o.hidden = true)); say("TROCOU DE MISSÃO", 1.4); }
       MA = { m: offer.m, left: offer.m.time || 0, pts: 0, got: offer.m.items ? offer.m.items.map(() => false) : null };
       offer = null;
       sfx.beep();
@@ -6618,10 +6718,10 @@ const STREET = (() => {
       if (!HITCH) {
         if (!keys.grab || S.mode !== "ground" || CUT || PH) return;
         for (const c of CARS) {
-          if (c.kind !== "bus" || c.v < 0.5) continue;
+
           const fx = Math.sin(c.head), fz = Math.cos(c.head);
           const bx = c.x - fx * (c.len / 2 + 0.9), bz = c.z - fz * (c.len / 2 + 0.9);
-          if (Math.hypot(S.x - bx, S.z - bz) < 1.6) { HITCH = { c }; say("RABEIRA NO CIRCULAR! (solte o L pra largar)", 2, true); sfx.bump(); break; }
+          if (Math.hypot(S.x - bx, S.z - bz) < 1.8) { HITCH = { c }; say(c.kind === "bus" ? "RABEIRA NO CIRCULAR! (solte o L pra largar)" : c.kind === "kombi" ? "RABEIRA NA KOMBI DA PAMONHA!" : "RABEIRA NO CARRO! (solte o L pra largar)", 2, true); sfx.bump(); break; }
         }
         return;
       }
@@ -6714,11 +6814,12 @@ const STREET = (() => {
       if (Math.abs(s) < 0.05) S.speed -= (0.45 + 0.06 * S.speed + brake) * dt;
       else S.speed -= (0.06 * S.speed + brake) * dt;
       const maxV = look.skates ? 9.5 : 9;
-      if (push && keys.up && Math.abs(s) < 0.15) {
+      // dá pra remar em ladeira (até ~30%); rampa de pista continua sem remada
+      if (push && keys.up && Math.abs(s) < 0.3) {
         // remada: só empurra quando o pé está no chão (primeira parte do ciclo)
         S.pushPh += dt * (look.skates ? 1.9 : 1.45);
         const ph = S.pushPh % 1;
-        if (ph < 0.5 && S.speed < maxV) S.speed += (look.skates ? 7.5 : 8.5) * dt;
+        if (ph < 0.5 && S.speed < maxV) S.speed += ((look.skates ? 7.5 : 8.5) + Math.max(0, s) * 14) * dt;
       } else if (S.pushPh > 0) {
         // termina a passada antes de voltar o pé pro shape
         const ph = S.pushPh % 1;
@@ -7407,6 +7508,7 @@ const STREET = (() => {
       hitchFrame(dt);
       NOW = t;
       missionFrame(dt, t);
+      placeFrame();
       storyFrame(dt, t);
       if (CUT) cutFrame(dt, t);
       trackFrame();
@@ -7658,8 +7760,8 @@ const STREET = (() => {
         const out = MISSIONS.map((m, i) => (mDone[i] || (MA && MA.m === m) ? null : { x: npcOf(m.k).x, z: npcOf(m.k).z, on: false })).filter(Boolean);
         if (MA && MA.m.deliver != null) { const n = npcOf(MA.m.deliver); out.push({ x: n.x, z: n.z, on: true }); }
         if (MA && MA.m.items) MA.m.items.forEach(([x, z], i) => { if (!MA.got[i]) out.push({ x, z, on: true }); });
-        const cc = curChal();
-        if (cc && cc.at) out.push({ x: cc.at[0], z: cc.at[1], on: false, c: "#ff4fa3" });
+        { const key = lookKey(); (DESAFIOS[key] || []).forEach((c, j) => { if (c.at && !dDone[key + j]) out.push({ x: c.at[0], z: c.at[1], on: false, c: "#ff4fa3" }); }); }
+        out.push({ x: 52, z: -5.3, on: false, c: "#3fd0ff", t: "L" }, { x: 67.5, z: -5.3, on: false, c: "#ffd23f", t: "♪" });
         if (SA && SA.def.kind === "ice" && !SA.phase && L.sorveteria) out.push({ x: L.sorveteria[0], z: L.sorveteria[1], on: true, c: "#ff4fa3" });
         if (lookKey() === "kf" && (stepOf("kf") < STORY.kf.length || replay != null) && !SA) out.push({ x: julie.x, z: julie.z, on: false, c: "#ff4fa3" });
         return out;
@@ -7920,7 +8022,7 @@ function mmDraw(S){const now=performance.now();if(now-mmT<90)return;mmT=now;cons
   const ox=X(S.x)-W/2,oz=Z(S.z)-H/2;
   mmG.fillStyle='#7cbf62';mmG.fillRect(0,0,W,H);mmG.drawImage(mmBg,-ox,-oz);
   for(const t of game.L.tags){if(t.done)continue;mmG.fillStyle='#ff4fa3';mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();mmG.arc(X(t.c[0])-ox,Z(t.c[2])-oz,7,0,7);mmG.fill();mmG.stroke()}
-  if(game.missionMarks)for(const m of game.missionMarks()){const x=X(m.x)-ox,y=Z(m.z)-oz,cx=Math.max(10,Math.min(W-10,x)),cy=Math.max(10,Math.min(H-10,y));mmG.fillStyle=m.c||(m.on?'#3fd0ff':'#ffd23f');mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();mmG.arc(cx,cy,8,0,7);mmG.fill();mmG.stroke();mmG.fillStyle='#1b1530';mmG.font='900 13px Rubik,sans-serif';mmG.textAlign='center';mmG.fillText('!',cx,cy+5)}
+  if(game.missionMarks)for(const m of game.missionMarks()){const x=X(m.x)-ox,y=Z(m.z)-oz,cx=Math.max(10,Math.min(W-10,x)),cy=Math.max(10,Math.min(H-10,y));mmG.fillStyle=m.c||(m.on?'#3fd0ff':'#ffd23f');mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();mmG.arc(cx,cy,8,0,7);mmG.fill();mmG.stroke();mmG.fillStyle='#1b1530';mmG.font='900 13px Rubik,sans-serif';mmG.textAlign='center';mmG.fillText(m.t||'!',cx,cy+5)}
   const px=W/2,pz=H/2,dx=Math.sin(S.head),dz=Math.cos(S.head);
   mmG.fillStyle='rgba(27,21,48,.7)';mmG.font='900 20px Rubik,sans-serif';mmG.textAlign='left';mmG.fillText('N',W-22,24);
   mmG.fillStyle='#ffd23f';mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();
@@ -7960,7 +8062,7 @@ $('mus').addEventListener('click',()=>{if(RADIO.active){RADIO.next();$('mus').te
 function pause(v){paused=v;game.pause(v);try{RADIO.pause(v)}catch(e){}if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();drawMedia();drawMissions();drawStory();$('over').style.display='grid'}else $('over').style.display='none'}
 // ---------- missões ----------
 let dlgOn=false,toastCT=0;
-function drawMissions(){$('mlist').innerHTML=game.missionList().map(m=>`<li class="${m.done?'done':m.on?'on':''}">${m.who}: ${m.title}</li>`).join('');$('chal').innerHTML=game.challenges(look).map(c=>`<li class="${c.done?'done':''}">${c.t}</li>`).join('')}
+function drawMissions(){const ml=game.missionList();$('dropM').hidden=!ml.some(m=>m.on);$('mlist').innerHTML=game.missionList().map(m=>`<li class="${m.done?'done':m.on?'on':''}">${m.who}: ${m.title}</li>`).join('');$('chal').innerHTML=game.challenges(look).map(c=>`<li class="${c.done?'done':''}">${c.t}</li>`).join('')}
 function toastC(t){$('toastC').textContent=t;$('toastC').style.display='block';clearTimeout(toastCT);toastCT=setTimeout(()=>$('toastC').style.display='none',3200)}
 function dlg(on){dlgOn=on;$('dlg').classList.toggle('on',on);$('screen').classList.toggle('talking',on)}
 $('dlgOk').addEventListener('click',()=>{game.acceptMission();dlg(false);$('cv').focus()});$('dlgNo').addEventListener('click',()=>{dlg(false);$('cv').focus()});
@@ -7972,7 +8074,7 @@ for(const b of document.querySelectorAll('.pick.cena'))b.addEventListener('click
 $('cutGo').addEventListener('click',()=>{go('free',true);setTimeout(()=>game.playCut('game'),300)});
 $('storyGo').addEventListener('click',()=>{if(game.continueStory()){go('free',true)}});
 ui.mission=(ev,d)=>{
-  if(ev==='offer'){$('dlgW').textContent=d.who;$('dlgL').textContent='“'+d.line+'”';$('dlgT').textContent=(d.who==='Julie'?'♡ ':'Missão: ')+d.title;dlg(true)}
+  if(ev==='offer'){$('dlgW').textContent=d.who;$('dlgL').textContent='“'+d.line+'”';$('dlgT').textContent=(d.place?'🚪 ':d.who==='Julie'?'♡ ':'Missão: ')+d.title;dlg(true)}
   else if(ev==='unlock'){drawStory()}
   else if(ev==='hide'){dlg(false);$('mis').classList.remove('on')}
   else if(ev==='start'){dlg(false);$('mis').classList.add('on');$('mis').textContent='★ '+d.title}
@@ -7980,6 +8082,65 @@ ui.mission=(ev,d)=>{
   else if(ev==='done'){$('mis').classList.remove('on');drawStory();drawMissions()}
   else if(ev==='fail'){$('mis').classList.remove('on');toastC('Não deu tempo: '+d.title)}
   else if(ev==='challenge'){drawMissions()}};
+$('dropM').addEventListener('click',()=>{game.dropMission();drawMissions()});
+// ---------- lan house (minigames) e loja de discos ----------
+let placeOn=null;
+ui.place=(id)=>{placeOn=id;game.pause(true);dlg(false);$(id==='lan'?'lanO':'discoO').classList.add('on');if(id==='discos')drawAlbums();else MG.menu()};
+function placeClose(){const id=placeOn;placeOn=null;$('lanO').classList.remove('on');$('discoO').classList.remove('on');MG.stop();if(id==='discos'){try{RADIO.stopTrack()}catch(e){}$('nowp').firstChild.textContent='Cabine livre'}game.pause(false);$('cv').focus()}
+for(const b of document.querySelectorAll('[data-close]'))b.addEventListener('click',placeClose);
+// loja de discos: prateleira de álbuns e cabine de audição (toca o álbum inteiro em sequência)
+let albCur=null;
+function drawAlbums(){const A=RADIO.albums();$('albums').innerHTML=A.map((a,i)=>`<button class="alb" data-a="${i}" style="${a.capa?`background-image:url('${a.capa}')`:`background:linear-gradient(135deg,${a.cor||'#8c5cff'},#1b1530)`}" aria-pressed="false">${a.a}<br>${a.t||''}</button>`).join('');
+  for(const b of document.querySelectorAll('.alb'))b.addEventListener('click',()=>{for(const x of document.querySelectorAll('.alb'))x.setAttribute('aria-pressed',x===b);albCur=A[+b.dataset.a];drawTracks()})}
+function drawTracks(){const a=albCur;$('tracks').innerHTML=`<h4>${a.a} — ${a.t||''}${a.y?' ('+a.y+')':''}</h4>`+a.faixas.map((f,i)=>`<button class="tk" data-i="${i}">▶ ${i+1}. ${f.t}</button>`).join('')+(a.faixas.length>1?'<button class="tk" data-i="all">💿 Ouvir o disco inteiro</button>':'');
+  for(const b of document.querySelectorAll('#tracks .tk'))b.addEventListener('click',()=>{const i=b.dataset.i==='all'?0:+b.dataset.i;const q=a.faixas.slice(i+1).map(f=>Object.assign({a:a.a},f));RADIO.playTrack(Object.assign({a:a.a,q:b.dataset.i==='all'?q:[]},a.faixas[i]));for(const x of document.querySelectorAll('#tracks .tk'))x.classList.toggle('on',x===b);$('nowp').firstChild.textContent='♪ Na cabine: '+a.a+' — '+a.faixas[i].t+(b.dataset.i==='all'?' (disco inteiro)':'')})}
+// minigames da lan: Skate Rush, Cobrinha 2001 e Invasores (recorde salvo no navegador)
+const MG=(()=>{const cv=$('mg'),g=cv.getContext('2d'),W=480,H=270;let cur=null,raf=0,last=0;const K={};
+  const best=(n)=>+(localStorage.getItem('plaza-mg-'+n)||0),setBest=(n,v)=>{if(v>best(n))try{localStorage.setItem('plaza-mg-'+n,v)}catch(e){}};
+  const info=(t)=>$('mgInfo').textContent=t,txt=(t,x,y,c='#fff',s=16,a='center')=>{g.fillStyle=c;g.font=`900 ${s}px Rubik,monospace`;g.textAlign=a;g.fillText(t,x,y)};
+  const G={
+    rush:{name:'Skate Rush',init(){return{y:0,vy:0,obs:[],cans:[],sp:240,d:0,sc:0,t:0,over:false}},
+      step(s,dt){if(s.over)return;s.t+=dt;s.sp+=dt*6;s.d+=s.sp*dt;const gy=210;
+        if((K[' ']||K.arrowup)&&s.y===0)s.vy=-430;s.vy+=1250*dt;s.y=Math.min(0,s.y+s.vy*dt);if(s.y===0)s.vy=0;
+        if(!s.obs.length||s.obs[s.obs.length-1].x<W-180-Math.random()*160){const k=Math.random();s.obs.push({x:W+20,w:k<.5?18:k<.8?48:30,h:k<.5?22:k<.8?16:30,k})}
+        if(Math.random()<dt*0.9)s.cans.push({x:W+20,y:gy-60-Math.random()*60});
+        for(const o of s.obs)o.x-=s.sp*dt;for(const c of s.cans)c.x-=s.sp*dt;s.obs=s.obs.filter(o=>o.x>-60);
+        const px=80,py=gy+s.y;for(const o of s.obs)if(px+16>o.x&&px-10<o.x+o.w&&py>gy-o.h+2){s.over=true;setBest('rush',Math.floor(s.sc+s.d/10));}
+        s.cans=s.cans.filter(c=>{if(Math.abs(c.x-px)<18&&Math.abs(c.y-(py-24))<24){s.sc+=50;return false}return c.x>-20})},
+      draw(s){g.fillStyle='#ff9a6a';g.fillRect(0,0,W,H);g.fillStyle='#ffc58a';g.fillRect(0,120,W,40);g.fillStyle='#6a4a8a';for(let i=0;i<8;i++){const x=((i*90-s.d*0.3)%720+720)%720-60;g.fillRect(x,90,50,80);g.fillRect(x+60,110,30,60)}
+        g.fillStyle='#8a8698';g.fillRect(0,210,W,60);g.fillStyle='#ffd23f';for(let i=0;i<10;i++)g.fillRect(((i*60-s.d)%600+600)%600-40,236,30,4);
+        for(const o of s.obs){g.fillStyle=o.k<.5?'#ff7a1a':o.k<.8?'#b7b0c9':'#3fd0ff';g.fillRect(o.x,210-o.h,o.w,o.h);g.fillStyle='#1b1530';g.fillRect(o.x,208,o.w,2)}
+        for(const c of s.cans){g.fillStyle='#ff4fa3';g.fillRect(c.x-5,c.y-9,10,18);g.fillStyle='#fff';g.fillRect(c.x-5,c.y-9,10,4)}
+        const py=210+s.y;g.fillStyle='#3fd0ff';g.fillRect(64,py-4,40,4);g.fillStyle='#1b1530';g.fillRect(68,py,6,6);g.fillRect(94,py,6,6);g.fillStyle='#e8242c';g.fillRect(76,py-30,16,18);g.fillStyle='#2f6fd8';g.fillRect(76,py-14,16,10);g.fillStyle='#6a4028';g.fillRect(77,py-42,14,12);g.fillStyle='#2a1a10';g.fillRect(72,py-48,24,10);
+        txt('Pontos '+Math.floor(s.sc+s.d/10),12,24,'#1b1530',16,'left');txt('Recorde '+best('rush'),W-12,24,'#1b1530',14,'right');if(s.over){txt('BATEU!',W/2,110,'#fff',34);txt('Enter pra jogar de novo',W/2,140,'#fff',14)}}},
+    snake:{name:'Cobrinha 2001',init(){return{b:[[8,6],[7,6],[6,6]],d:[1,0],nd:[1,0],f:[15,6],t:0,sc:0,over:false,dl:0.14}},
+      step(s,dt){if(s.over)return;const D={arrowup:[0,-1],arrowdown:[0,1],arrowleft:[-1,0],arrowright:[1,0]};for(const k in D)if(K[k]&&!(D[k][0]===-s.d[0]&&D[k][1]===-s.d[1]))s.nd=D[k];
+        s.t+=dt;if(s.t<s.dl)return;s.t=0;s.d=s.nd;const h=[s.b[0][0]+s.d[0],s.b[0][1]+s.d[1]];
+        if(h[0]<0||h[1]<0||h[0]>=24||h[1]>=13||s.b.some(p=>p[0]===h[0]&&p[1]===h[1])){s.over=true;setBest('snake',s.sc);return}
+        s.b.unshift(h);if(h[0]===s.f[0]&&h[1]===s.f[1]){s.sc+=10;s.dl=Math.max(0.06,s.dl-0.004);do{s.f=[Math.floor(Math.random()*24),Math.floor(Math.random()*13)]}while(s.b.some(p=>p[0]===s.f[0]&&p[1]===s.f[1]))}else s.b.pop()},
+      draw(s){g.fillStyle='#9cbc5a';g.fillRect(0,0,W,H);g.fillStyle='#8aaa4c';for(let x=0;x<24;x++)for(let y=0;y<13;y++)if((x+y)%2)g.fillRect(x*20,y*20+10,20,20);
+        g.fillStyle='#2a3a14';for(const p of s.b)g.fillRect(p[0]*20+1,p[1]*20+11,18,18);g.fillStyle='#ff4fa3';g.fillRect(s.f[0]*20+5,s.f[1]*20+13,10,16);
+        txt('Pontos '+s.sc+'   Recorde '+best('snake'),W/2,9,'#1b1530',10);if(s.over){txt('FIM DE JOGO',W/2,120,'#1b1530',32);txt('Enter pra jogar de novo',W/2,150,'#1b1530',14)}}},
+    inv:{name:'Invasores',init(){const a=[];for(let r=0;r<4;r++)for(let c=0;c<9;c++)a.push({x:60+c*40,y:30+r*28,r});return{x:W/2,a,dx:30,sh:[],bo:[],cd:0,sc:0,lv:1,over:false,vi:3}},
+      step(s,dt){if(s.over)return;if(K.arrowleft)s.x-=220*dt;if(K.arrowright)s.x+=220*dt;s.x=Math.max(16,Math.min(W-16,s.x));s.cd-=dt;
+        if(K[' ']&&s.cd<=0){s.sh.push({x:s.x,y:238});s.cd=0.35}for(const b of s.sh)b.y-=360*dt;s.sh=s.sh.filter(b=>b.y>0);
+        let edge=false;for(const a of s.a){a.x+=s.dx*dt*(1+s.lv*0.2);if(a.x<14||a.x>W-14)edge=true}if(edge){s.dx=-s.dx;for(const a of s.a)a.y+=10}
+        if(Math.random()<dt*(0.8+s.lv*0.3)&&s.a.length){const a=s.a[Math.floor(Math.random()*s.a.length)];s.bo.push({x:a.x,y:a.y})}for(const b of s.bo)b.y+=170*dt;
+        s.bo=s.bo.filter(b=>{if(Math.abs(b.x-s.x)<14&&b.y>236&&b.y<256){s.vi--;if(s.vi<=0){s.over=true;setBest('inv',s.sc)}return false}return b.y<H});
+        s.sh=s.sh.filter(b=>{const i=s.a.findIndex(a=>Math.abs(a.x-b.x)<14&&Math.abs(a.y-b.y)<10);if(i>=0){s.a.splice(i,1);s.sc+=10*s.lv;return false}return true});
+        if(s.a.some(a=>a.y>228)){s.over=true;setBest('inv',s.sc)}if(!s.a.length){s.lv++;const n=G.inv.init();s.a=n.a}},
+      draw(s){g.fillStyle='#0b0a1e';g.fillRect(0,0,W,H);g.fillStyle='#fff';for(let i=0;i<40;i++)g.fillRect((i*97)%W,(i*53)%H,1,1);
+        for(const a of s.a){g.fillStyle=['#ff4fa3','#ffd23f','#3fd0ff','#7cf28a'][a.r];g.fillRect(a.x-10,a.y-6,20,12);g.fillStyle='#0b0a1e';g.fillRect(a.x-6,a.y-2,4,4);g.fillRect(a.x+2,a.y-2,4,4)}
+        g.fillStyle='#fff';for(const b of s.sh)g.fillRect(b.x-1,b.y-6,3,8);g.fillStyle='#ff7a1a';for(const b of s.bo)g.fillRect(b.x-2,b.y-4,4,8);
+        g.fillStyle='#3fd0ff';g.fillRect(s.x-14,244,28,8);g.fillRect(s.x-4,238,8,6);txt('Pontos '+s.sc+'  Fase '+s.lv+'  Vidas '+s.vi,12,18,'#fff',13,'left');txt('Recorde '+best('inv'),W-12,18,'#ffd23f',13,'right');
+        if(s.over){txt('GAME OVER',W/2,120,'#ff4fa3',32);txt('Enter pra jogar de novo',W/2,150,'#fff',14)}}},
+  };
+  function loop(t){raf=requestAnimationFrame(loop);const dt=Math.min(0.05,(t-last)/1000||0);last=t;if(!cur)return;G[cur.n].step(cur.s,dt);G[cur.n].draw(cur.s)}
+  return{menu(){cur=null;g.fillStyle='#14112a';g.fillRect(0,0,W,H);txt('LAN HOUSE MEGABYTE',W/2,110,'#3fd0ff',26);txt('escolha um jogo aí em cima',W/2,140,'#fff',14);info('Recordes: Skate Rush '+best('rush')+' · Cobrinha '+best('snake')+' · Invasores '+best('inv'))},
+    start(n){cur={n,s:G[n].init()};for(const b of document.querySelectorAll('.gbtn'))b.setAttribute('aria-pressed',b.dataset.g===n);info(G[n].name+' — Esc sai da lan');$('lanSay').textContent=['“Esse aí eu zerei ontem, duvido você!”','“Clássico! Só não vale jogar no meu PC, que tá com o save do meu CS.”','“Cuidado que esse vicia, hein.”'][Math.floor(Math.random()*3)];if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}},
+    stop(){cur=null;cancelAnimationFrame(raf);raf=0},
+    key(k,v){K[k]=v;if(v&&k==='enter'&&cur&&cur.s.over)cur.s=G[cur.n].init()}}})();
+for(const b of document.querySelectorAll('.gbtn'))b.addEventListener('click',()=>{MG.start(b.dataset.g);b.blur()});
 // cutscene: barras de cinema, legenda com efeito de máquina de escrever
 let cutTy=0;
 ui.cut=(ev,d)=>{const o=$('cutO');
@@ -8043,6 +8204,7 @@ const map={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'lef
 function legend(){const sk=look==='manu';$('kJ').textContent=sk?'mortal / parafuso / estrela':'flip (kick, heel, shove-it…)';$('kL').textContent=sk?'pegada (na borda da rampa: parada de mão)':'grab (na borda da rampa: handplant)';$('kK').textContent=sk?'grind de patins':'grind';$('skfRow').style.display=sk?'':'none'}
 legend();
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
+  if(placeOn){if(k==='escape'){e.preventDefault();placeClose();return}if(placeOn==='lan'){if([' ','arrowup','arrowdown','arrowleft','arrowright','enter'].includes(k))e.preventDefault();MG.key(k,true)}return}
   if(game.cutOn){if(k==='enter'||k==='escape'||k===' '){e.preventDefault();game.cutSkip()}return}
   if(dlgOn){if(k==='enter'){e.preventDefault();game.acceptMission();dlg(false);return}if(k==='escape'){e.preventDefault();dlg(false);return}}
   // fita passando: controles do videocassete
@@ -8056,7 +8218,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();
   if(k==='m'){if(RADIO.active)RADIO.toggleMute();else game.toggleMusic();return}
   if(k==='c'){game.cycleCam();return}
   if(map[k]){e.preventDefault();if(!e.repeat)game.press(map[k],true)}});
-addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(map[k])game.press(map[k],false)});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(placeOn==='lan'){MG.key(k,false);return}if(map[k])game.press(map[k],false)});
 addEventListener('blur',()=>{for(const v of Object.values(map))game.press(v,false)});
 for(const b of document.querySelectorAll('.touch button')){const k=b.dataset.k;
   b.addEventListener('pointerdown',e=>{e.preventDefault();if(k==='cam'){game.cycleCam();return}
