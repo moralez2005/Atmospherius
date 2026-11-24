@@ -4948,6 +4948,8 @@ const STREET = (() => {
     const FLIP_N = new Set([...Object.values(FLIPS).map((f) => f.name), ...Object.values(SK_FLIP)]);
     const near = (e, x, z, r) => Math.hypot(e.x - x, e.z - z) < r;
     const clipHas = (c, f) => (c.ev || []).some(f);
+    let jSelfies = 0;
+    try { jSelfies = +localStorage.getItem("plaza-selfies-julie") || 0; } catch (e) {}
     // relógio do jogo e registro dos pontos (pra desafios de "some X pontos em Y segundos")
     let NOW = 0;
     const PTS = [];
@@ -4980,6 +4982,7 @@ const STREET = (() => {
         { t: "Grave um vídeo com 4 manobras diferentes", hint: "R liga a filmadora · R de novo salva", ok: (e) => e.type === "clip" && distinctTricks(e.clip) >= 4, prog: () => (REC ? [recTricks(), 4] : null) },
         { t: "Filme um gap na cidade nova", hint: "R grava · escadaria da prefeitura, chafariz, vagão", ok: (e) => e.type === "clip" && clipHas(e.clip, (v) => v.type === "gap" && v.z > 100) },
         { t: "Selfie à noite em frente à prefeitura", hint: "Hora: Noite (menu) · F abre a câmera · Espaço tira", ok: (e) => e.type === "photo" && e.night > 0.5 && e.view === "selfie" && near(e, -1, 155, 30) },
+        { t: "Tire 4 selfies com a Julie, cada uma com uma pose", hint: "pare perto dela e aperte F · cada foto ela muda a pose", ok: (e) => e.type === "photo" && e.julie && jSelfies >= 4, prog: () => [Math.min(4, jSelfies), 4] },
       ],
       manu: [
         { t: "Some 3.500 pontos em 60 s", hint: "manobras na rampa rendem mais", score: 3500, win: 60 },
@@ -5140,8 +5143,15 @@ const STREET = (() => {
     const julie = (() => {
       const look = ART.LOOKS.julie, r = ART.makeRig(Rn, look);
       objs.push(r.objs[0], r.board);
-      return { look, rig: r, x: JULIE_HOME[0], z: JULIE_HOME[1], head: 0, pitch: 0, follow: false, trail: [], wp: 1, v: 0, act: null, nextTrick: 4, cur: Object.assign({}, ART.POSES.ride), state: "ride" };
+      return { look, rig: r, pi: 0, posed: false, x: JULIE_HOME[0], z: JULIE_HOME[1], head: 0, pitch: 0, follow: false, trail: [], wp: 1, v: 0, act: null, nextTrick: 4, cur: Object.assign({}, ART.POSES.ride), state: "ride" };
     })();
+    // poses dela quando você tira foto perto (troca a cada foto)
+    const JPOSES = [
+      { n: "paz e amor", p: (t) => ({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.02, twist: -0.1, hy: 0.3, hp: 0.14 + Math.sin(t * 2) * 0.02, hF: [-0.05, 0.98, 0.28], hB: [0.26, 1.7, -0.22], lf: 0, lb: 0 }) },
+      { n: "uhuuul", p: (t) => ({ stand: 1, px: 0, py: 0.96 + Math.abs(Math.sin(t * 5)) * 0.03, pz: 0, lean: -0.08, twist: 0, hy: 0, hp: -0.18, hF: [0.12, 1.98, 0.34], hB: [0.12, 1.98, -0.34], lf: 0, lb: 0 }) },
+      { n: "coração", p: (t) => ({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.05, twist: 0, hy: 0.12, hp: 0.12, hF: [0.34, 1.5, 0.07], hB: [0.34, 1.5, -0.07], lf: 0, lb: 0 }) },
+      { n: "joinha", p: (t) => ({ stand: 1, px: 0, py: 0.94, pz: 0, lean: 0.06, twist: 0.2, hy: 0.25, hp: 0.1, hF: [-0.02, 0.98, 0.3], hB: [0.46, 1.38, -0.12], lf: 0, lb: 0.1 }) },
+    ];
     const angTo = (a, b, k) => { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return a + d * k; };
     const jSlope = (x, z, h) => (H(x + Math.sin(h) * 0.3, z + Math.cos(h) * 0.3) - H(x - Math.sin(h) * 0.3, z - Math.cos(h) * 0.3)) / 0.6;
     // a Julie faz uma manobra de verdade: pula, o shape gira; se errar, cai e o shape escapa
@@ -5283,7 +5293,23 @@ const STREET = (() => {
       const game = SA && SA.def.kind === "skate";
       const talkable = k === "kf" && !following && !game && !MA;
       let target = null, want = Object.assign({}, ART.POSES.ride, julie.look.ride), wantHead = julie.head;
-      if (following) {
+      // foto: se ela tá perto, chega do seu lado (do lado contrário da mão da câmera) e faz pose
+      const hh = PH && dPl < 7 && !julie.act && !game ? handAndHead() : null;
+      if (hh) {
+        if (julie.state !== "pose") { julie.state = "pose"; julie.posed = false; }
+        let sx = hh.hand[0] - hh.head[0], sz = hh.hand[2] - hh.head[2];
+        const sl0 = Math.hypot(sx, sz) || 1;
+        sx /= sl0; sz /= sl0;
+        const f = V.norm([hh.fwd[0], 0, hh.fwd[2]]), sc = look.scale || 1;
+        const tx = hh.head[0] - sx * 1.0 * sc + f[0] * 0.28, tz = hh.head[2] - sz * 1.0 * sc + f[2] * 0.28;
+        julie.x += (tx - julie.x) * Math.min(1, dt * 6);
+        julie.z += (tz - julie.z) * Math.min(1, dt * 6);
+        julie.v = 0;
+        const c = PH.cam.eye;
+        wantHead = Math.atan2(c[0] - julie.x, c[2] - julie.z) - Math.PI / 2;
+        want = JPOSES[julie.pi % JPOSES.length].p(t);
+        if (!julie.posed && Math.hypot(tx - julie.x, tz - julie.z) < 0.3) { julie.posed = true; say(`A JULIE ENTROU NA FOTO: ${JPOSES[julie.pi % JPOSES.length].n.toUpperCase()}`, 1.6); }
+      } else if (following) {
         julie.state = "follow";
         let tp = julie.trail[0];
         for (const q of julie.trail) if (t - q[3] >= 0.35) tp = q;
@@ -5336,9 +5362,9 @@ const STREET = (() => {
           julie.z += Math.cos(julie.head) * julie.v * dt;
         }
       }
-      julie.head = angTo(julie.head, wantHead, Math.min(1, dt * (julie.state === "ride" ? 5 : 8)));
+      julie.head = angTo(julie.head, wantHead, Math.min(1, dt * (julie.state === "ride" ? 5 : julie.state === "pose" ? 12 : 8)));
       // inclina o shape com a rampa
-      const sl = (julie.state === "park" || julie.state === "wait") ? 0 : jSlope(julie.x, julie.z, julie.head);
+      const sl = (julie.state === "park" || julie.state === "wait" || julie.state === "pose") ? 0 : jSlope(julie.x, julie.z, julie.head);
       julie.pitch += (Math.atan(Math.max(-2.5, Math.min(2.5, sl))) - julie.pitch) * Math.min(1, dt * 12);
       if (Math.abs(sl) > 0.25 && julie.state === "ride") want = ART.lerpPose(want, ART.POSES.crouch, Math.min(0.6, Math.abs(sl) * 0.5));
       // manobra em andamento
@@ -5379,7 +5405,7 @@ const STREET = (() => {
       }
       // "!" rosa quando tem capítulo pra fazer com o K.F.
       const hasStep = k === "kf" && kfStep < steps.length && !SA;
-      jMark.hidden = !hasStep;
+      jMark.hidden = !hasStep || !!PH;
       if (hasStep) jMark.mo = M.mul(M.T(julie.x, gy + 2.15, julie.z), M.RY(t * 2));
       // oferta: chegou perto da Julie parada
       // andando junto, ela só pergunta se quer parar quando vocês voltam pra pista dela
@@ -6574,8 +6600,13 @@ const STREET = (() => {
       if (PH.view === "selfie") {
         // na frente do rosto, de cima (ângulo clássico de foto de perfil)
         const s = look.scale || 1, f = V.norm([hh.fwd[0], 0, hh.fwd[2]]);
-        c.eye = V.add(hh.head, [f[0] * 0.78 * s, (0.2 + PH.arm * 0.5) * s, f[2] * 0.78 * s]);
-        c.at = V.add(hh.head, [0, -0.05 * s, 0]);
+        // com a Julie na foto, o braço estica e a câmera pega os dois
+        const jw = julie.state === "pose" && !julie.rig.objs[0].hidden ? 1 : 0;
+        PH.jw = (PH.jw || 0) + (jw - (PH.jw || 0)) * Math.min(1, dt * 5);
+        const jh = [julie.x, H(julie.x, julie.z) + 1.38 * (julie.look.scale || 1), julie.z];
+        const mid = V.add(V.lerp(hh.head, jh, 0.45 * PH.jw), [0, -0.12 * PH.jw, 0]), dd = (0.78 + 0.62 * PH.jw) * s;
+        c.eye = V.add(mid, [f[0] * dd, (0.2 + PH.arm * 0.5 + 0.08 * PH.jw) * s, f[2] * dd]);
+        c.at = V.add(mid, [0, -0.05 * s, 0]);
       } else {
         const tgt = [S.x, S.y + 1.0 * (look.scale || 1), S.z], d = PH.dist;
         const want = [tgt[0] + Math.sin(PH.yaw) * Math.cos(PH.pitch) * d, tgt[1] + Math.sin(PH.pitch) * d, tgt[2] + Math.cos(PH.yaw) * Math.cos(PH.pitch) * d];
@@ -6609,7 +6640,11 @@ const STREET = (() => {
       Rn.size(Math.max(prev, 720));
       render(0);
       const url = canvas.toDataURL("image/png");
-      emit("photo", { view: PH ? PH.view : "", night: scene.night, tod: ATM.tod, rain: ATM.rain });
+      const withJ = julie.state === "pose" && julie.posed;
+      if (withJ && PH && PH.view === "selfie") { jSelfies++; try { localStorage.setItem("plaza-selfies-julie", jSelfies); } catch (e) {} }
+      emit("photo", { view: PH ? PH.view : "", night: scene.night, tod: ATM.tod, rain: ATM.rain, julie: withJ });
+      // na próxima foto ela faz outra pose
+      if (withJ) { julie.pi++; julie.posed = false; }
       Rn.size(prev);
       sfx.snap();
       return url;
