@@ -5130,36 +5130,63 @@ const STREET = (() => {
     const STORY = {
       kf: [
         { title: "A garota da pista", line: "Ei, você do shape de tubarão. Até que você anda... Faz 2.000 pontos em 90 segundos que eu quero ver.", kind: "score", pts: 2000, time: 90 },
-        { title: "Game de S.K.A.T.E. com a Julie", line: "Ok, ok, não foi ruim. Mas aguenta um game de S.K.A.T.E. comigo? Eu mando, você repete. Quem errar ganha letra.", kind: "skate" },
+        { title: "Game de S.K.A.T.E. com a Julie", line: "Ok, ok, não foi ruim. Mas aguenta um game de S.K.A.T.E. comigo? 5 rodadas: eu mando, você repete, depois inverte. Errou, ganha letra. Uma tentativa só, hein!", kind: "skate" },
         { title: "Rolê com a Julie até a estação", line: "Tá bom, você anda bem. Bora dar um rolê? Me leva até a estação de trem, lá na cidade nova.", kind: "ride", to: [48, 112, 109, 160] },
       ],
     };
     const JULIE_HOME = [8, 16];
+    // rolê da Julie pela pista: atravessa o funbox, sobe as duas rampas e volta (kickturn lá em cima)
+    const JPATH = [[8, 16], [4, 10], [0, 6.5], [0, 0], [0, -7], [3, -16], [5, -22], [6, -27.6, 1], [8, -20], [11, -12], [10, -4], [9, 6], [10, 14], [11, 21], [12, 27.6, 1], [11, 19]];
     const julie = (() => {
       const look = ART.LOOKS.julie, r = ART.makeRig(Rn, look);
       objs.push(r.objs[0], r.board);
-      return { look, rig: r, x: JULIE_HOME[0], z: JULIE_HOME[1], head: Math.atan2(-8, -2) - Math.PI / 2, follow: false, hop: 0, trail: [] };
+      return { look, rig: r, x: JULIE_HOME[0], z: JULIE_HOME[1], head: 0, pitch: 0, follow: false, trail: [], wp: 1, v: 0, act: null, nextTrick: 4, cur: Object.assign({}, ART.POSES.ride), state: "ride" };
     })();
+    const angTo = (a, b, k) => { let d = b - a; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2; return a + d * k; };
+    const jSlope = (x, z, h) => (H(x + Math.sin(h) * 0.3, z + Math.cos(h) * 0.3) - H(x - Math.sin(h) * 0.3, z - Math.cos(h) * 0.3)) / 0.6;
+    // a Julie faz uma manobra de verdade: pula, o shape gira; se errar, cai e o shape escapa
+    function jTrick(key, ok) {
+      julie.act = { key, t: 0, dur: 0.78, ok, ft: 0 };
+      if (Math.hypot(S.x - julie.x, S.z - julie.z) < 30) sfx.pop();
+    }
     const jMark = add(Rn.upload((() => { const m = new Mesh(); m.box(-0.07, 0.25, -0.07, 0.07, 0.75, 0.07, hex(0xff4fa3), { m: 2 }); m.box(-0.07, 0, -0.07, 0.07, 0.14, 0.07, hex(0xff4fa3), { m: 2 }); return m; })()), M.I(), { hidden: true });
     let SA = null, soffer = null;
-    const story = () => STORY[lookKey()];
     const stepOf = (k) => HS[k] || 0;
     const LET = "SKATE";
     const letters5 = (n) => LET.split("").map((c, i) => (i < n ? c : "_")).join(" ");
+    // ---------- game de S.K.A.T.E.: 5 rodadas (Julie manda nas ímpares, você nas pares) ----------
+    const FKEY = Object.fromEntries(Object.entries(FLIPS).map(([k, f]) => [f.name, k]));
+    const FHINT = { Kickflip: "J", Heelflip: "J + D", "Pop Shove-it": "J + S", Hardflip: "J + W", "Varial Kickflip": "J + A" };
+    const GRIND_N = new Set([...Object.values(GRINDN), ...Object.values(SK_GRIND)]);
+    const GRAB_N = new Set([...Object.values(GRABN), ...Object.values(SK_GRAB)]);
+    const J_SETS = [
+      [{ n: "Kickflip", f: "Kickflip" }, { n: "Heelflip", f: "Heelflip" }, { n: "Pop Shove-it", f: "Pop Shove-it" }],
+      [{ n: "Hardflip", f: "Hardflip" }, { n: "Varial Kickflip", f: "Varial Kickflip" }, { n: "Kickflip + grind", f: "Kickflip", grind: 1 }, { n: "Heelflip + grab", f: "Heelflip", grab: 1 }],
+      [{ n: "Varial Kickflip + grind", f: "Varial Kickflip", grind: 1 }, { n: "Hardflip + grind", f: "Hardflip", grind: 1 }, { n: "Double Kickflip", f: "Kickflip", dbl: 1 }, { n: "Pop Shove-it + grab", f: "Pop Shove-it", grab: 1 }],
+    ];
+    const setHint = (st) => [FHINT[st.f] + (st.dbl ? " (segure o J)" : "") + " no ar", st.grind && "K no corrimão", st.grab && "L no ar"].filter(Boolean).join(" · ");
+    const comboHas = (names, st) => names.some((n) => baseFlip(n) === st.f && (!st.dbl || /^(Double|Triple|\d+x) /.test(n))) && (!st.grind || names.some((n) => GRIND_N.has(n))) && (!st.grab || names.some((n) => GRAB_N.has(n)));
+    // chance da Julie repetir o que você mandou: quanto mais difícil, mais ela erra
+    function julieChance(names) {
+      const fl = names.map(baseFlip).filter(Boolean);
+      const B = { Kickflip: 0.82, Heelflip: 0.8, "Pop Shove-it": 0.86, Hardflip: 0.6, "Varial Kickflip": 0.56 };
+      let p = Math.min(...fl.map((f) => B[f] ?? 0.65));
+      if (names.some((n) => /^(Double|Triple|\d+x) /.test(n) && baseFlip(n))) p *= 0.72;
+      if (new Set(fl).size > 1) p *= 0.82;
+      if (names.some((n) => GRIND_N.has(n))) p *= 0.82;
+      if (names.some((n) => GRAB_N.has(n))) p *= 0.86;
+      return Math.max(0.2, Math.min(0.9, p));
+    }
+    const describe = (names) => [...new Set(names.filter((n) => !n.startsWith("GAP") && n !== "GRAFITE"))].slice(0, 4).join(" + ");
     function storyEvent(e) {
       if (!SA) return;
       const st = SA.def;
       if (st.kind === "score" && e.type === "combo") { SA.pts += e.pts; if (SA.pts >= st.pts) storyStepDone(); }
       if (st.kind === "skate") {
         const G = SA.g;
-        if (e.type === "bail" && (G.phase === "copy" || G.phase === "set")) G.fail = true;
-        if (e.type === "trick" && baseFlip(e.name) && (G.phase === "copy" || G.phase === "set") && !G.got) G.got = baseFlip(e.name);
-        if (e.type === "combo" && G.got) {
-          if (G.phase === "copy" && G.got === G.target) G.ok = true;
-          if (G.phase === "set") { G.target = G.got; G.ok = true; }
-          G.got = null;
-        }
-        if (e.type === "bail") G.got = null;
+        if (G.phase !== "copy" && G.phase !== "pset") return;
+        if (e.type === "bail") G.att = { bail: true };
+        if (e.type === "combo" && e.names && e.names.some((n) => baseFlip(n))) G.att = { names: e.names };
       }
     }
     function storyStepDone() {
@@ -5178,35 +5205,67 @@ const STREET = (() => {
     }
     function skateFrame(dt) {
       const G = SA.g;
-      const tick = (txt) => ui.mission && ui.mission("tick", { title: `S.K.A.T.E. · você ${letters5(G.pl)} · Julie ${letters5(G.ju)} · ${txt}`, left: G.t > 0 ? G.t : null });
-      if (G.ju >= 5) return storyStepDone();
-      if (G.pl >= 5) { say("PERDEU O GAME! fala com a Julie pra revanche", 2.6, true); sfx.nocan(); ui.mission && ui.mission("fail", { title: "Game de S.K.A.T.E." }); SA = null; return; }
-      G.t -= dt;
-      if (G.phase === "julie") {
-        tick("vez da Julie…");
-        if (G.t > 0) return;
-        // a Julie escolhe e manda a manobra
-        G.target = G.list[Math.floor(Math.random() * G.list.length)];
-        julie.hop = 0.9;
-        say(`JULIE MANDOU: ${G.target.toUpperCase()}`, 2, true);
-        Object.assign(G, { phase: "copy", t: 14, ok: false, fail: false, got: null });
-      } else if (G.phase === "copy") {
-        tick(`repita: ${G.target}`);
-        if (G.ok) { say("ACERTOU!", 1.4, true); sfx.combo(true); Object.assign(G, { phase: "set", t: 14, ok: false, fail: false, got: null, target: null }); }
-        else if (G.fail || G.t <= 0) { G.pl++; say(`ERROU! VOCÊ: ${letters5(G.pl)}`, 1.8, true); sfx.nocan(); Object.assign(G, { phase: G.pl >= 5 ? "end" : "set", t: 14, ok: false, fail: false, got: null, target: null }); }
-      } else if (G.phase === "set") {
-        tick("sua vez: mande um flip");
-        if (G.ok && G.target) { Object.assign(G, { phase: "jtry", t: 1.2, ok: false }); say(`VOCÊ MANDOU: ${G.target.toUpperCase()}`, 1.4); }
-        else if (G.fail || G.t <= 0) { say("SUA VEZ PASSOU", 1.4); Object.assign(G, { phase: "julie", t: 1.4, ok: false, fail: false, got: null }); }
-      } else if (G.phase === "jtry") {
-        tick(`a Julie tenta: ${G.target}`);
-        if (G.t <= 0) {
-          julie.hop = 0.9;
-          const hard = { Kickflip: 0.75, Heelflip: 0.7, "Pop Shove-it": 0.8, Hardflip: 0.5, "Varial Kickflip": 0.45 }[G.target] ?? 0.6;
-          if (Math.random() < hard) say("A JULIE ACERTOU", 1.6);
-          else { G.ju++; say(`A JULIE ERROU! JULIE: ${letters5(G.ju)}`, 1.8, true); sfx.combo(true); }
-          Object.assign(G, { phase: "julie", t: 1.6 });
+      const head = () => `S.K.A.T.E. · rodada ${Math.min(G.round, 5)}${G.round > 5 ? "+ desempate" : "/5"} · você ${letters5(G.pl)} · Julie ${letters5(G.ju)}`;
+      const tick = (txt, left) => ui.mission && ui.mission("tick", { title: `${head()} · ${txt}`, left: left ?? null });
+      const next = () => {
+        // fim: depois da 5ª rodada (ou de cada par de desempate) quem tiver menos letras ganha
+        if (G.round >= 5 && G.pl !== G.ju && (G.round === 5 || G.round % 2 === 0)) {
+          if (G.pl < G.ju) { say("VOCÊ GANHOU O GAME!", 2.4, true); return storyStepDone(); }
+          say("A JULIE GANHOU! fala com ela pra revanche", 2.8, true); sfx.nocan();
+          ui.mission && ui.mission("fail", { title: "Game de S.K.A.T.E." });
+          SA = null; return;
         }
+        if (G.round === 5 && G.pl === G.ju) say("EMPATE! DESEMPATE!", 2, true);
+        G.round++;
+        Object.assign(G, { phase: G.round % 2 ? "jprep" : "pprep", t: 2.2, att: null });
+      };
+      G.t -= dt;
+      if (G.phase === "jprep") {
+        tick("vez da Julie…");
+        if (G.t > 0 || julie.state !== "park") return;
+        const tier = J_SETS[G.round >= 5 ? 2 : G.round >= 3 ? 1 : 0];
+        G.set = tier[Math.floor(Math.random() * tier.length)];
+        G.jok = Math.random() < (G.round >= 5 ? 0.72 : G.round >= 3 ? 0.82 : 0.92);
+        jTrick(FKEY[G.set.f], G.jok);
+        say(`A JULIE VAI DE ${G.set.n.toUpperCase()}`, 1.8);
+        G.phase = "jset";
+      } else if (G.phase === "jset") {
+        tick(`a Julie manda: ${G.set.n}`);
+        if (julie.act) return;
+        if (!G.jok) { say("A JULIE ERROU A PRÓPRIA MANOBRA! sem letra", 2.2, true); return next(); }
+        say(`REPITA: ${G.set.n.toUpperCase()}`, 2, true);
+        Object.assign(G, { phase: "copy", t: 15, att: null });
+      } else if (G.phase === "copy") {
+        tick(`repita ${G.set.n} (${setHint(G.set)}) · uma tentativa`, G.t);
+        const a = G.att;
+        if (!a && G.t > 0) return;
+        if (a && a.names && comboHas(a.names, G.set)) { say("ACERTOU!", 1.6, true); sfx.combo(true); }
+        else { G.pl++; say(`${!a ? "TEMPO ESGOTADO" : a.bail ? "CAIU" : "NÃO FOI ESSA"}! letra ${LET[G.pl - 1]} pra você`, 2, true); sfx.nocan(); }
+        next();
+      } else if (G.phase === "pprep") {
+        tick("sua vez de mandar…");
+        if (G.t > 0) return;
+        say("SUA VEZ! mande uma manobra com flip", 2, true);
+        Object.assign(G, { phase: "pset", t: 15, att: null });
+      } else if (G.phase === "pset") {
+        tick("mande um flip (dá pra emendar grind e grab) · uma tentativa", G.t);
+        const a = G.att;
+        if (!a && G.t > 0) return;
+        if (!a || a.bail) { say(a ? "VOCÊ CAIU NA SUA! sem letra" : "TEMPO ESGOTADO, sem letra", 2, true); return next(); }
+        G.mine = describe(a.names);
+        G.jp = julieChance(a.names);
+        const fl = a.names.map(baseFlip).find(Boolean);
+        say(`VOCÊ MANDOU: ${G.mine.toUpperCase()}`, 1.8, true);
+        Object.assign(G, { phase: "jtry", t: 1.4, fl });
+      } else if (G.phase === "jtry") {
+        tick(`a Julie tenta: ${G.mine}`);
+        if (G.t > 0) return;
+        if (!G.tried) { G.tried = true; G.jok = Math.random() < G.jp; jTrick(FKEY[G.fl] || "none", G.jok); return; }
+        if (julie.act) return;
+        G.tried = false;
+        if (G.jok) say("A JULIE ACERTOU", 1.8);
+        else { G.ju++; say(`A JULIE ERROU! letra ${LET[G.ju - 1]} pra ela`, 2, true); sfx.combo(true); }
+        next();
       }
     }
     function storyFrame(dt, t) {
@@ -5218,8 +5277,14 @@ const STREET = (() => {
       julie.trail.push([S.x, S.z, S.head, t]);
       while (julie.trail.length && t - julie.trail[0][3] > 1.2) julie.trail.shift();
       const following = julie.follow && k === "kf";
-      let pose, gy;
+      const dPl = Math.hypot(S.x - julie.x, S.z - julie.z);
+      const faceP = () => Math.atan2(S.x - julie.x, S.z - julie.z) - Math.PI / 2;
+      const flatHere = Math.abs(jSlope(julie.x, julie.z, julie.head)) < 0.03 && H(julie.x, julie.z) < 0.05;
+      const game = SA && SA.def.kind === "skate";
+      const talkable = k === "kf" && !following && !game && !MA;
+      let target = null, want = Object.assign({}, ART.POSES.ride, julie.look.ride), wantHead = julie.head;
       if (following) {
+        julie.state = "follow";
         let tp = julie.trail[0];
         for (const q of julie.trail) if (t - q[3] >= 0.35) tp = q;
         const side = [Math.cos(tp[2]), -Math.sin(tp[2])];
@@ -5227,31 +5292,99 @@ const STREET = (() => {
         if (Math.hypot(tx - julie.x, tz - julie.z) > 25) { julie.x = tx; julie.z = tz; }
         julie.x += (tx - julie.x) * Math.min(1, dt * 7);
         julie.z += (tz - julie.z) * Math.min(1, dt * 7);
-        let d = tp[2] - julie.head;
-        while (d > Math.PI) d -= Math.PI * 2;
-        while (d < -Math.PI) d += Math.PI * 2;
-        julie.head += d * Math.min(1, dt * 5);
-        pose = S.speed > 0.6 ? Object.assign({}, ART.POSES.ride, julie.look.ride) : CHARS.IDLE.kick(t);
+        wantHead = tp[2];
+        if (S.speed < 0.6) { want = CHARS.IDLE.kick(t); wantHead = faceP(); }
       } else {
-        julie.x += (JULIE_HOME[0] - julie.x) * Math.min(1, dt * 2);
-        julie.z += (JULIE_HOME[1] - julie.z) * Math.min(1, dt * 2);
-        const dd = Math.hypot(S.x - julie.x, S.z - julie.z);
-        if (dd < 12) julie.head = Math.atan2(S.x - julie.x, S.z - julie.z) - Math.PI / 2;
-        pose = CHARS.IDLE.kick(t);
+        // pra onde ela vai: casa (no game), parar pra conversar, ou seguir o rolê
+        if (game) target = JULIE_HOME;
+        else if (julie.state === "wait") { if (dPl > 11 || !talkable) julie.state = "ride"; }
+        else if (talkable && dPl < 8 && flatHere && !julie.act) julie.state = "wait";
+        if (target) {
+          const dx = target[0] - julie.x, dz = target[1] - julie.z, d = Math.hypot(dx, dz);
+          if (d > 0.3) { julie.state = "go"; julie.v = Math.min(4.5, d * 2 + 0.5); wantHead = Math.atan2(dx, dz); }
+          else { julie.state = "park"; julie.v = 0; julie.x = target[0]; julie.z = target[1]; want = CHARS.IDLE.kick(t); wantHead = faceP(); }
+        } else if (julie.state === "wait") {
+          julie.v = Math.max(0, julie.v - dt * 8);
+          if (julie.v < 0.5) { want = CHARS.IDLE.kick(t); wantHead = faceP(); }
+        } else {
+          if (julie.state !== "ride") {
+            // volta pro rolê pelo ponto mais perto
+            let bi = 0, bd = 1e9;
+            JPATH.forEach((q, i) => { const dd = Math.hypot(q[0] - julie.x, q[1] - julie.z); if (dd < bd) { bd = dd; bi = i; } });
+            julie.wp = (bi + 1) % JPATH.length;
+            julie.state = "ride";
+          }
+          const w = JPATH[julie.wp], dx = w[0] - julie.x, dz = w[1] - julie.z, d = Math.hypot(dx, dz);
+          const h = H(julie.x, julie.z);
+          julie.v += ((w[2] ? 2.6 : 5) * Math.max(0.45, 1 - h * 0.22) - julie.v) * Math.min(1, dt * 2);
+          wantHead = Math.atan2(dx, dz);
+          const passed = d < 1.6 && dx * Math.sin(julie.head) + dz * Math.cos(julie.head) < 0;
+          if (d < (w[2] ? 0.35 : 0.9) || passed) {
+            julie.wp = (julie.wp + 1) % JPATH.length;
+            if (w[2]) { julie.head += Math.PI; julie.v = 1.2; } // kickturn no alto da rampa
+          }
+          // de vez em quando manda um flip no chão liso
+          julie.nextTrick -= dt;
+          if (julie.nextTrick <= 0 && flatHere && !julie.act && !game) {
+            julie.nextTrick = 5 + Math.random() * 5;
+            const ks = Object.keys(FLIPS);
+            jTrick(ks[Math.floor(Math.random() * ks.length)], true);
+          }
+        }
+        if (julie.state !== "park" && !(julie.state === "wait" && julie.v < 0.5)) {
+          julie.x += Math.sin(julie.head) * julie.v * dt;
+          julie.z += Math.cos(julie.head) * julie.v * dt;
+        }
       }
-      julie.hop = Math.max(0, julie.hop - dt);
-      gy = H(julie.x, julie.z) + Math.sin(Math.max(0, julie.hop) / 0.9 * Math.PI) * 0.7;
-      const base = M.mul(M.T(julie.x, gy, julie.z), M.RY(julie.head));
-      julie.rig.pose(base, pose, base);
-      julie.rig.board.mo = base;
+      julie.head = angTo(julie.head, wantHead, Math.min(1, dt * (julie.state === "ride" ? 5 : 8)));
+      // inclina o shape com a rampa
+      const sl = (julie.state === "park" || julie.state === "wait") ? 0 : jSlope(julie.x, julie.z, julie.head);
+      julie.pitch += (Math.atan(Math.max(-2.5, Math.min(2.5, sl))) - julie.pitch) * Math.min(1, dt * 12);
+      if (Math.abs(sl) > 0.25 && julie.state === "ride") want = ART.lerpPose(want, ART.POSES.crouch, Math.min(0.6, Math.abs(sl) * 0.5));
+      // manobra em andamento
+      let hop = 0, flipM = null, fall = 0, up = 0;
+      const A = julie.act;
+      if (A) {
+        A.t += dt;
+        const f = Math.min(1, A.t / A.dur);
+        if (f < 1) {
+          hop = Math.sin(f * Math.PI) * 0.8;
+          const e = f * f * (3 - 2 * f);
+          flipM = FLIPS[A.key].r(A.ok ? e : e * 0.7);
+          want = ART.lerpPose(Object.assign({}, ART.POSES.ride, julie.look.ride), ART.POSES.flip, Math.sin(f * Math.PI));
+        } else if (A.ok) { julie.act = null; if (dPl < 30) sfx.land(); }
+        else {
+          if (!A.ft) { if (dPl < 30) sfx.bail(); A.bx = julie.x; A.bz = julie.z; A.bh = julie.head; }
+          A.ft += dt;
+          const ss = (a, b, x) => { const u = Math.max(0, Math.min(1, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
+          fall = ss(0, 0.3, A.ft); up = ss(1.1, 1.6, A.ft);
+          want = ART.lerpPose(ART.POSES.crouch, CHARS.IDLE.kick(t), up);
+          if (A.ft > 1.7) julie.act = null;
+        }
+      }
+      julie.cur = ART.lerpPose(julie.cur, want, Math.min(1, dt * 10));
+      const gy = H(julie.x, julie.z) + hop;
+      const base = M.mul(M.T(julie.x, gy, julie.z), M.mul(M.RY(julie.head), M.RX(-julie.pitch)));
+      if (A && !A.ok && A.ft > 0) {
+        // caiu: tomba sentada e o shape escapa de cabeça pra baixo
+        const ang = 1.2 * fall * (1 - up);
+        const body = M.mul(M.T(julie.x, gy, julie.z), M.mul(M.RY(julie.head), M.RX(ang)));
+        julie.rig.pose(body, julie.cur);
+        const away = 1.5 * fall;
+        julie.rig.board.mo = M.mul(M.T(A.bx + Math.sin(A.bh) * away, H(A.bx, A.bz) + 0.05, A.bz + Math.cos(A.bh) * away), M.mul(M.RY(A.bh + fall * 0.7), M.RZ(Math.PI * fall)));
+      } else {
+        const bm = flipM ? M.mul(base, M.mul(M.T(0, 0.12, 0), M.mul(flipM, M.T(0, -0.09, 0)))) : base;
+        julie.rig.pose(base, julie.cur, bm);
+        julie.rig.board.mo = bm;
+      }
       // "!" rosa quando tem capítulo pra fazer com o K.F.
       const hasStep = k === "kf" && kfStep < steps.length && !SA;
       jMark.hidden = !hasStep;
       if (hasStep) jMark.mo = M.mul(M.T(julie.x, gy + 2.15, julie.z), M.RY(t * 2));
-      // oferta: chegou perto da Julie
+      // oferta: chegou perto da Julie parada
       // andando junto, ela só pergunta se quer parar quando vocês voltam pra pista dela
-      const near = Math.hypot(S.x - julie.x, S.z - julie.z) < 2.8 && S.speed < 4 && S.running && !PH && !REC && !MA && !SA &&
-        (!following || Math.hypot(S.x - JULIE_HOME[0], S.z - JULIE_HOME[1]) < 7);
+      const near = dPl < 2.8 && S.speed < 4 && S.running && !PH && !REC && !MA && !SA && !julie.act &&
+        (following ? Math.hypot(S.x - JULIE_HOME[0], S.z - JULIE_HOME[1]) < 7 : julie.state === "wait" && julie.v < 0.5);
       if (near && k === "kf" && !soffer) {
         if (kfStep < steps.length) soffer = { step: kfStep, line: steps[kfStep].line, title: steps[kfStep].title };
         else soffer = { toggle: true, line: julie.follow ? "Já vou indo... amanhã a gente anda de novo?" : "Bora dar um rolê?", title: julie.follow ? "Deixar a Julie em casa" : "Andar com a Julie" };
@@ -5282,7 +5415,7 @@ const STREET = (() => {
       }
       const def = STORY.kf[o.step];
       SA = { def, pts: 0, left: def.time || 0 };
-      if (def.kind === "skate") SA.g = { pl: 0, ju: 0, phase: "julie", t: 0, list: Object.values(FLIPS).map((f) => f.name) };
+      if (def.kind === "skate") SA.g = { round: 1, pl: 0, ju: 0, phase: "jprep", t: 1.5, att: null };
       if (def.kind === "ride") { julie.follow = true; if (RADIO_ && RADIO_.special) RADIO_.special("juntos"); }
       sfx.beep();
       ui.mission && ui.mission("start", { title: def.title });
@@ -5487,7 +5620,7 @@ const STREET = (() => {
     function commit() {
       if (!S.combo.length) return;
       const tot = comboBase() * S.combo.length;
-      emit("combo", { pts: tot });
+      emit("combo", { pts: tot, names: S.combo.map((c) => c.name) });
       S.score += tot;
       S.bestCombo = Math.max(S.bestCombo, tot);
       const lbl = tot >= 15000 ? "INSANO!!" : tot >= 5000 ? "IRADO!" : tot >= 1500 ? "BOA!" : "";
@@ -6614,6 +6747,7 @@ const STREET = (() => {
         const out = MISSIONS.map((m, i) => (mDone[i] || (MA && MA.m === m) ? null : { x: npcOf(m.k).x, z: npcOf(m.k).z, on: false })).filter(Boolean);
         if (MA && MA.m.deliver != null) { const n = npcOf(MA.m.deliver); out.push({ x: n.x, z: n.z, on: true }); }
         if (MA && MA.m.items) MA.m.items.forEach(([x, z], i) => { if (!MA.got[i]) out.push({ x, z, on: true }); });
+        if (lookKey() === "kf" && stepOf("kf") < STORY.kf.length && !SA) out.push({ x: julie.x, z: julie.z, on: false, c: "#ff4fa3" });
         return out;
       },
       // câmera digital e filmadora
@@ -6872,7 +7006,7 @@ function mmDraw(S){const now=performance.now();if(now-mmT<90)return;mmT=now;cons
   const ox=X(S.x)-W/2,oz=Z(S.z)-H/2;
   mmG.fillStyle='#7cbf62';mmG.fillRect(0,0,W,H);mmG.drawImage(mmBg,-ox,-oz);
   for(const t of game.L.tags){if(t.done)continue;mmG.fillStyle='#ff4fa3';mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();mmG.arc(X(t.c[0])-ox,Z(t.c[2])-oz,7,0,7);mmG.fill();mmG.stroke()}
-  if(game.missionMarks)for(const m of game.missionMarks()){const x=X(m.x)-ox,y=Z(m.z)-oz,cx=Math.max(10,Math.min(W-10,x)),cy=Math.max(10,Math.min(H-10,y));mmG.fillStyle=m.on?'#3fd0ff':'#ffd23f';mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();mmG.arc(cx,cy,8,0,7);mmG.fill();mmG.stroke();mmG.fillStyle='#1b1530';mmG.font='900 13px Rubik,sans-serif';mmG.textAlign='center';mmG.fillText('!',cx,cy+5)}
+  if(game.missionMarks)for(const m of game.missionMarks()){const x=X(m.x)-ox,y=Z(m.z)-oz,cx=Math.max(10,Math.min(W-10,x)),cy=Math.max(10,Math.min(H-10,y));mmG.fillStyle=m.c||(m.on?'#3fd0ff':'#ffd23f');mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();mmG.arc(cx,cy,8,0,7);mmG.fill();mmG.stroke();mmG.fillStyle='#1b1530';mmG.font='900 13px Rubik,sans-serif';mmG.textAlign='center';mmG.fillText('!',cx,cy+5)}
   const px=W/2,pz=H/2,dx=Math.sin(S.head),dz=Math.cos(S.head);
   mmG.fillStyle='rgba(27,21,48,.7)';mmG.font='900 20px Rubik,sans-serif';mmG.textAlign='left';mmG.fillText('N',W-22,24);
   mmG.fillStyle='#ffd23f';mmG.strokeStyle='#1b1530';mmG.lineWidth=3;mmG.beginPath();
