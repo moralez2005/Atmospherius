@@ -3311,18 +3311,18 @@ const CITY = (() => {
       pave(-35, 112, 33, 166, SW + 0.006, RECT.petit, 2);
       // chafariz redondo: borda dá grind (octógono), água por dentro
       {
-        // baixo e menor que antes pra dar pra pular por cima: só a borda e um bico no meio; o jato d'água não bate
-        const cx = -1, cz = 136, R1 = 2.4, Hc = SW + 0.42;
+        const cx = -1, cz = 136, R1 = 4.2, Hc = SW + 0.62;
         solid.tube([cx, SW, cz], [cx, Hc, cz], R1, R1, 16, hex(0xe9e2d2), 0, { capCol: hex(0xe9e2d2) });
         solid.tube([cx, Hc - 0.18, cz], [cx, Hc - 0.16, cz], R1 - 0.35, R1 - 0.35, 16, hex(0x4fb6e8), 3, { capCol: hex(0x6cc8f2) });
-        solid.tube([cx, Hc - 0.2, cz], [cx, Hc + 0.3, cz], 0.45, 0.32, 8, hex(0xe9e2d2));
-        deco.tube([cx, Hc + 0.3, cz], [cx, Hc + 1.5, cz], 0.07, 0.03, 6, hex(0xbfeaff), 2);
-        for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; deco.tube([cx, Hc + 1.45, cz], [cx + Math.cos(a) * 0.9, Hc + 0.2, cz + Math.sin(a) * 0.9], 0.03, 0.02, 4, hex(0x9ad8f5), 2); }
-        feats.push({ x0: cx - R1, z0: cz - R1, x1: cx + R1, z1: cz + R1, f: (x, z) => { const d = Math.hypot(x - cx, z - cz); return d > R1 ? 0 : d > R1 - 0.4 ? Hc : d < 0.5 ? Hc + 0.3 : Hc - 0.18; } });
+        solid.tube([cx, Hc - 0.2, cz], [cx, Hc + 1.6, cz], 0.35, 0.22, 8, hex(0xe9e2d2));
+        solid.tube([cx, Hc + 1.6, cz], [cx, Hc + 1.75, cz], 1.1, 1.1, 10, hex(0xe9e2d2));
+        solid.ball([cx, Hc + 2.1, cz], 0.32, hex(0x9ad8f5), 3, 8, 5);
+        feats.push({ x0: cx - R1, z0: cz - R1, x1: cx + R1, z1: cz + R1, f: (x, z) => { const d = Math.hypot(x - cx, z - cz); return d > R1 ? 0 : d > R1 - 0.4 ? Hc : d < 0.45 ? 60 : Hc - 0.18; } });
         for (let i = 0; i < 8; i++) {
           const a0 = (i / 8) * Math.PI * 2 + Math.PI / 8, a1 = ((i + 1) / 8) * Math.PI * 2 + Math.PI / 8;
           rail([cx + Math.cos(a0) * (R1 - 0.12), Hc, cz + Math.sin(a0) * (R1 - 0.12)], [cx + Math.cos(a1) * (R1 - 0.12), Hc, cz + Math.sin(a1) * (R1 - 0.12)], "ledge", "borda do chafariz");
         }
+        OB.push({ x: cx, z: cz, r: 0.5, y1: Hc + 2.4 });
       }
       // canteiros com palmeira e bancos (ledges)
       for (const [x, z] of [[-24, 122], [22, 122], [-24, 150], [22, 150]]) {
@@ -3565,8 +3565,7 @@ const CITY = (() => {
       GAPS.push(
         { name: "ESCADARIA DA PREFEITURA", pts: 500, from: (s) => s.z > 166 && s.y > TH - 0.2 && Math.abs(s.x + 1) < 9, to: (s) => s.z < 163.6 && s.y < TH - 0.6 },
         { name: "PLATAFORMA → TRILHO", pts: 350, from: (s) => s.z > 136 && s.y > PH - 0.2 && s.x > 52 && s.x < 104, to: (s) => s.z < 134 && s.y < SW + 0.4 },
-        { name: "SOBRE O CHAFARIZ", pts: 450, from: (s) => s.z < 133.5 && s.z > 129.5 && Math.abs(s.x + 1) < 2.2, to: (s) => s.z > 137.9, cond: (s) => Math.abs(s.x + 1) < 2.8 },
-        { name: "SOBRE O CHAFARIZ", pts: 450, from: (s) => s.z > 138.5 && s.z < 142.5 && Math.abs(s.x + 1) < 2.2, to: (s) => s.z < 134.1, cond: (s) => Math.abs(s.x + 1) < 2.8 },
+        { name: "SOBRE O CHAFARIZ", pts: 450, from: (s) => s.z < 131.5 && Math.abs(s.x + 1) < 2, to: (s) => s.z > 140.5, cond: (s) => Math.abs(s.x + 1) < 2.5 },
         { name: "TETO DO VAGÃO", pts: 300, from: (s) => s.y > SW + 3.1 && s.x > 64 && s.x < 82 && s.z > 129 && s.z < 132, to: (s) => s.y < SW + 0.4 },
       );
     }
