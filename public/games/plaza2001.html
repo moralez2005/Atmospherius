@@ -167,6 +167,81 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .tk{display:flex;gap:6px;align-items:center;width:100%;text-align:left;font:700 13px Rubik,sans-serif;background:#fff;border:2px solid var(--ink);border-radius:8px;padding:6px 8px;margin-bottom:5px;cursor:pointer}.tk.on{background:#ffd23f}
 .nowp{padding:8px 14px;border-top:3px solid var(--ink);font:800 13px Rubik,sans-serif;display:flex;gap:8px;align-items:center}.nowp button{margin-left:auto}
 @media (max-width:560px){.dbody{grid-template-columns:1fr}}
+/* ---------- dentro das lojas ---------- */
+.screen.inside #score,.screen.inside #spec,.screen.inside #time,.screen.inside .tr,.screen.inside .combo,.screen.inside #bal,.screen.inside #track,.screen.inside .trk,.screen.inside .mis{display:none!important}
+.inHud{position:absolute;left:12px;top:10px;display:none;flex-direction:column;gap:2px;font:900 17px Rubik,sans-serif;color:#ffd23f;text-shadow:0 2px 0 #1b1530,0 0 8px rgba(0,0,0,.5);z-index:6;pointer-events:none}
+.screen.inside .inHud{display:flex}.inHud small{font:700 12px Rubik,sans-serif;color:#fff;opacity:.9}
+.inP{position:absolute;left:50%;bottom:22px;transform:translate(-50%,10px);opacity:0;transition:.18s;background:#fff8e6;border:3px solid var(--ink);border-radius:999px;padding:5px 16px 5px 6px;font:900 15px Rubik,sans-serif;color:var(--ink);box-shadow:3px 3px 0 var(--pink);display:flex;gap:8px;align-items:center;pointer-events:none;z-index:6;white-space:nowrap}
+.inP.on{opacity:1;transform:translate(-50%,0)}.inP kbd{background:var(--ink);color:#fff;border-radius:999px;padding:2px 9px;font:900 12px ui-monospace,monospace}
+.say{position:absolute;left:50%;top:14%;transform:translateX(-50%);max-width:min(520px,80%);background:#fff;border:3px solid var(--ink);border-radius:16px;padding:8px 14px;font:700 15px Rubik,sans-serif;color:var(--ink);display:none;z-index:7;box-shadow:4px 4px 0 var(--ink)}
+.say.on{display:block;animation:sayIn .28s cubic-bezier(.2,1.5,.4,1)}.say b{display:block;color:#d8247a;font-weight:900}
+.say:after{content:'';position:absolute;left:28%;bottom:-15px;border:12px solid transparent;border-top-color:var(--ink);border-bottom:0}
+@keyframes sayIn{from{transform:translateX(-50%) scale(.6);opacity:0}}
+.fade{position:absolute;inset:0;background:#0b0816;opacity:0;pointer-events:none;transition:opacity .3s;z-index:30}.fade.on{opacity:1}
+.np{position:absolute;right:12px;bottom:12px;display:none;align-items:center;gap:10px;background:rgba(20,14,34,.9);color:#fff;border:3px solid #ffd23f;border-radius:14px;padding:6px 12px 6px 6px;font:700 12px Rubik,sans-serif;z-index:6;max-width:44%;pointer-events:none}
+.np.on{display:flex}.np b{display:block;font:900 14px Rubik,sans-serif;color:#ffd23f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.np span{display:block;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np>div:not(.vmini){min-width:0;flex:1}.np .bar{height:4px;background:#3a2f55;border-radius:3px;margin-top:4px;overflow:hidden}.np .bar i{display:block;height:100%;width:0;background:#ff4fa3;transition:width .4s linear}
+.vmini{width:46px;height:46px;flex:none;border-radius:50%;position:relative;background:repeating-radial-gradient(circle,#0c0c10 0 1.5px,#1d1d24 1.5px 3px);box-shadow:0 0 0 2px #000;animation:vspin 1.8s linear infinite}
+.vmini img{position:absolute;left:31%;top:31%;width:38%;height:38%;border-radius:50%}.vmini.cd{background:conic-gradient(#dfe4ea,#b9f0ff,#ffd1f0,#fff6c2,#c9ffd8,#dfe4ea);animation-duration:.9s}
+@keyframes vspin{to{transform:rotate(360deg)}}
+.inO{position:absolute;inset:0;display:none;z-index:9;background:radial-gradient(ellipse at 50% 42%,rgba(46,22,34,.62),rgba(10,6,16,.94));color:#fff;font:700 13px Rubik,sans-serif;overflow:hidden}
+.inO.on{display:block}.inO.light{background:linear-gradient(90deg,rgba(10,6,16,0) 40%,rgba(10,6,16,.78) 62%)}
+.oHead{position:absolute;left:14px;right:14px;top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;z-index:3}
+.oHead b{font:900 20px Rubik,sans-serif;color:#ffd23f;text-shadow:0 2px 0 #1b1530}.oHead span{flex:1;opacity:.9;min-width:120px}
+.oBtn{font:800 13px Rubik,sans-serif;border:3px solid var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;background:#fff8e6;color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.oBtn.ok{background:#ffd23f}.oBtn.pk{background:#ff8fc8}.oBtn:hover{filter:brightness(1.06)}.oBtn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink)}
+.oHint{position:absolute;left:0;right:0;bottom:12px;text-align:center;opacity:.8;font:700 12px Rubik,sans-serif}
+.inO{--s:min(42vh,290px)}.crate{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);transform:translate(-50%,-50%);perspective:900px}
+.crate .stk{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-16deg) translateY(4%)}
+.rec{position:absolute;inset:0;border-radius:2px;background-size:cover;background-position:center;box-shadow:0 0 0 2px rgba(0,0,0,.55),0 14px 26px rgba(0,0,0,.45);transition:transform .34s cubic-bezier(.2,.9,.3,1),filter .34s,opacity .34s;transform-origin:50% 100%;cursor:pointer}
+.rec.fw{background:linear-gradient(#ece5d5,#cfc6b2)!important}.rec.cd{border-radius:4px;box-shadow:inset 0 0 0 5px rgba(225,238,255,.45),inset 7px 0 0 5px rgba(255,255,255,.18),0 0 0 2px rgba(0,0,0,.6),0 10px 18px rgba(0,0,0,.5)}
+.crF{position:absolute;left:-7%;right:-7%;bottom:-6%;height:46%;transform:translateZ(36px);background:repeating-linear-gradient(180deg,#c8955a 0 22%,#8a5a32 22% 26%,#b98548 26% 48%,rgba(0,0,0,0) 48% 54%,#c8955a 54% 76%,#8a5a32 76% 80%,#b98548 80% 100%);border:3px solid #4a2c1c;border-radius:4px;box-shadow:0 10px 24px rgba(0,0,0,.6)}
+.crF.cd{background:linear-gradient(#3a3f4a,#22252c);border-color:#111}
+.crF:after{content:attr(data-t);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-2deg);background:#fff8e6;color:#1b1530;border:2px solid #1b1530;padding:2px 10px;font:900 13px Rubik,sans-serif;border-radius:4px}
+.digInfo{position:absolute;left:0;right:0;bottom:44px;text-align:center}.digInfo b{display:block;font:900 22px Rubik,sans-serif}.digInfo span{color:#ffd23f;font:800 14px Rubik,sans-serif}
+.digArr{position:absolute;top:50%;transform:translateY(-50%);font:900 30px Rubik,sans-serif;width:52px;height:52px;border-radius:50%;border:3px solid var(--ink);background:#fff8e6;color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.digArr.l{left:calc(50% - var(--s) / 2 - 90px)}.digArr.r{right:calc(50% - var(--s) / 2 - 90px)}
+.ins .stage{position:absolute;left:2%;top:9%;width:58%;bottom:6%;perspective:1300px;display:grid;place-items:center;cursor:grab;touch-action:none}
+.ins .stage:active{cursor:grabbing}
+.obj{position:relative;width:var(--S);height:var(--S);transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.8,.3,1);--S:min(58vh,360px);--t:7px}
+.obj.cdo{--S:min(48vh,300px);--t:24px}.obj.drag{transition:none}
+.obj .f{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;border-radius:2px}
+.obj .fr{transform:translateZ(calc(var(--t) / 2));background-size:cover;background-position:center}
+.obj .bk{transform:rotateY(180deg) translateZ(calc(var(--t) / 2))}
+.obj .ed{position:absolute;background:#e6dfcf}
+.obj .eR,.obj .eL{width:var(--t);height:100%;top:0;left:calc(50% - var(--t) / 2)}.obj .eR{transform:rotateY(90deg) translateZ(calc(var(--S) / 2))}.obj .eL{transform:rotateY(-90deg) translateZ(calc(var(--S) / 2))}
+.obj .eT,.obj .eB{height:var(--t);width:100%;left:0;top:calc(50% - var(--t) / 2)}.obj .eT{transform:rotateX(90deg) translateZ(calc(var(--S) / 2))}.obj .eB{transform:rotateX(-90deg) translateZ(calc(var(--S) / 2))}
+.obj .eL{background:#1b1530;color:#fff;font:900 6px Rubik,sans-serif;writing-mode:vertical-rl;display:grid;place-items:center;overflow:hidden;white-space:nowrap}
+.obj.cdo .ed{background:linear-gradient(90deg,rgba(220,235,255,.55),rgba(160,180,210,.75))}.obj.cdo .eL{background:#e9e4d6;color:#1b1530;font-size:11px}
+.obj.cdo .fr{box-shadow:inset 0 0 0 6px rgba(220,235,255,.35),inset 10px 0 0 6px rgba(255,255,255,.12)}
+.obj.cdo .fr:after,.obj.cdo .bk:after{content:'';position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.35) 0 12%,rgba(255,255,255,0) 30% 70%,rgba(255,255,255,.12) 85%)}
+.disc{position:absolute;left:2%;top:2%;width:96%;height:96%;transition:transform 1s cubic-bezier(.3,.8,.3,1);transform:translateZ(0)}
+.disc.out{transform:translateX(56%) translateZ(0)}.obj.cdo .disc{left:7%;top:7%;width:86%;height:86%}.obj.cdo .disc.out{transform:translateX(62%) translateZ(0)}
+.disc i{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,transparent 0 31%,#26262e 31.5% 33%,transparent 33.5%),repeating-radial-gradient(circle,#0b0b0f 0 1.2px,#1a1a21 1.2px 2.4px);box-shadow:0 0 0 2px #000}
+.disc i:before{content:'';position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 20deg,rgba(255,255,255,0),rgba(255,255,255,.13) 8%,rgba(255,255,255,0) 16%,rgba(255,255,255,0) 50%,rgba(255,255,255,.09) 58%,rgba(255,255,255,0) 66%)}
+.disc img{position:absolute;left:33%;top:33%;width:34%;height:34%;border-radius:50%}
+.disc.out i,.disc.out img{animation:vspin 6s linear infinite}
+.disc.cdd i{background:radial-gradient(circle,transparent 0 6%,rgba(240,244,250,.92) 6.5% 31%,transparent 31.5%),conic-gradient(#dfe4ea,#b9f0ff,#ffd1f0,#fff6c2,#c9ffd8,#dfe4ea,#d6c9ff,#ffe0c2,#dfe4ea)}
+.disc.cdd img{left:12%;top:12%;width:76%;height:76%;opacity:.0}
+.bkd{position:absolute;inset:0;padding:7% 7% 5%;display:flex;flex-direction:column;gap:4%;font:700 calc(var(--S) * .034) Rubik,sans-serif;color:#f2efe6;background:var(--b1)}
+.bkd .t1{font:900 calc(var(--S) * .062) Rubik,sans-serif;line-height:1;color:var(--b2)}.bkd .t2{font:800 calc(var(--S) * .04) Rubik,sans-serif;opacity:.9}
+.bkd .cols{display:grid;grid-template-columns:1fr 1fr;gap:5%;flex:1}.bkd h5{margin:0 0 4px;font:900 calc(var(--S) * .036) Rubik,sans-serif;color:var(--b2);letter-spacing:.08em}
+.bkd ol{margin:0;padding-left:1.4em;line-height:1.5}.bkd ol li span{opacity:.6;margin-left:4px}
+.bkd .ft{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;font-size:calc(var(--S) * .028);opacity:.9}
+.bkd .bc{width:24%;height:calc(var(--S) * .07);background:repeating-linear-gradient(90deg,#f2efe6 0 1px,transparent 1px 3px,#f2efe6 3px 5px,transparent 5px 6px);background-color:transparent}
+.bkd .pr{position:absolute;right:6%;top:5%;background:#ffd23f;color:#1b1530;border-radius:50%;width:calc(var(--S) * .17);height:calc(var(--S) * .17);display:grid;place-items:center;font:900 calc(var(--S) * .034) Rubik,sans-serif;transform:rotate(12deg);box-shadow:0 2px 0 rgba(0,0,0,.3);text-align:center;line-height:1}
+.obj.cdo .bkd{padding:6% 9%;font-size:calc(var(--S) * .036)}.obj.cdo .bkd .cols{grid-template-columns:1fr}
+.iSide{position:absolute;right:3%;top:9%;width:35%;bottom:6%;display:flex;flex-direction:column;gap:8px;min-height:0}
+.iSide h3{margin:0;font:900 22px Rubik,sans-serif;color:#ffd23f;line-height:1.05}.iSide p{margin:0;font:800 14px Rubik,sans-serif;opacity:.9}
+.iTr{flex:1;overflow:auto;display:flex;flex-direction:column;gap:3px;min-height:60px;padding-right:4px}
+.iTr button{display:flex;gap:6px;width:100%;text-align:left;font:700 12px Rubik,sans-serif;background:rgba(255,248,230,.08);color:#fff;border:2px solid rgba(255,255,255,.18);border-radius:8px;padding:4px 8px;cursor:pointer}
+.iTr button:hover{background:rgba(255,210,63,.2)}.iTr button.on{background:#ffd23f;color:#1b1530;border-color:#1b1530}.iTr button span{margin-left:auto;opacity:.7}
+.iTr h6{margin:6px 0 2px;font:900 12px Rubik,sans-serif;color:#ff8fc8;letter-spacing:.1em}
+.iBtns{display:flex;flex-wrap:wrap;gap:6px}
+.vpan{position:absolute;right:3%;top:8%;bottom:8%;width:min(42%,340px);background:#fff8e6;color:var(--ink);border:4px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 #ff4fa3;display:flex;flex-direction:column;padding:10px 12px;gap:8px;font:700 13px Rubik,sans-serif}
+.vpan h4{margin:0;font:900 18px Rubik,sans-serif}.vpNow{display:flex;gap:10px;align-items:center}.vpNow img{width:64px;height:64px;border:2px solid var(--ink);border-radius:3px}
+.vpNow b{display:block;font:900 15px Rubik,sans-serif}.vpan .iTr button{background:#fff;color:var(--ink);border-color:var(--ink)}.vpan .iTr button.on{background:#ffd23f}
+.vpan .iTr h6{color:#d8247a}.vpan p{margin:0}
 .win{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;z-index:8}.win.on{display:grid}
 .winC{position:relative;background:#fff8e6;border:4px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:14px 30px 16px;text-align:center;max-width:78%;animation:winIn .5s cubic-bezier(.2,1.6,.4,1)}
 .win.out .winC{animation:winOut .35s ease-in forwards}
@@ -212,10 +287,19 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
       <div class="phead"><b>LAN HOUSE MEGABYTE</b><span>Dudu: <i id="lanSay">“Escolhe aí, mano. Ficha por minha conta!”</i></span><button class="px" data-close>Sair (Esc)</button></div>
       <div class="pbody"><div class="games"><button class="gbtn" data-g="rush">🛹 Skate Rush<small>Espaço pula</small></button><button class="gbtn" data-g="snake">🐍 Cobrinha 2001<small>setas</small></button><button class="gbtn" data-g="inv">👾 Invasores<small>← → e Espaço</small></button></div>
       <canvas id="mg" width="480" height="270" aria-label="minigame"></canvas><div class="mgInfo" id="mgInfo">Escolha um jogo</div></div></div></div>
-    <div class="place" id="discoO" role="dialog" aria-label="Loja de discos"><div class="pcard disco">
-      <div class="phead"><b>DISCOS & CDs</b><span>Seu Vavá: <i>“Escolhe um disco e põe na cabine.”</i></span><button class="px" data-close>Sair (Esc)</button></div>
-      <div class="pbody dbody"><div class="albums" id="albums"></div><div class="tracks" id="tracks"><p>Clique num disco pra ver as faixas.</p></div></div>
-      <div class="nowp" id="nowp">Cabine livre</div></div></div>
+    <div class="inHud" aria-live="polite"><span id="inName"></span><small>setas andam · Enter mexe nas coisas · Esc pausa</small></div>
+    <div class="inP" id="inP"><kbd>Enter</kbd><span id="inPL"></span></div>
+    <div class="say" id="say"><b id="sayW"></b><span id="sayL"></span></div>
+    <div class="np" id="np"><div class="vmini" id="npV"><img id="npL" alt=""></div><div><b id="npT"></b><span id="npA"></span><div class="bar"><i id="npBar"></i></div></div></div>
+    <div class="inO" id="digO" role="dialog" aria-label="Caixote de discos"><div class="oHead"><b id="digT">LPs</b><span id="digS"></span><button class="oBtn" data-inclose>Voltar (Esc)</button></div>
+      <button class="digArr l" id="digL" aria-label="Disco anterior">‹</button><div class="crate" id="crate"><div class="stk" id="stk"></div></div><button class="digArr r" id="digR" aria-label="Próximo disco">›</button>
+      <div class="digInfo"><b id="digA"></b><span id="digN"></span></div><div class="oHint">← → folheia · Enter (ou clique) pega o disco · Esc volta</div></div>
+    <div class="inO ins" id="insO" role="dialog" aria-label="Olhando o disco"><div class="stage" id="stage"><div class="obj" id="obj"><div class="disc" id="iDisc"><i></i><img id="iLab" alt=""></div><div class="f fr" id="iFr"></div><div class="f bk" id="iBk"></div><div class="ed eR"></div><div class="ed eL" id="iSp"></div><div class="ed eT"></div><div class="ed eB"></div></div></div>
+      <div class="iSide"><h3 id="iT"></h3><p id="iA"></p><div class="iTr" id="iTr"></div>
+        <div class="iBtns"><button class="oBtn" id="bFlip">↺ Virar (V)</button><button class="oBtn pk" id="bOut">💿 Tirar o disco (T)</button><button class="oBtn ok" id="bPlay">▶ Tocar (Enter)</button><button class="oBtn" data-inclose>Voltar (Esc)</button></div>
+        <small style="opacity:.75">Arraste com o mouse (ou ← → ↑ ↓) pra girar e ver de todos os lados</small></div></div>
+    <div class="inO light" id="vitO" role="dialog" aria-label="Vitrola"><div class="vpan"><h4>🎶 Cantinho de audição</h4><div id="vpB" style="display:flex;flex-direction:column;gap:8px;flex:1;min-height:0"></div><button class="oBtn" data-inclose>Voltar (Esc)</button></div></div>
+    <div class="fade" id="fade"></div>
     <div class="win" id="win" aria-live="polite"><div class="winC"><span class="winK" id="winK"></span><b id="winT"></b><small id="winS"></small><span class="winOk">✓</span></div><div class="conf" id="conf"></div></div>
     <div class="dlg" id="dlg" role="dialog" aria-live="polite"><b id="dlgW"></b><p id="dlgL"></p><span class="mt" id="dlgT"></span><div class="row"><button class="ok" id="dlgOk">Aceitar (Enter)</button><button id="dlgNo">Agora não</button></div></div>
     <div class="mm" id="mmBox" aria-hidden="true"><canvas id="mm" width="318" height="300"></canvas></div>
@@ -561,6 +645,17 @@ void main(){vec4 t=texture2D(T,uv);vec3 c=t.rgb;float l=dot(c,vec3(.299,.587,.11
       gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
     }
     size();
+    // textura extra (interior das lojas): o objeto usa o.tex no lugar do atlas
+    function texture(cv, old) {
+      const t = old || gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      return t;
+    }
     function setAtlas(cv) {
       gl.bindTexture(gl.TEXTURE_2D, atlas);
       gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
@@ -685,10 +780,13 @@ void main(){vec4 t=texture2D(T,uv);vec3 c=t.rgb;float l=dot(c,vec3(.299,.587,.11
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, atlas);
       gl.uniform1i(pm.u.TEX, 0);
+      let bound = atlas;
       const pass = (p) => {
         gl.uniform1f(pm.u.PASS, p);
         for (const o of objs) {
           if (p && !o.g.trans) continue;
+          const tx = o.tex || atlas;
+          if (tx !== bound) { gl.bindTexture(gl.TEXTURE_2D, tx); bound = tx; }
           bindMesh(pm, o.g);
           gl.uniformMatrix4fv(pm.u.MO, false, o.mo || ID);
           gl.uniform1f(pm.u.SK, o.bones ? 1 : 0);
@@ -705,6 +803,7 @@ void main(){vec4 t=texture2D(T,uv);vec3 c=t.rgb;float l=dot(c,vec3(.299,.587,.11
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.depthMask(false);
       pass(1);
+      if (bound !== atlas) gl.bindTexture(gl.TEXTURE_2D, atlas);
       gl.depthMask(true);
       gl.disable(gl.BLEND);
       for (const k in pm.at) gl.disableVertexAttribArray(pm.at[k]);
@@ -724,7 +823,7 @@ void main(){vec4 t=texture2D(T,uv);vec3 c=t.rgb;float l=dot(c,vec3(.299,.587,.11
       gl.disableVertexAttribArray(pb.at.Q);
       return VP;
     }
-    return { gl, upload, draw, size, setAtlas, get low() { return lh; }, get tris() { return tris; } };
+    return { gl, upload, draw, size, setAtlas, texture, get low() { return lh; }, get tris() { return tris; } };
   }
 
   // IK de dois ossos: quadril/ombro a, alvo c, comprimentos l1 l2, dica de direção do joelho/cotovelo
@@ -4939,9 +5038,29 @@ const RADIO = (() => {
   // Pra colocar um álbum de verdade, é só acrescentar aqui:
   // { a: "Artista", t: "Nome do álbum", y: 2001, cor: "#hex", capa: "url opcional da foto", faixas: [{ id: "idDoYouTube", t: "Música" }] }
   // Enquanto não chegam os álbuns, a loja monta as prateleiras com as músicas das rádios (agrupadas por artista).
-  const ALBUNS = [];
+  // um vídeo com o álbum inteiro: cada faixa começa em "s" segundos (é só soltar a agulha ali)
+  const DSOTM = "k9ynZnEBtvw";
+  const ALBUNS = [
+    {
+      a: "Pink Floyd", t: "The Dark Side of the Moon", y: 1973, sel: "Harvest", cor: "#101018", cor2: "#7a5cff", fmt: ["lp", "cd"], fim: 2585, um: 1,
+      rot: { bg: "#15151c", fg: "#f2efe6", ac: "#8fd4ff" },
+      capa: "data:image/jpeg;base64,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/hmz8Pr4Z1pLa2jCki6izI3VnPHUkk/jXmQpaabWxEoqWjOw/tj4eEY/4RvxAD7Xsf8AhUT6j4CbOzQ/EK/W7iP9K5SjFPmZPsl3f3s6V7zwQwO3S/EK/S5hNMFx4K72PiP/AL+w1ztGKOYPZru/vZ0Cz+CgcvbeI8egeH/GpBP4EP8Ay6+JQP8Aeh/xrm8UYo5vIPZru/vOkEvgPjMHiX3/ANT/APFUnmeBx91PEX4rF/8AFVzmKKObyD2S7v7z0uTxx4Jn8H3PhqSx1sRum6CUxxkxSjlH+/69fYmvNR096Slzxik25blRgoqyDNGaSilYoWjNJmiiwC5ozSUUAFFFBoAdG7xPujZkb1UkH9K17TxZrNpgC8aVR/DMA/69f1rGopxnKPwsYGkoNFIQUUUUAFFFFABRRRQAUUUUAFFFFABRmiigAzS5pKKAFzRmkooAXNGaSigAzRmiigAzRRRQAUUUUAFGaKKADNLmkooAXNGaSigANFBooAKKKKYBRRRSAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAFpKWkoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACgUUUAFFFFABRRRQAUUUUAFFFFAC5pKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKQ0AKaKKKACiiimAUUUUAFFFFIAooooAKKKKYBRRRQAUUUUgCiilNACUUUUwCiiigAooopAFFFFABRRRTAKKKKACkNLSGkAtFGKKACiiimAUUUUXAKKKKQBSmkooAKKKKdwCiiii4BRRRSABS0lFABRRRTuAUUUUAFFFFIApTSUUAFFFFMAooooAKQ0tBpALSUuaTNABRSZozQAtFJmjNAC0UZpM5oAWiiigAopM0ZoAWikzRmgBaKKTNAC0UUZoAKKTNGaAFopM0ZoAWijNFABRR0ooAKKTNGaAFopM0ZoAWiiigD/2Q==",
+      faixas: [
+        { id: DSOTM, t: "Speak to Me", s: 0, lado: "A" },
+        { id: DSOTM, t: "Breathe (In the Air)", s: 71, lado: "A" },
+        { id: DSOTM, t: "On the Run", s: 237, lado: "A" },
+        { id: DSOTM, t: "Time", s: 450, lado: "A" },
+        { id: DSOTM, t: "The Great Gig in the Sky", s: 875, lado: "A" },
+        { id: DSOTM, t: "Money", s: 1159, lado: "B" },
+        { id: DSOTM, t: "Us and Them", s: 1548, lado: "B" },
+        { id: DSOTM, t: "Any Colour You Like", s: 2013, lado: "B" },
+        { id: DSOTM, t: "Brain Damage", s: 2219, lado: "B" },
+        { id: DSOTM, t: "Eclipse", s: 2449, lado: "B" },
+      ],
+    },
+  ];
   const SPECIAL = { juntos: { id: "iGbPR36zGx4", t: "Wherever You Will Go", a: "The Calling", s: 0 } };
-  let spec = null;
+  let spec = null, ALB_CACHE = null;
   const VOLUME = 60;
   let apiP = null, player = null, readyP = null; // player só fica preenchido depois de pronto (onReady)
   let st = null, order = [], idx = 0, errors = 0, on = false, paused = false, muted = false;
@@ -5000,7 +5119,11 @@ const RADIO = (() => {
       emit("playing", track(), st);
     } else if (s === 0) {
       // faixa da loja com fila (álbum): passa pra próxima; senão repete a especial ou segue a rádio
-      if (spec) { if (spec.q && spec.q.length) spec = Object.assign({}, spec.q[0], { q: spec.q.slice(1) }); play(); }
+      if (spec) {
+        if (spec.q && spec.q.length) spec = Object.assign({}, spec.q[0], { q: spec.q.slice(1), once: spec.once, onEnd: spec.onEnd });
+        else if (spec.once) { const f = spec.onEnd; spec = null; player.pauseVideo(); if (f) f(); return; }
+        play();
+      }
       else next();
     }
   }
@@ -5093,14 +5216,20 @@ const RADIO = (() => {
       return true;
     },
     stopTrack() { if (spec) { spec = null; if (player && on) next(); } },
+    // o que a loja está tocando agora e em que segundo do vídeo
+    now: () => spec,
+    time() { try { return player && spec ? player.getCurrentTime() || 0 : 0; } catch (e) { return 0; } },
     albums() {
-      if (ALBUNS.length) return ALBUNS;
+      if (ALB_CACHE) return ALB_CACHE;
       const by = {};
       for (const k in STATIONS) for (const tr of STATIONS[k].tracks) {
         const a = tr.a.split(/ feat\.| & | e /)[0].trim();
         (by[a] = by[a] || { a, t: "Seleção da loja", faixas: [], cor: STATIONS[k].band }).faixas.some((f) => f.id === tr.id) || by[a].faixas.push({ id: tr.id, t: tr.t, s: tr.s || 0 });
       }
-      return Object.values(by).sort((x, y) => y.faixas.length - x.faixas.length || x.a.localeCompare(y.a));
+      const sel = Object.values(by).sort((x, y) => y.faixas.length - x.faixas.length || x.a.localeCompare(y.a)).slice(0, 12);
+      sel.forEach((x, i) => { x.fmt = i % 3 === 2 ? ["cd"] : ["cd", "lp"]; x.y = 2001; });
+      ALB_CACHE = ALBUNS.concat(sel);
+      return ALB_CACHE;
     },
     pause(v) {
       paused = v;
@@ -5125,6 +5254,611 @@ const RADIO = (() => {
       emit("stopped", null, null);
     },
   };
+})();
+</script>
+<script>// Dentro das lojas: a loja de discos e a lan house viram salas de verdade. O skatista desce do
+// skate, encosta a prancha na porta e anda lá dentro. Aqui ficam a textura própria das salas
+// (capas, rótulos, vinil, lombadas, cartazes e placas, tudo desenhado em canvas) e a montagem
+// das duas salas: paredes, móveis, discos, PCs, luzes e os pontos onde dá pra mexer nas coisas.
+"use strict";
+const INSIDE = (() => {
+  const { V, M, hex, Mesh } = E;
+  const TW = 1024;
+  const RR = (x, y, w, h) => [x / TW, y / TW, (x + w) / TW, (y + h) / TW];
+  const T = {
+    covers: Array.from({ length: 16 }, (_, i) => RR((i % 8) * 128 + 2, Math.floor(i / 8) * 128 + 2, 124, 124)),
+    vinyl: RR(0, 256, 256, 256),
+    labels: Array.from({ length: 24 }, (_, i) => RR(256 + (i % 12) * 64, 256 + Math.floor(i / 12) * 64, 64, 64)),
+    cd: RR(256, 384, 128, 128),
+    spinesCD: RR(384, 384, 640, 64),
+    spinesLP: RR(384, 448, 640, 64),
+    posters: [0, 1, 2, 3].map((i) => RR(i * 192 + 2, 514, 188, 284)),
+    screens: Array.from({ length: 6 }, (_, i) => RR(768 + (i % 2) * 128 + 2, 512 + Math.floor(i / 2) * 96 + 2, 124, 92)),
+    ouca: RR(0, 800, 512, 96), precos: RR(512, 800, 512, 96),
+    neonD: RR(0, 896, 512, 64), semana: RR(512, 896, 256, 64), neonL: RR(768, 896, 256, 64),
+    tags: Array.from({ length: 8 }, (_, i) => RR(i * 128 + 2, 962, 124, 60)),
+  };
+  const FONT = (px, w = 900) => `${w} ${px}px Rubik, "Arial Black", Arial, sans-serif`;
+  function rnd(seed) {
+    let s = seed >>> 0;
+    return () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  const hash = (s) => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; };
+  const PAL = [["#ff4fa3", "#ffd23f", "#1b1530"], ["#3fd0ff", "#1b1530", "#f5f1e6"], ["#ff8a1f", "#2457c8", "#f5f1e6"], ["#1fae5a", "#ffd23f", "#14213a"], ["#8c5cff", "#ff8fc8", "#120f24"], ["#e0302b", "#f5f1e6", "#1b1530"], ["#2a8a7a", "#f2c14e", "#0f1c1a"], ["#f5f1e6", "#e0302b", "#1b1530"]];
+  const palOf = (a) => PAL[hash(a.a + (a.t || "")) % PAL.length];
+  // texto que encolhe até caber
+  function fit(g, t, maxW, px, w) { let f = px; g.font = FONT(f, w); while (g.measureText(t).width > maxW && f > 6) { f -= 1; g.font = FONT(f, w); } return f; }
+
+  // ---------- capa gerada (álbuns sem foto): arte original, só formas e o nome ----------
+  function drawCover(g, a, x, y, s) {
+    g.save();
+    g.beginPath(); g.rect(x, y, s, s); g.clip();
+    if (a.img) { g.drawImage(a.img, x, y, s, s); g.restore(); return; }
+    const r = rnd(hash(a.a)), [c1, c2, c3] = palOf(a), st = hash(a.a) % 4;
+    g.fillStyle = c3; g.fillRect(x, y, s, s);
+    if (st === 0) {
+      for (let i = 0; i < 7; i++) { g.fillStyle = i % 2 ? c1 : c2; g.fillRect(x, y + s * (0.5 + i * 0.07), s, s * 0.035); }
+      g.fillStyle = c1; g.beginPath(); g.arc(x + s * 0.5, y + s * 0.5, s * 0.26, Math.PI, 0); g.fill();
+    } else if (st === 1) {
+      for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) { g.fillStyle = (i + j) % 3 ? c1 : c2; const k = 0.25 + r() * 0.6; g.beginPath(); g.arc(x + s * (0.12 + i * 0.152), y + s * (0.12 + j * 0.152), s * 0.06 * k, 0, 7); g.fill(); }
+    } else if (st === 2) {
+      g.translate(x + s / 2, y + s / 2); g.rotate(-0.5);
+      for (let i = -4; i < 5; i++) { g.fillStyle = i % 2 ? c1 : c2; g.fillRect(-s, i * s * 0.12, s * 2, s * 0.06); }
+      g.setTransform(1, 0, 0, 1, 0, 0); g.beginPath(); g.rect(x, y, s, s); g.clip();
+    } else {
+      for (let i = 6; i > 0; i--) { g.fillStyle = i % 2 ? c1 : c2; g.beginPath(); g.arc(x + s * 0.62, y + s * 0.42, s * 0.07 * i, 0, 7); g.fill(); }
+    }
+    g.fillStyle = c3; g.globalAlpha = 0.85; g.fillRect(x, y + s * 0.74, s, s * 0.26); g.globalAlpha = 1;
+    g.fillStyle = c1 === "#f5f1e6" ? c2 : "#f5f1e6"; g.textAlign = "left"; g.textBaseline = "alphabetic";
+    fit(g, a.a.toUpperCase(), s * 0.88, Math.round(s * 0.13)); g.fillText(a.a.toUpperCase(), x + s * 0.06, y + s * 0.88);
+    g.fillStyle = c1; fit(g, a.t || "", s * 0.88, Math.round(s * 0.075), 700); g.fillText(a.t || "", x + s * 0.06, y + s * 0.96);
+    g.restore();
+  }
+  // rótulo do vinil (o meio do disco)
+  function drawLabel(g, a, cx, cy, r, side) {
+    const [c1, c2, c3] = palOf(a), R = a.rot || { bg: c1, fg: c3, ac: c2 };
+    g.save();
+    g.fillStyle = R.bg; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+    g.strokeStyle = R.ac; g.lineWidth = Math.max(1, r * 0.04); g.beginPath(); g.arc(cx, cy, r * 0.9, 0, 7); g.stroke();
+    g.fillStyle = R.fg; g.textAlign = "center"; g.textBaseline = "middle";
+    fit(g, a.a.toUpperCase(), r * 1.4, Math.round(r * 0.22)); g.fillText(a.a.toUpperCase(), cx, cy - r * 0.45);
+    fit(g, a.t || "", r * 1.5, Math.round(r * 0.13), 700); g.fillText(a.t || "", cx, cy + r * 0.42);
+    g.font = FONT(Math.round(r * 0.14)); g.fillStyle = R.ac; g.fillText(side ? "LADO " + side : "33⅓", cx, cy + r * 0.68);
+    g.fillStyle = "#050507"; g.beginPath(); g.arc(cx, cy, r * 0.07, 0, 7); g.fill();
+    g.restore();
+  }
+  function drawVinyl(g, cx, cy, r, glow) {
+    g.save();
+    g.fillStyle = "#0c0c10"; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+    for (let i = 0; i < 46; i++) { const rr = r * (0.36 + (i / 46) * 0.6); g.strokeStyle = i % 2 ? "#17171d" : "#101015"; g.lineWidth = r * 0.008; g.beginPath(); g.arc(cx, cy, rr, 0, 7); g.stroke(); }
+    // faixas entre as músicas (anéis mais lisos)
+    for (const k of [0.5, 0.63, 0.75, 0.86]) { g.strokeStyle = "#24242c"; g.lineWidth = r * 0.012; g.beginPath(); g.arc(cx, cy, r * k, 0, 7); g.stroke(); }
+    // brilho de luz no sulco
+    for (const [a0, al] of [[-0.9, glow ? 0.22 : 0.16], [2.24, glow ? 0.16 : 0.11]]) {
+      for (let i = 0; i < 8; i++) { g.strokeStyle = `rgba(220,225,255,${al * (1 - i / 8)})`; g.lineWidth = r * 0.5; g.beginPath(); g.arc(cx, cy, r * 0.66, a0 - 0.05 * (8 - i), a0 + 0.05 * (8 - i)); g.stroke(); }
+    }
+    g.strokeStyle = "#2a2a33"; g.lineWidth = r * 0.02; g.beginPath(); g.arc(cx, cy, r * 0.985, 0, 7); g.stroke();
+    g.restore();
+  }
+  function drawCD(g, cx, cy, r) {
+    g.save();
+    const cg = g.createConicGradient ? g.createConicGradient(0, cx, cy) : null;
+    if (cg) { ["#dfe4ea", "#b9f0ff", "#ffd1f0", "#fff6c2", "#c9ffd8", "#dfe4ea", "#d6c9ff", "#ffe0c2", "#dfe4ea"].forEach((c, i, A) => cg.addColorStop(i / (A.length - 1), c)); g.fillStyle = cg; }
+    else g.fillStyle = "#d6dbe2";
+    g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+    g.fillStyle = "rgba(240,244,250,.85)"; g.beginPath(); g.arc(cx, cy, r * 0.32, 0, 7); g.fill();
+    g.globalCompositeOperation = "destination-out"; g.beginPath(); g.arc(cx, cy, r * 0.11, 0, 7); g.fill();
+    g.restore();
+  }
+  function spines(g, x, y, w, h, seed, thin) {
+    const r = rnd(seed); let px = x;
+    const C = ["#1b1530", "#f5f1e6", "#e0302b", "#2457c8", "#ffd23f", "#1fae5a", "#ff8fc8", "#8c5cff", "#ff8a1f", "#3fd0ff", "#6a4a3a", "#c9ced8", "#2a8a7a", "#101018"];
+    while (px < x + w) {
+      const sw = thin ? 3 + Math.floor(r() * 3) : 8 + Math.floor(r() * 4), c = C[Math.floor(r() * C.length)];
+      g.fillStyle = c; g.fillRect(px, y, sw, h);
+      g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(px + sw - 1, y, 1, h);
+      if (!thin) { g.fillStyle = c === "#f5f1e6" || c === "#ffd23f" || c === "#c9ced8" ? "rgba(27,21,48,.65)" : "rgba(255,255,255,.7)"; const n = 2 + Math.floor(r() * 3); for (let k = 0; k < n; k++) g.fillRect(px + sw / 2 - 1, y + 6 + r() * (h - 18), 2, 3 + r() * 9); }
+      else if (r() < 0.4) { g.fillStyle = "rgba(255,255,255,.4)"; g.fillRect(px + 1, y + h * 0.3, 1, h * 0.3); }
+      px += sw;
+    }
+  }
+  function poster(g, x, y, w, h, k) {
+    g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+    g.textAlign = "center"; g.textBaseline = "alphabetic";
+    const T2 = (t, yy, px, c, wt) => { g.fillStyle = c; fit(g, t, w * 0.86, px, wt); g.fillText(t, x + w / 2, y + yy); };
+    if (k === 0) {
+      g.fillStyle = "#ff8a1f"; g.fillRect(x, y, w, h);
+      g.fillStyle = "#1b1530"; for (let i = 0; i < 16; i++) { g.save(); g.translate(x + w / 2, y + h * 0.42); g.rotate((i / 16) * Math.PI * 2); g.fillRect(0, -3, w, 6); g.restore(); }
+      g.fillStyle = "#ffd23f"; g.beginPath(); g.arc(x + w / 2, y + h * 0.42, w * 0.24, 0, 7); g.fill();
+      T2("ROCK", h * 0.17, 46, "#1b1530"); T2("NA PRAÇA", h * 0.27, 30, "#1b1530");
+      g.fillStyle = "#1b1530"; g.fillRect(x, y + h * 0.66, w, h * 0.34);
+      T2("OS CALANGOS", h * 0.74, 18, "#ffd23f"); T2("FERRUGEM · LUA DE LATA", h * 0.81, 13, "#f5f1e6"); T2("SÁBADO 21H · PRAÇA DA MATRIZ", h * 0.9, 11, "#ff8a1f", 700); T2("ENTRADA: 1 KG DE ALIMENTO", h * 0.96, 10, "#f5f1e6", 700);
+    } else if (k === 1) {
+      const gr = g.createLinearGradient(x, y, x, y + h); gr.addColorStop(0, "#2a1450"); gr.addColorStop(1, "#ff4fa3"); g.fillStyle = gr; g.fillRect(x, y, w, h);
+      drawVinyl(g, x + w / 2, y + h * 0.45, w * 0.36, 1); g.fillStyle = "#ffd23f"; g.beginPath(); g.arc(x + w / 2, y + h * 0.45, w * 0.12, 0, 7); g.fill();
+      T2("NOITE DO", h * 0.11, 26, "#f5f1e6"); T2("VINIL", h * 0.2, 44, "#ffd23f");
+      T2("TODA SEXTA · 20H", h * 0.8, 18, "#f5f1e6"); T2("TRAGA SEU DISCO", h * 0.87, 15, "#1b1530"); T2("DJ SEU VAVÁ", h * 0.94, 13, "#1b1530", 700);
+    } else if (k === 2) {
+      g.fillStyle = "#3fd0ff"; g.fillRect(x, y, w, h); g.fillStyle = "#ffd23f"; g.fillRect(x, y + h * 0.58, w, h * 0.42);
+      g.save(); g.translate(x + w / 2, y + h * 0.42); g.rotate(-0.35);
+      g.fillStyle = "#1b1530"; g.beginPath(); g.roundRect ? g.roundRect(-w * 0.36, -10, w * 0.72, 20, 10) : g.rect(-w * 0.36, -10, w * 0.72, 20); g.fill();
+      g.fillStyle = "#ff4fa3"; for (const sx of [-0.22, 0.22]) { g.beginPath(); g.arc(w * sx, 16, 9, 0, 7); g.fill(); }
+      g.restore();
+      T2("SKATE JAM", h * 0.15, 40, "#1b1530"); T2("PLAZA 2001", h * 0.25, 26, "#f5f1e6");
+      T2("CAMPEONATO NA PRAÇA", h * 0.72, 16, "#1b1530"); T2("INSCRIÇÕES AQUI NA LOJA", h * 0.81, 13, "#1b1530", 700); T2("PRÊMIO: SHAPE NOVO", h * 0.9, 14, "#e0302b");
+    } else {
+      g.fillStyle = "#0f1c3a"; g.fillRect(x, y, w, h);
+      g.strokeStyle = "#1fae5a"; g.lineWidth = 2; for (let i = 0; i < 12; i++) { g.beginPath(); g.moveTo(x, y + h * 0.35 + i * 12); g.lineTo(x + w, y + h * 0.35 + i * 12 - 30); g.stroke(); }
+      T2("CAMPEONATO", h * 0.13, 30, "#3fd0ff"); T2("5 x 5", h * 0.27, 54, "#ffd23f");
+      T2("LAN MEGABYTE", h * 0.74, 20, "#f5f1e6"); T2("SÁBADO · 14H", h * 0.82, 16, "#3fd0ff"); T2("PRÊMIO: 10 HORAS GRÁTIS", h * 0.91, 12, "#ffd23f", 700);
+    }
+    g.restore();
+  }
+  function screen(g, x, y, w, h, k) {
+    g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+    if (k === 0) { const gr = g.createLinearGradient(x, y, x, y + h); gr.addColorStop(0, "#6cc4ff"); gr.addColorStop(1, "#ffe2b0"); g.fillStyle = gr; g.fillRect(x, y, w, h); g.fillStyle = "#8f7fd6"; g.beginPath(); g.moveTo(x, y + h); g.quadraticCurveTo(x + w * 0.2, y + h * 0.35, x + w * 0.45, y + h); g.fill(); g.fillStyle = "#1b1530"; g.fillRect(x + w * 0.55, y + h * 0.62, 18, 4); g.fillStyle = "#ff4fa3"; g.fillRect(x + w * 0.57, y + h * 0.45, 8, 14); g.fillStyle = "#1b1530"; g.font = FONT(10); g.fillText("COMBO x4", x + 6, y + 14); }
+    else if (k === 1) { g.fillStyle = "#9bbc0f"; g.fillRect(x, y, w, h); g.fillStyle = "#306230"; for (let i = 0; i < 9; i++) g.fillRect(x + 20 + i * 8, y + 40, 7, 7); for (let i = 0; i < 4; i++) g.fillRect(x + 84, y + 40 - i * 8, 7, 7); g.fillRect(x + 30, y + 70, 7, 7); }
+    else if (k === 2) { g.fillStyle = "#06060c"; g.fillRect(x, y, w, h); g.fillStyle = "#3fd0ff"; for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) g.fillRect(x + 14 + i * 17, y + 12 + j * 13, 10, 7); g.fillStyle = "#ff4fa3"; g.fillRect(x + w / 2 - 7, y + h - 14, 14, 7); }
+    else if (k === 3) { g.fillStyle = "#1f7a8a"; g.fillRect(x, y, w, h); g.fillStyle = "#c9ced8"; g.fillRect(x, y + h - 10, w, 10); g.fillStyle = "#2457c8"; g.fillRect(x + 2, y + h - 8, 22, 6); for (let i = 0; i < 4; i++) { g.fillStyle = "#ffd23f"; g.fillRect(x + 8, y + 8 + i * 18, 10, 10); } g.fillStyle = "#f5f1e6"; g.fillRect(x + 40, y + 14, 70, 50); g.fillStyle = "#2457c8"; g.fillRect(x + 40, y + 14, 70, 8); }
+    else if (k === 4) { g.fillStyle = "#3a2a1a"; g.fillRect(x, y, w, h); g.fillStyle = "#6a4a2a"; g.beginPath(); g.moveTo(x, y); g.lineTo(x + w * 0.4, y + h * 0.35); g.lineTo(x + w * 0.4, y + h * 0.7); g.lineTo(x, y + h); g.fill(); g.beginPath(); g.moveTo(x + w, y); g.lineTo(x + w * 0.6, y + h * 0.35); g.lineTo(x + w * 0.6, y + h * 0.7); g.lineTo(x + w, y + h); g.fill(); g.fillStyle = "#8a8a8a"; g.fillRect(x + w * 0.62, y + h * 0.7, 30, 26); g.fillStyle = "#ffd23f"; g.fillRect(x + w / 2 - 1, y + h / 2 - 5, 2, 10); g.fillRect(x + w / 2 - 5, y + h / 2 - 1, 10, 2); }
+    else { g.fillStyle = "#e8eef8"; g.fillRect(x, y, w, h); g.fillStyle = "#2457c8"; g.fillRect(x, y, w, 12); g.fillStyle = "#1b1530"; g.font = FONT(9, 700); ["kf: bora pista?", "julie: bora!! 5h", "manu: levo o som", "kaua: tô indo"].forEach((t, i) => g.fillText(t, x + 6, y + 26 + i * 14)); }
+    g.restore();
+  }
+  function sign(g, x, y, w, h, t, bg, fg, px, neon) {
+    g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+    if (bg) { g.fillStyle = bg; g.fillRect(x, y, w, h); }
+    g.textAlign = "center"; g.textBaseline = "middle"; fit(g, t, w * 0.9, px);
+    if (neon) { g.shadowColor = neon; g.shadowBlur = 14; g.fillStyle = neon; g.fillText(t, x + w / 2, y + h / 2 + 2); g.shadowBlur = 4; g.fillStyle = fg; g.fillText(t, x + w / 2, y + h / 2 + 2); }
+    else { g.fillStyle = fg; g.fillText(t, x + w / 2, y + h / 2 + 2); }
+    g.restore();
+  }
+
+  // monta a textura das salas; albs = álbuns da loja (cada um ganha uma capa e um rótulo)
+  function makeTex(albs, onUpdate) {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = TW;
+    const g = cv.getContext("2d");
+    const P = (r) => [r[0] * TW, r[1] * TW, (r[2] - r[0]) * TW, (r[3] - r[1]) * TW];
+    const paintAlb = (a, i) => {
+      const [x, y, w] = P(T.covers[i % 16]);
+      g.clearRect(x - 2, y - 2, w + 4, w + 4);
+      drawCover(g, a, x, y, w);
+      const [lx, ly, lw] = P(T.labels[i % 24]);
+      g.clearRect(lx, ly, lw, lw);
+      drawLabel(g, a, lx + lw / 2, ly + lw / 2, lw / 2 - 1);
+    };
+    albs.forEach(paintAlb);
+    { const [x, y, w] = P(T.vinyl); drawVinyl(g, x + w / 2, y + w / 2, w / 2 - 2); }
+    { const [x, y, w] = P(T.cd); drawCD(g, x + w / 2, y + w / 2, w / 2 - 2); }
+    { const [x, y, w, h] = P(T.spinesCD); spines(g, x, y, w, h, 7); }
+    { const [x, y, w, h] = P(T.spinesLP); spines(g, x, y, w, h, 19, 1); }
+    T.posters.forEach((r, k) => { const [x, y, w, h] = P(r); poster(g, x, y, w, h, k); });
+    T.screens.forEach((r, k) => { const [x, y, w, h] = P(r); screen(g, x, y, w, h, k); });
+    { const [x, y, w, h] = P(T.ouca); sign(g, x, y, w, h, "OUÇA ANTES DE COMPRAR", "#c8282f", "#f5f1e6", 52); g.strokeStyle = "#f5f1e6"; g.lineWidth = 4; g.strokeRect(x + 6, y + 6, w - 12, h - 12); }
+    { const [x, y, w, h] = P(T.precos); g.fillStyle = "#6a4422"; g.fillRect(x, y, w, h); g.fillStyle = "#1e2a24"; g.fillRect(x + 7, y + 7, w - 14, h - 14); sign(g, x, y, w, h, "LP R$ 15 · CD R$ 18 · K7 R$ 5", null, "#f2efe6", 38); }
+    { const [x, y, w, h] = P(T.neonD); sign(g, x, y, w, h, "DISCOS & CDs", null, "#ffe3f3", 50, "#ff4fa3"); }
+    { const [x, y, w, h] = P(T.semana); sign(g, x, y, w, h, "DISCO DA SEMANA", "#ffd23f", "#1b1530", 26); }
+    { const [x, y, w, h] = P(T.neonL); sign(g, x, y, w, h, "MEGABYTE", null, "#e6fbff", 44, "#3fd0ff"); }
+    ["ROCK", "NACIONAL", "POP", "ANOS 90", "CLÁSSICOS", "PROMOÇÃO", "R$ 2 / HORA", "SKATE NA PORTA ;)"].forEach((t, i) => {
+      const [x, y, w, h] = P(T.tags[i]);
+      sign(g, x, y, w, h, t, i === 5 ? "#ffd23f" : i === 6 ? "#3fd0ff" : i === 7 ? "#f5f1e6" : "#f5f1e6", i === 7 ? "#e0302b" : "#1b1530", 26);
+    });
+    // fotos de capa chegam depois (decodificar a imagem é assíncrono)
+    albs.forEach((a, i) => {
+      if (!a.capa || a.img) return;
+      const im = new Image();
+      im.onload = () => { a.img = im; paintAlb(a, i); onUpdate && onUpdate(cv); };
+      im.src = a.capa;
+    });
+    return cv;
+  }
+  // capa, verso e rótulo em tamanho grande pra tela de olhar o disco (HTML)
+  function coverURL(a, s = 320) {
+    const c = document.createElement("canvas"); c.width = c.height = s; drawCover(c.getContext("2d"), a, 0, 0, s); return c.toDataURL("image/jpeg", 0.9);
+  }
+  function labelURL(a, side, s = 220) {
+    const c = document.createElement("canvas"); c.width = c.height = s; drawLabel(c.getContext("2d"), a, s / 2, s / 2, s / 2 - 2, side); return c.toDataURL();
+  }
+
+  // ---------- peças ----------
+  const C = {
+    wood: hex(0x7a4a2a), woodD: hex(0x4a2c1c), woodL: hex(0xc8955a), woodT: hex(0x2b1a12), teal: hex(0x2c6e6b), cream: hex(0xeadfc6), wine: hex(0x5a2433),
+    ceil: hex(0x2b2236), metal: hex(0xb8bcc4), dark: hex(0x1d1a22), black: hex(0x0f0f14), white: hex(0xf2efe6), beige: hex(0xd8d0b8), navy: hex(0x2f3e66), navyD: hex(0x22283a),
+    pink: hex(0xff4fa3), cyan: hex(0x3fd0ff), lamp: hex(0xfff2d0), green: hex(0x2fae4a), terra: hex(0xb8603a), red: hex(0xc8282f), blue: hex(0x2457c8),
+  };
+  // sala: paredes, piso, teto, vitrine e porta (a rua lá fora é um painel aceso)
+  function shell(st, fl, o) {
+    const { wallLo, wallHi, floorA, floorB, tile } = o;
+    for (let i = 0; i < 8 / tile; i++) for (let j = 0; j < 10 / tile; j++) {
+      const x = -4 + i * tile, z = j * tile;
+      fl.quad([x, 0, z], [x, 0, z + tile], [x + tile, 0, z + tile], [x + tile, 0, z], (i + j) % 2 ? floorA : floorB);
+    }
+    st.box(-4.1, 0, 0, -4, 1.0, 10, wallLo); st.box(-4.1, 1.0, 0, -4, 3.3, 10, wallHi);
+    st.box(4, 0, 0, 4.1, 1.0, 10, wallLo); st.box(4, 1.0, 0, 4.1, 3.3, 10, wallHi);
+    st.box(-4, 0, 10, 4, 1.0, 10.1, wallLo); st.box(-4, 1.0, 10, 4, 3.3, 10.1, wallHi);
+    for (const [x0, x1] of [[-4, -3.97], [3.97, 4]]) st.box(x0, 0.97, 0, x1, 1.05, 10, C.woodT);
+    st.box(-4, 0.97, 9.97, 4, 1.05, 10, C.woodT);
+    // rodapé
+    for (const [x0, x1] of [[-4, -3.98], [3.98, 4]]) fl.box(x0, 0, 0, x1, 0.1, 10, C.woodT);
+    // fachada por dentro: porta de vidro no meio e duas vitrines
+    const fw = (x0, y0, x1, y1) => st.box(x0, y0, -0.1, x1, y1, 0, wallHi);
+    fw(-4, 0, -3.6, 3.3); fw(3.6, 0, 4, 3.3); fw(-1.2, 0, -0.7, 3.3); fw(0.7, 0, 1.2, 3.3);
+    fw(-3.6, 0, -1.2, 0.55); fw(1.2, 0, 3.6, 0.55); fw(-3.6, 2.4, -1.2, 3.3); fw(1.2, 2.4, 3.6, 3.3); fw(-0.7, 2.3, 0.7, 3.3);
+    // rua lá fora (acesa): céu, prédios do outro lado, calçada
+    const out = o.outside || [hex(0xffe0b0), hex(0xffc98a), hex(0xbfa890)];
+    fl.quad([-4, 1.5, -0.9], [4, 1.5, -0.9], [4, 3.3, -0.9], [-4, 3.3, -0.9], out[0], 2);
+    fl.quad([-4, 0.35, -0.9], [4, 0.35, -0.9], [4, 1.5, -0.9], [-4, 1.5, -0.9], out[1], 2);
+    fl.quad([-4, 0, -0.9], [4, 0, -0.9], [4, 0.35, -0.9], [-4, 0.35, -0.9], out[2], 2);
+    for (let k = 0; k < 6; k++) { const x = -3.8 + k * 1.4, h = 1.6 + ((k * 37) % 5) * 0.18; fl.quad([x, 0.35, -0.85], [x + 1.1, 0.35, -0.85], [x + 1.1, h, -0.85], [x, h, -0.85], [out[1][0] * 0.82, out[1][1] * 0.78, out[1][2] * 0.8], 2); }
+    // vidros e caixilhos
+    const glass = hex(0xcfe8ff);
+    for (const [x0, y0, x1, y1] of [[-3.6, 0.55, -1.2, 2.4], [1.2, 0.55, 3.6, 2.4], [-0.7, 0, 0.7, 2.3]]) {
+      fl.quad([x0, y0, -0.05], [x1, y0, -0.05], [x1, y1, -0.05], [x0, y1, -0.05], glass, 3);
+      st.box(x0, y0, -0.07, x1, y0 + 0.05, -0.02, C.metal); st.box(x0, y1 - 0.05, -0.07, x1, y1, -0.02, C.metal);
+      st.box(x0, y0, -0.07, x0 + 0.05, y1, -0.02, C.metal); st.box(x1 - 0.05, y0, -0.07, x1, y1, -0.02, C.metal);
+    }
+    st.box(-0.02, 0, -0.07, 0.02, 2.3, -0.02, C.metal);
+    st.box(-0.45, 1.0, -0.02, -0.12, 1.04, 0.03, C.metal); st.box(0.12, 1.0, -0.02, 0.45, 1.04, 0.03, C.metal);
+    // teto com vigas
+    st.box(-4.1, 3.3, -0.1, 4.1, 3.4, 10.1, C.ceil);
+    for (const z of [2.5, 5, 7.5]) st.box(-4, 3.14, z - 0.08, 4, 3.3, z + 0.08, C.woodT);
+    // tapete da entrada
+    fl.box(-0.8, 0, 0.12, 0.8, 0.012, 1.15, hex(0x8a2a2a)); fl.box(-0.7, 0.012, 0.2, 0.7, 0.016, 1.07, hex(0x6a1e22));
+  }
+  // luminária pendente (cúpula + lâmpada acesa)
+  function pendant(st, x, y, z, col = C.pink) {
+    st.tube([x, 3.3, z], [x, y + 0.2, z], 0.008, 0.008, 4, C.dark);
+    st.tube([x, y + 0.22, z], [x, y, z], 0.035, 0.2, 10, col, 0, { cap: false });
+    st.ball([x, y + 0.02, z], 0.07, C.lamp, 2, 8, 4);
+  }
+  function tube(st, x0, x1, y, z) {
+    st.box(x0 - 0.05, y + 0.02, z - 0.09, x1 + 0.05, y + 0.07, z + 0.09, C.metal);
+    st.box(x0, y - 0.02, z - 0.035, x1, y + 0.02, z + 0.035, hex(0xf8f4ea), { m: 2 });
+  }
+  const dec = (m, c, r, u, w, h, rect, col, mat) => m.decal(c, r, u, w, h, rect, col || [1, 1, 1], mat || 4);
+
+  // ---------- loja de discos ----------
+  function buildDiscos(albs, Rn, tex) {
+    const st = new Mesh(), fl = new Mesh(), thin = new Mesh();
+    const solids = [];
+    const S = (x0, z0, x1, z1) => solids.push([x0, z0, x1, z1]);
+    shell(st, fl, { wallLo: C.wood, wallHi: C.teal, floorA: C.wine, floorB: C.cream, tile: 0.5 });
+    const N = albs.length, lp = albs.map((a, i) => i).filter((i) => (albs[i].fmt || ["lp"]).includes("lp")), cdI = albs.map((a, i) => i).filter((i) => (albs[i].fmt || ["cd"]).includes("cd"));
+    const colOf = (i) => hex(parseInt((palOf(albs[i % N])[0]).slice(1), 16));
+    // vitrines: plataforma e discos de costas pra dentro
+    for (const [x0, x1] of [[-3.6, -1.2], [1.2, 3.6]]) {
+      st.box(x0, 0, 0, x1, 0.5, 0.6, C.red, { top: C.woodT });
+      for (let k = 0; k < 3; k++) { thin.tf = M.mul(M.T(x0 + 0.45 + k * 0.75, 0.5, 0.3), M.RX(-0.12)); thin.box(-0.155, 0, -0.003, 0.155, 0.31, 0.003, C.white); thin.tf = null; }
+      S(x0, 0, x1, 0.62);
+    }
+    // ---- parede esquerda: estante de CDs ----
+    st.box(-4, 0, 1.4, -3.62, 0.12, 8.6, C.woodD); st.box(-4, 2.4, 1.4, -3.58, 2.48, 8.6, C.woodD);
+    for (const z of [1.4, 3.2, 5.0, 6.8, 8.55]) st.box(-4, 0, z, -3.6, 2.4, z + 0.05, C.woodD);
+    const rowsY = [0.12, 0.5, 0.88, 1.26, 1.64, 2.02];
+    for (const y of rowsY.slice(1)) st.box(-4, y - 0.025, 1.45, -3.62, y, 8.55, C.wood);
+    const segs = [[1.45, 3.2], [3.25, 5.0], [5.05, 6.8], [6.85, 8.55]];
+    rowsY.forEach((y, r) => segs.forEach(([z0, z1], s) => {
+      if (r === 3 && s === 2) return; // a fileira de destaques fica de frente
+      fl.box(-4, y, z0, -3.72, y + 0.142, z1, C.dark);
+      const R = T.spinesCD, du = (R[2] - R[0]) * 0.7, off = (((r * 4 + s) * 0.37) % 0.3) * (R[2] - R[0]);
+      const rect = (r + s) % 2 ? [R[0] + off, R[1], R[0] + off + du, R[3]] : [R[0] + off + du, R[1], R[0] + off, R[3]];
+      dec(fl, [-3.715, y + 0.071, (z0 + z1) / 2], [0, 0, -1], [0, 1, 0], z1 - z0, 0.142, rect);
+    }));
+    // destaques de frente (caixinhas com a capa)
+    const feat = [];
+    {
+      const y = 1.26, z0 = 5.05, z1 = 6.8, n = Math.min(6, cdI.length);
+      fl.box(-4, y, z0, -3.8, y + 0.15, z1, C.dark);
+      for (let k = 0; k < n; k++) {
+        const z = z0 + 0.15 + k * ((z1 - z0 - 0.3) / Math.max(1, n - 1)), ai = cdI[k];
+        thin.tf = M.mul(M.T(-3.74, y, z), M.RZ(0.1));
+        thin.box(-0.012, 0, -0.072, 0.012, 0.142, 0.072, hex(0xdfe6ee));
+        dec(thin, [0.0125, 0.071, 0], [0, 0, -1], [0, 1, 0], 0.122, 0.122, T.covers[ai % 16]);
+        thin.tf = null;
+        feat.push([z, ai]);
+      }
+      dec(fl, [-3.6, y + 0.33, (z0 + z1) / 2], [0, 0, -1], [0, 1, 0], 0.5, 0.25, T.tags[4]);
+    }
+    S(-4, 1.4, -3.52, 8.6);
+    // ---- parede direita: parede de LPs (capas de frente) e o disco da semana ----
+    st.box(3.35, 0, 1.3, 4, 0.85, 7.9, C.woodD, { top: C.woodT });
+    for (const z of [2.6, 3.9, 5.2, 6.5]) st.box(3.33, 0.1, z - 0.01, 3.36, 0.8, z + 0.01, C.woodT);
+    const wallZ = [], row = (y, n, z0, z1) => { for (let k = 0; k < n; k++) wallZ.push([y, z0 + (k + 0.5) * ((z1 - z0) / n)]); };
+    row(1.28, 10, 1.4, 7.8); row(1.78, 4, 1.4, 4.0); row(1.78, 4, 5.2, 7.8);
+    for (const y of [1.28, 1.78]) { st.box(3.84, y - 0.03, 1.3, 4, y, 7.9, C.wood); st.box(3.8, y - 0.03, 1.3, 3.84, y + 0.035, 7.9, C.woodT); }
+    wallZ.forEach(([y, z], k) => {
+      const ai = lp[k % lp.length], up = V.norm([0.13, 1, 0]);
+      dec(thin, [3.9, y + 0.155, z], [0, 0, 1], up, 0.31, 0.31, T.covers[ai % 16]);
+    });
+    // disco da semana: o primeiro álbum com foto, maior e com luz em cima
+    const star = albs.findIndex((a) => a.capa) >= 0 ? albs.findIndex((a) => a.capa) : 0;
+    st.box(3.8, 1.9, 4.25, 4, 1.93, 4.95, C.woodT);
+    thin.box(3.945, 1.93, 4.32, 3.965, 2.55, 4.88, C.dark);
+    dec(thin, [3.91, 2.24, 4.6], [0, 0, 1], V.norm([0.06, 1, 0]), 0.56, 0.56, T.covers[star % 16], [1.12, 1.12, 1.12]);
+    dec(fl, [3.95, 2.72, 4.6], [0, 0, 1], [0, 1, 0], 0.62, 0.155, T.semana);
+    st.tube([3.2, 3.3, 4.6], [3.2, 3.0, 4.6], 0.015, 0.015, 4, C.dark); st.tube([3.2, 3.02, 4.6], [3.45, 2.86, 4.6], 0.05, 0.09, 8, C.dark, 0, { cap: false });
+    st.ball([3.42, 2.88, 4.6], 0.045, C.lamp, 2, 6, 3);
+    // caixote de promoção em cima do balcão da direita
+    S(3.3, 1.3, 4, 7.9);
+    // ---- mesas do meio com caixotes de LP ----
+    const crates = [];
+    const tags = [0, 1, 2, 3, 4, 5];
+    const table = (z0, z1, ti) => {
+      st.box(-1.25, 0.72, z0, 1.25, 0.77, z1, C.woodD, { top: C.wood });
+      for (const [x, z] of [[-1.18, z0 + 0.07], [1.18, z0 + 0.07], [-1.18, z1 - 0.07], [1.18, z1 - 0.07]]) st.box(x - 0.04, 0, z - 0.04, x + 0.04, 0.72, z + 0.04, C.woodD);
+      st.box(-1.15, 0.12, z0 + 0.1, 1.15, 0.15, z1 - 0.1, C.woodD);
+      [-0.8, 0, 0.8].forEach((cx, c) => {
+        const za = z0 + 0.12, zb = z1 - 0.12, yt = 0.77, wc = 0.2, cc = C.woodL;
+        for (const [hy0, hy1] of [[0, 0.1], [0.14, 0.24]]) {
+          st.box(cx - wc - 0.02, yt + hy0, za, cx - wc, yt + hy1, zb, cc); st.box(cx + wc, yt + hy0, za, cx + wc + 0.02, yt + hy1, zb, cc);
+          st.box(cx - wc, yt + hy0, za - 0.02, cx + wc, yt + hy1, za, cc); st.box(cx - wc, yt + hy0, zb, cx + wc, yt + hy1, zb + 0.02, cc);
+        }
+        fl.box(cx - wc, yt, za, cx + wc, yt + 0.01, zb, C.woodT);
+        const n = 26, ci = crates.length;
+        for (let k = 0; k < n; k++) {
+          const z = za + 0.05 + k * ((zb - za - 0.08) / n), ai = (ci * 5 + k * 3) % N;
+          thin.tf = M.mul(M.T(cx, yt + 0.012, z), M.RX(0.2 + Math.sin(k * 1.7 + c) * 0.03));
+          thin.box(-0.155, 0, -0.002, 0.155, 0.31, 0.002, k % 5 === 0 ? C.white : colOf(ai));
+          thin.tf = null;
+        }
+        // o da frente mostra a capa; divisória com plaquinha
+        const a0 = lp[(ci * 2) % lp.length];
+        thin.tf = M.mul(M.T(cx, yt + 0.012, za + 0.04), M.RX(0.34));
+        thin.box(-0.155, 0, -0.002, 0.155, 0.31, 0.002, C.white);
+        dec(thin, [0, 0.155, -0.003], [-1, 0, 0], [0, 1, 0], 0.305, 0.305, T.covers[a0 % 16]);
+        thin.tf = M.mul(M.T(cx, yt + 0.012, za + 0.35), M.RX(0.22));
+        thin.box(-0.16, 0, -0.002, 0.16, 0.36, 0.002, hex(0xd9c9a0));
+        dec(thin, [0, 0.395, -0.003], [-1, 0, 0], [0, 1, 0], 0.2, 0.095, T.tags[tags[ci % tags.length]]);
+        thin.box(-0.1, 0.35, -0.0015, 0.1, 0.445, 0.0015, hex(0xd9c9a0));
+        thin.tf = null;
+        crates.push({ x: cx, z: za, a0 });
+      });
+      S(-1.3, z0 - 0.05, 1.3, z1 + 0.05);
+    };
+    table(3.0, 4.3, 0);
+    table(5.6, 6.9, 1);
+    // ---- balcão do Seu Vavá (fundo à esquerda) ----
+    st.box(-3.8, 0, 7.9, -0.6, 0.95, 8.55, hex(0x6b3b24)); st.box(-3.85, 0.95, 7.85, -0.55, 1.0, 8.6, C.woodT);
+    dec(fl, [-2.2, 0.55, 7.885], [-1, 0, 0], [0, 1, 0], 1.6, 0.3, T.precos);
+    st.box(-0.6, 0, 8.6, -0.52, 0.95, 9.55, hex(0x6b3b24));
+    // caixa registradora
+    st.box(-3.32, 1.0, 8.05, -2.9, 1.12, 8.42, hex(0x7a7f8a)); st.box(-3.3, 1.12, 8.1, -2.92, 1.2, 8.3, hex(0x5a5f6a));
+    st.box(-3.28, 1.2, 8.3, -2.94, 1.36, 8.4, hex(0x7a7f8a)); st.box(-3.22, 1.27, 8.295, -3.0, 1.33, 8.3, hex(0x7dff9a), { m: 2 });
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) st.box(-3.26 + i * 0.08, 1.2, 8.12 + j * 0.06, -3.21 + i * 0.08, 1.215, 8.16 + j * 0.06, C.white);
+    st.tube([-3.0, 1.38, 8.35], [-3.2, 1.38, 8.35], 0.03, 0.03, 8, C.white);
+    // pilha de discos e TVzinha
+    for (let k = 0; k < 6; k++) { thin.tf = M.mul(M.T(-2.2, 1.0 + k * 0.012, 8.25), M.RY(k * 0.09 - 0.2)); thin.box(-0.155, 0, -0.155, 0.155, 0.01, 0.155, k === 5 ? C.white : colOf(k)); thin.tf = null; }
+    st.box(-1.45, 1.0, 8.15, -1.0, 1.36, 8.5, hex(0x2a2a30)); st.box(-1.4, 1.36, 8.2, -1.05, 1.38, 8.45, hex(0x1d1d22));
+    dec(fl, [-1.225, 1.19, 8.145], [-1, 0, 0], [0, 1, 0], 0.34, 0.26, T.screens[0], [1.3, 1.3, 1.3]);
+    st.tube([-1.15, 1.38, 8.35], [-1.0, 1.62, 8.3], 0.006, 0.006, 3, C.metal); st.tube([-1.3, 1.38, 8.35], [-1.45, 1.6, 8.32], 0.006, 0.006, 3, C.metal);
+    S(-3.9, 7.8, -0.5, 8.62); S(-0.62, 8.55, -0.48, 9.6);
+    // estante do fundo com lombadas de LP e o neon
+    st.box(-3.95, 0, 9.55, -0.6, 2.35, 10, C.woodD);
+    for (const y of [0.15, 0.68, 1.21, 1.74]) {
+      fl.box(-3.9, y, 9.62, -0.65, y + 0.33, 9.96, C.dark);
+      const R = T.spinesLP, off = ((y * 7) % 0.4) * (R[2] - R[0]);
+      dec(fl, [-2.275, y + 0.165, 9.615], [-1, 0, 0], [0, 1, 0], 3.25, 0.33, [R[0] + off, R[1], R[0] + off + (R[2] - R[0]) * 0.6, R[3]]);
+      st.box(-3.95, y - 0.03, 9.58, -0.6, y, 10, C.wood);
+    }
+    S(-4, 9.5, -0.55, 10);
+    dec(fl, [-2.3, 2.78, 9.96], [-1, 0, 0], [0, 1, 0], 2.0, 0.25, T.neonD, [1.6, 1.6, 1.6]);
+    for (const [a, b] of [[[-3.35, 2.6, 9.95], [-1.25, 2.6, 9.95]], [[-3.35, 2.96, 9.95], [-1.25, 2.96, 9.95]]]) st.tube(a, b, 0.012, 0.012, 4, C.pink, 2);
+    // ---- cantinho de audição (fundo à direita) ----
+    st.box(1.1, 0, 8.75, 2.9, 0.82, 9.75, C.woodD, { top: C.woodT });
+    st.box(1.15, 0.12, 8.73, 1.98, 0.75, 8.75, C.wood); st.box(2.02, 0.12, 8.73, 2.85, 0.75, 8.75, C.wood);
+    const TT = [1.62, 0.82, 9.22];
+    st.tf = M.T(...TT);
+    st.box(-0.26, 0, -0.2, 0.26, 0.1, 0.2, hex(0x8a5a32)); st.box(-0.25, 0.1, -0.19, 0.25, 0.106, 0.19, C.metal, { m: 1 });
+    st.tube([0, 0.106, 0], [0, 0.124, 0], 0.158, 0.158, 22, hex(0x26262c));
+    st.tube([0.19, 0.106, 0.13], [0.19, 0.165, 0.13], 0.026, 0.022, 8, C.metal, 1);
+    st.box(0.17, 0.106, -0.17, 0.23, 0.13, -0.12, C.dark); st.ball([-0.21, 0.11, -0.16], 0.018, hex(0x7dff9a), 2, 6, 3);
+    st.tf = null;
+    // aparelho de CD com visor
+    const CDP = [2.45, 0.82, 9.22];
+    st.tf = M.T(...CDP);
+    st.box(-0.22, 0, -0.16, 0.22, 0.09, 0.16, hex(0xc9ced8), { m: 1 }); st.box(-0.18, 0.045, -0.165, 0.06, 0.055, -0.16, C.dark);
+    st.tf = null;
+    // caixas de som
+    for (const x of [0.52, 2.98]) {
+      st.box(x, 0, 9.0, x + 0.46, 1.05, 9.5, hex(0x2a2226));
+      st.tube([x + 0.23, 0.36, 8.999], [x + 0.23, 0.36, 8.98], 0.16, 0.16, 14, C.black); st.ball([x + 0.23, 0.36, 8.985], 0.06, hex(0x3a3a44), 0, 8, 4, { sz: 0.4 });
+      st.tube([x + 0.23, 0.8, 8.999], [x + 0.23, 0.8, 8.985], 0.06, 0.06, 10, C.black); st.ball([x + 0.23, 0.8, 8.985], 0.03, C.metal, 1, 6, 3, { sz: 0.4 });
+    }
+    S(0.48, 8.7, 3.48, 9.8);
+    // fone pendurado
+    st.box(2.4, 1.32, 9.93, 2.44, 1.36, 10, C.metal);
+    for (let k = 0; k < 6; k++) { const a0 = Math.PI * (k / 6), a1 = Math.PI * ((k + 1) / 6); st.tube([2.42 + Math.cos(a0) * 0.1, 1.2 + Math.sin(a0) * 0.12, 9.9], [2.42 + Math.cos(a1) * 0.1, 1.2 + Math.sin(a1) * 0.12, 9.9], 0.012, 0.012, 4, C.dark); }
+    for (const sx of [-1, 1]) st.ball([2.42 + sx * 0.1, 1.17, 9.9], 0.055, C.red, 0, 8, 5, { sx: 0.6 });
+    dec(fl, [1.95, 1.95, 9.96], [-1, 0, 0], [0, 1, 0], 1.5, 0.28, T.ouca);
+    // banquinho
+    st.tube([3.15, 0, 8.3], [3.15, 0.55, 8.3], 0.03, 0.03, 6, C.metal, 1); st.tube([3.15, 0.55, 8.3], [3.15, 0.6, 8.3], 0.17, 0.17, 12, C.red);
+    S(3.0, 8.15, 3.3, 8.45);
+    // ---- violão no pedestal, cartazes, planta, ventilador ----
+    {
+      const g0 = [0.0, 0, 9.35];
+      st.tube([g0[0] - 0.12, 0, g0[2]], [g0[0], 0.32, g0[2] - 0.05], 0.012, 0.012, 4, C.dark); st.tube([g0[0] + 0.12, 0, g0[2]], [g0[0], 0.32, g0[2] - 0.05], 0.012, 0.012, 4, C.dark);
+      st.tf = M.mul(M.T(g0[0], 0.12, g0[2] - 0.02), M.RX(0.16));
+      st.ball([0, 0.2, 0], 0.2, hex(0xc8722a), 0, 12, 6, { sz: 0.25 }); st.ball([0, 0.46, 0], 0.15, hex(0xc8722a), 0, 12, 6, { sz: 0.25 });
+      st.tube([0, 0.33, -0.052], [0, 0.33, -0.054], 0.05, 0.05, 10, C.black);
+      st.box(-0.025, 0.5, -0.03, 0.025, 1.02, 0.01, C.woodT); st.box(-0.04, 1.02, -0.035, 0.04, 1.16, 0.0, C.woodT);
+      st.tf = null;
+      S(-0.25, 9.05, 0.25, 9.6);
+    }
+    dec(fl, [0, 1.95, 9.96], [-1, 0, 0], [0, 1, 0], 0.5, 0.75, T.posters[0]);
+    dec(fl, [-3.99, 1.75, 0.85], [0, 0, -1], [0, 1, 0], 0.5, 0.75, T.posters[2]);
+    dec(fl, [3.99, 1.75, 0.82], [0, 0, 1], [0, 1, 0], 0.5, 0.75, T.posters[1]);
+    dec(fl, [-0.95, 1.65, 0.005], [1, 0, 0], [0, 1, 0], 0.4, 0.2, T.tags[7]);
+    st.tube([3.55, 0, 1.05], [3.55, 0.36, 1.05], 0.16, 0.2, 10, C.terra);
+    for (let k = 0; k < 7; k++) { const a = k * 0.9; st.ball([3.55 + Math.cos(a) * 0.14, 0.62 + (k % 3) * 0.16, 1.05 + Math.sin(a) * 0.14], 0.16, C.green, 0, 6, 4, { sy: 1.4 }); }
+    S(3.3, 0.8, 3.85, 1.3);
+    st.tube([0, 3.3, 5.2], [0, 2.98, 5.2], 0.02, 0.02, 6, C.dark); st.ball([0, 2.95, 5.2], 0.1, C.dark, 1, 8, 4, { sy: 0.6 });
+    tube(st, -0.9, 0.9, 3.04, 3.65); tube(st, -0.9, 0.9, 3.04, 6.25); tube(st, -3.4, -2.2, 3.04, 5.0);
+    pendant(st, -2.2, 2.45, 8.25, C.pink); pendant(st, 2.0, 2.45, 8.85, C.cyan);
+    const lights = [[0, 2.9, 3.65], [0, 2.9, 6.25], [-2.2, 2.4, 8.25], [2.0, 2.4, 8.85], [3.35, 2.6, 4.6], [-3.0, 2.8, 5.0], [0, 2.0, 0.6]];
+
+    // ---- partes que mexem ----
+    const fan = new Mesh();
+    for (let k = 0; k < 4; k++) { fan.tf = M.RY((k * Math.PI) / 2); fan.box(0.08, -0.012, -0.07, 0.62, 0.0, 0.07, C.woodL); fan.tf = null; }
+    const disc = new Mesh();
+    disc.tube([0, 0, 0], [0, 0.003, 0], 0.15, 0.15, 24, C.black, 0, { cap: true });
+    dec(disc, [0, 0.0035, 0], [1, 0, 0], [0, 0, -1], 0.3, 0.3, T.vinyl);
+    const labs = albs.map((a, i) => { const m = new Mesh(); dec(m, [0, 0.0045, 0], [1, 0, 0], [0, 0, -1], 0.1, 0.1, T.labels[i % 24]); return m; });
+    const arm = new Mesh();
+    arm.tube([0, 0, 0], [0, 0, -0.2], 0.006, 0.006, 5, C.metal, 1); arm.tube([0, 0, -0.2], [-0.02, -0.005, -0.235], 0.006, 0.006, 5, C.metal, 1);
+    arm.box(-0.035, -0.02, -0.25, -0.005, 0.0, -0.225, C.dark); arm.tube([0, 0, 0], [0, 0, 0.07], 0.012, 0.012, 6, C.metal, 1); arm.tube([0, 0, 0.07], [0, 0, 0.1], 0.025, 0.025, 8, C.dark);
+    const nowP = albs.map((a, i) => { const m = new Mesh(); m.box(-0.155, 0, -0.004, 0.155, 0.31, 0.0, C.white); dec(m, [0, 0.155, -0.0045], [-1, 0, 0], [0, 1, 0], 0.305, 0.305, T.covers[i % 16]); return m; });
+    const cdLed = new Mesh().box(0.08, 0.045, -0.166, 0.19, 0.075, -0.16, hex(0x7dff9a), { m: 2 });
+    const up = (m, o) => Rn.upload(m, o);
+    const base = [
+      { g: up(fl, { outline: false }), tex },
+      { g: up(st), tex },
+      { g: up(thin, { outline: false }), tex },
+    ];
+    const dyn = {
+      fan: { g: up(fan), mo: M.T(0, 2.95, 5.2) },
+      disc: { g: up(disc), mo: M.I(), tex, hidden: true },
+      labs: labs.map((m) => ({ g: up(m, { outline: false }), mo: M.I(), tex, hidden: true })),
+      arm: { g: up(arm), mo: M.I(), inkw: 0.6 },
+      nowP: nowP.map((m) => ({ g: up(m, { outline: false }), mo: M.mul(M.T(1.62, 0.82, 9.6), M.RX(0.18)), tex, hidden: true })),
+      cdLed: { g: up(cdLed, { outline: false }), mo: M.T(...CDP), tint: [0.25, 0.4, 0.3] },
+    };
+    const spots = [
+      { id: "door", x: 0, z: 0.55, r: 0.62, act: "door", label: "Sair da loja" },
+      { id: "lpA", x: 0, z: 2.6, r: 0.95, act: "dig", fmt: "lp", start: 0, label: "Fuçar nos LPs", face: [0, 3.6] },
+      { id: "lpB", x: 0, z: 5.2, r: 0.75, act: "dig", fmt: "lp", start: 6, label: "Fuçar nos LPs", face: [0, 6.2] },
+      { id: "cd", x: -3.05, z: 5.0, r: 1.5, act: "dig", fmt: "cd", start: 0, label: "Ver os CDs", face: [-4, 5.0] },
+      { id: "semana", x: 2.75, z: 4.6, r: 0.8, act: "insp", alb: star, fmt: "lp", label: "Pegar o disco da semana", face: [4, 4.6] },
+      { id: "vit", x: 1.8, z: 8.2, r: 0.8, act: "vit", label: "Mexer na vitrola", face: [1.8, 9.2] },
+      { id: "vava", x: -2.2, z: 7.35, r: 0.95, act: "talk", who: "vava", label: "Falar com o Seu Vavá", face: [-2.2, 9.1] },
+    ];
+    return {
+      id: "discos", name: "DISCOS & CDs", base, dyn, solids, spots, lights, TT, CDP, star, crates, feat,
+      npcs: [
+        { look: "fig51", x: -2.2, z: 9.1, yaw: Math.PI / 2, idle: "calm", who: "vava" },
+        { look: "fig12", x: -3.05, z: 3.3, yaw: Math.PI, idle: "browse", who: "cli" },
+      ],
+      spawn: [0, 1.5, 0],
+      scene: { sun: V.norm([0.18, 0.95, 0.22]), top: hex(0x2b2236), mid: hex(0x2b2236), hz: hex(0x2b2236), fog: hex(0x2a1e22), fogd: 0.006, shade: hex(0xb4a4c4), ink: hex(0x1b1530), ink_w: 1.5, amb: [0.98, 0.9, 0.84], night: 0.42, wet: 0, winc: [9, 9, 9] },
+    };
+  }
+
+  // ---------- lan house ----------
+  function buildLan(Rn, tex) {
+    const st = new Mesh(), fl = new Mesh(), thin = new Mesh();
+    const solids = [];
+    const S = (x0, z0, x1, z1) => solids.push([x0, z0, x1, z1]);
+    shell(st, fl, { wallLo: C.navyD, wallHi: C.navy, floorA: hex(0x3a4252), floorB: hex(0x343b4a), tile: 1, outside: [hex(0xffe8c0), hex(0xffd29a), hex(0xbfae98)] });
+    const pcs = [];
+    // bancadas de PC nas duas paredes (4 de cada lado)
+    for (const sd of [-1, 1]) {
+      const xw = 4 * sd, xd = 3.25 * sd;
+      st.box(Math.min(xw, xd), 0.72, 1.55, Math.max(xw, xd), 0.77, 8.45, hex(0xe8e2d0), { side: hex(0xb8b0a0) });
+      for (const z of [1.6, 8.4]) st.box(Math.min(xw, xd), 0, z - 0.03, Math.max(xw, xd), 0.72, z + 0.03, hex(0xb8b0a0));
+      [2.35, 3.95, 5.55, 7.15].forEach((z, k) => {
+        const T0 = M.mul(M.T(3.62 * sd, 0.77, z), M.RY(sd > 0 ? Math.PI : 0));
+        st.tf = T0;
+        // monitor de tubo (bege), teclado, mouse e gabinete
+        st.box(-0.3, 0.02, -0.17, -0.02, 0.36, 0.17, C.beige); st.box(-0.06, 0.0, -0.2, 0.1, 0.4, 0.2, hex(0xe2dac4)); st.box(-0.1, -0.0, -0.09, 0.05, 0.03, 0.09, C.beige);
+        st.box(0.2, 0, -0.2, 0.34, 0.025, 0.2, hex(0xd8d0bc)); st.box(0.22, 0.025, 0.24, 0.29, 0.045, 0.29, hex(0xd8d0bc));
+        st.tf = M.mul(M.T(3.84 * sd, 0, z + 0.32), M.RY(sd > 0 ? Math.PI : 0));
+        st.box(-0.12, 0, -0.1, 0.12, 0.46, 0.1, C.beige); st.box(0.121, 0.36, -0.03, 0.125, 0.38, -0.01, hex(0x7dff9a), { m: 2 });
+        st.tf = null;
+        // tela acesa
+        thin.tf = T0;
+        dec(thin, [0.103, 0.2, 0], [0, 0, -1], [0, 1, 0], 0.3, 0.24, T.screens[(k * 2 + (sd > 0 ? 1 : 0)) % 6], [1.35, 1.35, 1.35], 4);
+        thin.tf = null;
+        // divisória azul e cadeira
+        if (k) st.box(Math.min(xw, 3.3 * sd), 0.77, z - 0.82, Math.max(xw, 3.3 * sd), 1.25, z - 0.78, C.blue);
+        const cx = 2.78 * sd;
+        st.tf = M.mul(M.T(cx, 0, z), M.RY(sd > 0 ? Math.PI : 0));
+        st.tube([0, 0.05, 0], [0, 0.42, 0], 0.025, 0.025, 6, C.dark);
+        for (let a = 0; a < 5; a++) { const an = (a / 5) * Math.PI * 2; st.tube([0, 0.05, 0], [Math.cos(an) * 0.26, 0.03, Math.sin(an) * 0.26], 0.015, 0.015, 4, C.dark); }
+        st.box(-0.22, 0.42, -0.22, 0.22, 0.5, 0.22, hex(0x1b1530)); st.box(0.2, 0.5, -0.2, 0.26, 0.98, 0.2, hex(0x1b1530));
+        st.tf = null;
+        pcs.push({ sd, z, cx, k });
+      });
+      S(Math.min(xw, xd) - 0.05, 1.5, Math.max(xw, xd) + 0.05, 8.5);
+    }
+    // balcão do Dudu, baleiro e estante de jogos
+    st.box(-1.6, 0, 8.0, 1.6, 1.0, 8.6, hex(0x2457c8)); st.box(-1.65, 1.0, 7.95, 1.65, 1.05, 8.65, hex(0xe8e2d0));
+    dec(fl, [0.9, 0.62, 7.985], [-1, 0, 0], [0, 1, 0], 0.7, 0.33, T.tags[6]);
+    st.box(-1.2, 1.05, 8.2, -0.8, 1.38, 8.5, C.beige); dec(thin, [-1.0, 1.22, 8.195], [-1, 0, 0], [0, 1, 0], 0.3, 0.22, T.screens[3], [1.3, 1.3, 1.3]);
+    st.tube([0.4, 1.05, 8.3], [0.4, 1.12, 8.3], 0.06, 0.05, 8, C.red); st.ball([0.4, 1.26, 8.3], 0.14, hex(0xcfe8ff), 3, 10, 6);
+    for (let k = 0; k < 9; k++) st.ball([0.33 + (k % 3) * 0.07, 1.16 + Math.floor(k / 3) * 0.06, 8.27 + ((k * 7) % 3) * 0.03], 0.028, [C.pink, hex(0xffd23f), C.cyan][k % 3], 0, 5, 3);
+    S(-1.7, 7.9, 1.7, 8.7);
+    st.box(-3.2, 0, 9.55, 3.2, 2.2, 10, C.navyD);
+    for (const y of [0.2, 0.75, 1.3]) {
+      fl.box(-3.1, y, 9.6, 3.1, y + 0.3, 9.96, C.dark);
+      const R = T.spinesCD, off = ((y * 5) % 0.25) * (R[2] - R[0]);
+      dec(fl, [0, y + 0.15, 9.595], [-1, 0, 0], [0, 1, 0], 6.2, 0.3, [R[0] + off, R[1], R[0] + off + (R[2] - R[0]) * 0.75, R[3]]);
+      st.box(-3.2, y - 0.03, 9.57, 3.2, y, 10, hex(0x3a4a7a));
+    }
+    S(-3.3, 9.5, 3.3, 10);
+    dec(fl, [0, 2.72, 9.96], [-1, 0, 0], [0, 1, 0], 2.2, 0.55, T.neonL, [1.6, 1.6, 1.6]);
+    for (const y of [2.42, 3.02]) st.tube([-1.15, y, 9.95], [1.15, y, 9.95], 0.012, 0.012, 4, C.cyan, 2);
+    // fliperama perto da porta
+    {
+      st.tf = M.mul(M.T(-3.45, 0, 0.95), M.RY(0));
+      st.box(-0.3, 0, -0.32, 0.3, 1.75, 0.32, hex(0x8c5cff)); st.box(0.3, 0.85, -0.3, 0.48, 0.95, 0.3, hex(0x1b1530));
+      st.box(0.3, 1.0, -0.26, 0.32, 1.4, 0.26, C.black); st.box(0.3, 1.55, -0.3, 0.36, 1.72, 0.3, hex(0xffd23f), { m: 2 });
+      st.ball([0.4, 0.98, 0.1], 0.035, C.red, 0, 6, 3); st.tube([0.4, 0.95, -0.1], [0.4, 1.02, -0.1], 0.01, 0.01, 4, C.dark); st.ball([0.4, 1.03, -0.1], 0.025, C.red, 0, 6, 3);
+      st.tf = null;
+      dec(thin, [-3.125, 1.2, 0.95], [0, 0, -1], [0, 1, 0], 0.48, 0.36, T.screens[2], [1.4, 1.4, 1.4]);
+      S(-3.8, 0.6, -3.0, 1.3);
+    }
+    // sofá e pufes no fundo à direita? cartazes e luz
+    dec(fl, [2.4, 1.85, 9.96], [-1, 0, 0], [0, 1, 0], 0.5, 0.75, T.posters[3]);
+    dec(fl, [-2.4, 1.85, 9.96], [-1, 0, 0], [0, 1, 0], 0.5, 0.75, T.posters[2]);
+    dec(fl, [-0.95, 1.65, 0.005], [1, 0, 0], [0, 1, 0], 0.4, 0.2, T.tags[7]);
+    st.box(3.3, 2.5, 4.4, 4, 2.85, 5.4, C.white); st.box(3.29, 2.55, 4.45, 3.3, 2.6, 5.35, hex(0x9aa0aa));
+    for (const z of [2.6, 5.4]) { tube(st, -2.0, -0.4, 3.04, z); tube(st, 0.4, 2.0, 3.04, z); }
+    for (let k = 0; k < 6; k++) st.box(-3.95, 0.02, 1.3 + k * 1.3, -3.85, 0.06, 1.35 + k * 1.3, hex(0x1b1530));
+    const lights = [[-1.2, 2.9, 2.6], [1.2, 2.9, 2.6], [-1.2, 2.9, 5.4], [1.2, 2.9, 5.4], [0, 2.6, 8.4], [-3.4, 1.6, 1.0]];
+    const base = [
+      { g: Rn.upload(fl, { outline: false }), tex },
+      { g: Rn.upload(st), tex },
+      { g: Rn.upload(thin, { outline: false }), tex },
+    ];
+    const spots = [
+      { id: "door", x: 0, z: 0.55, r: 0.62, act: "door", label: "Sair da lan" },
+      { id: "dudu", x: 0, z: 7.3, r: 1.0, act: "talk", who: "dudu", label: "Falar com o Dudu", face: [0, 9] },
+      { id: "fli", x: -2.6, z: 0.95, r: 0.7, act: "pc", game: "inv", label: "Jogar no fliperama", face: [-4, 0.95] },
+    ];
+    // PCs livres (os outros têm gente jogando)
+    const busy = new Set([1, 6]);
+    pcs.forEach((p, i) => { if (!busy.has(i)) spots.push({ id: "pc" + i, x: p.cx - p.sd * 0.55, z: p.z, r: 0.55, act: "pc", pc: p, game: ["rush", "snake", "inv"][i % 3], label: "Sentar e jogar", face: [p.sd * 4, p.z] }); });
+    return {
+      id: "lan", name: "LAN HOUSE MEGABYTE", base, dyn: {}, solids, spots, lights, pcs,
+      npcs: [
+        { look: "dudu", x: 0, z: 9.05, yaw: Math.PI / 2, idle: "bounce", who: "dudu" },
+        { look: "fig7", x: pcs[1].cx, z: pcs[1].z, yaw: pcs[1].sd > 0 ? 0 : Math.PI, idle: "play" },
+        { look: "fig23", x: pcs[6].cx, z: pcs[6].z, yaw: pcs[6].sd > 0 ? 0 : Math.PI, idle: "play" },
+        { look: "fig33", x: pcs[6].cx - 0.75, z: pcs[6].z + 0.45, yaw: 0.25, idle: "watch" },
+      ],
+      spawn: [0, 1.5, 0],
+      scene: { sun: V.norm([0.18, 0.95, 0.22]), top: hex(0x1a1e2e), mid: hex(0x1a1e2e), hz: hex(0x1a1e2e), fog: hex(0x161a28), fogd: 0.006, shade: hex(0xa8b0d0), ink: hex(0x0f0d1e), ink_w: 1.5, amb: [0.9, 0.94, 1.02], night: 0.38, wet: 0, winc: [9, 9, 9] },
+    };
+  }
+
+  // falas de quem trabalha lá
+  const LINES = {
+    vava: [
+      "Vinil é que nem skate, menino: tem que cuidar, senão empena.",
+      "Esse do prisma é clássico. Põe na vitrola e escuta de olho fechado.",
+      "Pode fuçar à vontade, só não deixa digital no vinil, hein!",
+      "Tem disco chegando semana que vem. Me fala o que você quer que eu encomendo.",
+      "O CD é prático, mas o chiadinho do vinil... não tem igual.",
+      "Seu skate tá bem ali na porta, ninguém mexe. Aqui é família.",
+    ],
+    dudu: [
+      "E aí, mano! Escolhe um PC aí, a ficha é por minha conta.",
+      "O 3 tá com o mouse meio ruim, mas dá pra jogar de boa.",
+      "Sábado tem campeonato, bora montar um time?",
+      "Depois que fechar aqui eu vou pra pista, me espera!",
+      "Se o PC travar é só dar um tapinha no gabinete. Brincadeira... ou não.",
+    ],
+  };
+  return { T, makeTex, buildDiscos, buildLan, coverURL, labelURL, drawCover, palOf, LINES };
 })();
 </script>
 <script>// Jogabilidade: física arcade de skate (ollie carregado, vert com 180 automático, flips e
@@ -5556,9 +6290,223 @@ const STREET = (() => {
       if (p && S.speed < 4 && poffer !== p) { poffer = p; ui.mission && ui.mission("offer", { who: p.who, line: p.line, title: p.title, place: 1 }); }
       if (!p && poffer) { poffer = null; ui.mission && ui.mission("hide"); if (MA) ui.mission && ui.mission("start", { title: MA.m.title }); }
     }
+    // ---------- dentro das lojas: desce do skate e anda a pé ----------
+    let IN = null, inTex = null, inCv = null, inAlbs = null;
+    const ROOMS = {};
+    const noteG = Rn.upload(new Mesh().ball([0, 0, 0], 0.035, hex(0xff4fa3), 2, 6, 4, { sy: 0.8 }).box(0.022, 0, -0.006, 0.034, 0.13, 0.006, hex(0xff4fa3), { m: 2 }).box(0.022, 0.1, -0.006, 0.08, 0.13, 0.006, hex(0xff4fa3), { m: 2 }), { outline: false });
+    function shopAlbums() { if (!inAlbs) inAlbs = RADIO_ ? RADIO_.albums() : []; return inAlbs; }
+    function roomOf(id) {
+      if (ROOMS[id]) return ROOMS[id];
+      if (!inCv) {
+        inCv = INSIDE.makeTex(shopAlbums(), (cv) => { inTex = Rn.texture(cv, inTex); });
+        inTex = Rn.texture(inCv, inTex);
+      }
+      const R = id === "lan" ? INSIDE.buildLan(Rn, inTex) : INSIDE.buildDiscos(shopAlbums(), Rn, inTex);
+      R.npcR = R.npcs.map((d, i) => Object.assign({ rig: ART.makeRig(Rn, ART.LOOKS[d.look] || ART.LOOKS.npc0), ph: i * 1.9 }, d));
+      R.scene.lights = new Float32Array(R.lights.flat());
+      R.notes = Array.from({ length: 8 }, (_, i) => ({ g: noteG, mo: M.I(), hidden: true, t: i * 0.45, sp: i % 2 }));
+      ROOMS[id] = R;
+      return R;
+    }
+    const POSE = (o) => Object.assign({ stand: 1, walk: 1, px: 0, py: 0.94, pz: 0, lean: 0.04, twist: 0, hy: 0, hp: 0.04, hr: 0, roll: 0, hF: [0.04, 0.95, 0.27], hB: [0.02, 0.95, -0.27], lf: 0, lb: 0, fxF: 0, fxB: 0, fzF: 0.1, fzB: -0.1 }, o);
+    const SITP = (t, o) => POSE(Object.assign({ stand: 0, walk: 0, px: -0.06, py: 0.68, lean: 0.14, hp: 0.12, hF: [0.42, 0.86, 0.13], hB: [0.42, 0.86, -0.13], fxF: 0.36, fxB: 0.36, fzF: 0.1, fzB: -0.1 }, o));
+    function enterPlace(id) {
+      const R = roomOf(id);
+      if (REC) recStop();
+      if (PH) photoOff();
+      for (const k in keys) keys[k] = false;
+      IN = { id, R, x: R.spawn[0], z: R.spawn[1], yaw: -Math.PI / 2, yawT: null, v: 0, ph: 0, spot: null, hold: false, sit: null, talk: null, li: 0, pose: POSE({}), play: null, prog: 0, ang: 0, spin: 0, armA: 0, armY: 0, cam: { eye: [0, 2.5, -1.2], at: [0, 1.1, 3], fov: 1.08 }, synth: false, t: 0 };
+      if (music && music.playing) { music.stop(); IN.synth = true; }
+      ui.inside && ui.inside("enter", { id, name: R.name });
+      return true;
+    }
+    function exitPlace() {
+      if (!IN) return;
+      const p = PLACES.find((q) => q.id === IN.id);
+      // sai na calçada olhando pro lado (a câmera fica na calçada, não dentro da loja)
+      Object.assign(S, { x: p.at[0] + 0.6, z: p.at[1] + 1.6, head: Math.PI / 2, camYaw: Math.PI / 2, speed: 0, vy: 0, mode: "ground", air: null, grind: null, man: null, hop: null });
+      S.y = H(S.x, S.z);
+      cam.eye = [S.x - 4, S.y + 2.4, S.z + 0.6]; cam.at = [S.x + 2, S.y + 1, S.z];
+      rig.board.hidden = !!look.skates;
+      if (IN.synth && music && !music.playing && !opt.noMusic) music.start();
+      const id = IN.id;
+      IN = null;
+      poffer = p;
+      ui.inside && ui.inside("exit", { id });
+    }
+    function blockedIn(x, z) {
+      if (x < -3.72 || x > 3.72 || z < 0.28 || z > 9.72) return true;
+      const r = 0.27;
+      for (const [x0, z0, x1, z1] of IN.R.solids) if (x > x0 - r && x < x1 + r && z > z0 - r && z < z1 + r) return true;
+      for (const n of IN.R.npcR) if (Math.hypot(x - n.x, z - n.z) < 0.5) return true;
+      return false;
+    }
+    function inInteract() {
+      if (!IN || IN.hold || IN.sit || !S.running) return false;
+      const s = IN.spot;
+      if (!s) return false;
+      if (s.act === "door") { ui.inside && ui.inside("leave"); return true; }
+      if (s.face) IN.yawT = Math.atan2(-(s.face[1] - IN.z), s.face[0] - IN.x);
+      if (s.act === "talk") {
+        const L = INSIDE.LINES[s.who];
+        IN.talk = { who: s.who, t: 4 };
+        ui.inside && ui.inside("say", { who: s.who === "vava" ? "Seu Vavá" : "Dudu", line: L[IN.li++ % L.length] });
+        return true;
+      }
+      if (s.act === "pc") {
+        const p = s.pc;
+        const at = p ? [p.cx + p.sd * 0.04, p.z] : [-2.95, 0.95];
+        IN.sit = { s, t: 0, from: [IN.x, IN.z, IN.yaw], at, yaw: p ? (p.sd > 0 ? 0 : Math.PI) : Math.PI, stand: !p, opened: false };
+        IN.hold = true;
+        return true;
+      }
+      IN.hold = true;
+      ui.inside && ui.inside("open", { act: s.act, fmt: s.fmt, start: s.start || 0, alb: s.alb });
+      return true;
+    }
+    // a página fecha a tela (disco, vitrola, PC) e o skatista volta a andar
+    function inRelease() {
+      if (!IN) return;
+      if (IN.sit) { const [x, z, y] = IN.sit.from; IN.x = x; IN.z = z; IN.yaw = y + Math.PI; IN.yawT = null; IN.sit = null; }
+      IN.hold = false;
+      IN.spot = null;
+    }
+    // ângulo do braço da vitrola pra agulha cair no raio r do disco
+    function armFor(r) {
+      let best = 0, be = 9;
+      for (let a = 0; a <= 1.3; a += 0.01) {
+        const c = Math.cos(a), s = Math.sin(a), x = 0.19 + c * -0.02 + s * -0.235, z = 0.13 + -s * -0.02 + c * -0.235;
+        const e = Math.abs(Math.hypot(x, z) - r);
+        if (e < be) { be = e; best = a; }
+      }
+      return best;
+    }
+    function inFrame(dt, t) {
+      const R = IN.R;
+      IN.t += dt;
+      const walk = S.running && !IN.hold && !IN.sit;
+      let mv = 0;
+      if (walk) {
+        const turn = (keys.left ? 1 : 0) - (keys.right ? 1 : 0);
+        if (turn) IN.yawT = null;
+        IN.yaw += turn * dt * 2.7;
+        mv = (keys.up ? 1 : 0) - (keys.down ? 1 : 0);
+      }
+      if (IN.yawT != null) {
+        let d = IN.yawT - IN.yaw;
+        while (d > Math.PI) d -= Math.PI * 2;
+        while (d < -Math.PI) d += Math.PI * 2;
+        IN.yaw += d * Math.min(1, dt * 8);
+        if (Math.abs(d) < 0.01) IN.yawT = null;
+      }
+      const want = mv > 0 ? 1.9 : mv < 0 ? -1.0 : 0;
+      IN.v += (want - IN.v) * Math.min(1, dt * 10);
+      const fx = Math.cos(IN.yaw), fz = -Math.sin(IN.yaw);
+      if (Math.abs(IN.v) > 0.01 && !IN.sit) {
+        const nx = IN.x + fx * IN.v * dt, nz = IN.z + fz * IN.v * dt;
+        if (!blockedIn(nx, IN.z)) IN.x = nx;
+        if (!blockedIn(IN.x, nz)) IN.z = nz;
+      }
+      IN.ph += Math.abs(IN.v) * dt * 5.4;
+      // ponto de interação mais perto
+      if (!IN.hold && !IN.sit) {
+        let sp = null, bd = 9;
+        for (const s of R.spots) { const d = Math.hypot(IN.x - s.x, IN.z - s.z); if (d < s.r && d < bd) { sp = s; bd = d; } }
+        if (sp !== IN.spot) { IN.spot = sp; ui.inside && ui.inside("spot", sp ? { label: sp.label, act: sp.act } : null); }
+      }
+      // sentando no PC / fliperama
+      let yaw = IN.yaw, px = IN.x, pz = IN.z, tp;
+      if (IN.sit) {
+        const Z = IN.sit;
+        Z.t += dt;
+        const k = Math.min(1, Z.t / 0.6), e = k * k * (3 - 2 * k);
+        px = Z.from[0] + (Z.at[0] - Z.from[0]) * e; pz = Z.from[1] + (Z.at[1] - Z.from[1]) * e;
+        let d = Z.yaw - Z.from[2];
+        while (d > Math.PI) d -= Math.PI * 2;
+        while (d < -Math.PI) d += Math.PI * 2;
+        yaw = Z.from[2] + d * e;
+        IN.x = px; IN.z = pz; IN.yaw = yaw;
+        tp = Z.stand ? POSE({ lean: 0.1, hp: -0.05, hF: [0.42, 1.08, 0.12], hB: [0.4, 1.05, -0.14] }) : k < 1 ? POSE({ py: 0.94 - 0.26 * e }) : SITP(t, { hp: 0.1 + Math.sin(t * 7) * 0.02, hF: [0.44, 0.87 + Math.sin(t * 9) * 0.01, 0.13], hB: [0.44, 0.86, -0.15] });
+        if (k >= 1 && !Z.opened) { Z.opened = true; ui.inside && ui.inside("open", { act: "pc", game: Z.s.game }); }
+      } else if (Math.abs(IN.v) > 0.12) {
+        const sw = Math.sin(IN.ph), cw = Math.cos(IN.ph), sg = IN.v < 0 ? -1 : 1;
+        tp = POSE({ lean: 0.06, twist: sw * 0.07, fxF: sw * 0.2 * sg, fxB: -sw * 0.2 * sg, lf: Math.max(0, cw) * 0.07, lb: Math.max(0, -cw) * 0.07, hF: [-sw * 0.18 * sg, 0.93, 0.27], hB: [sw * 0.18 * sg, 0.93, -0.27] });
+      } else if (IN.hold && IN.spot) {
+        const a = IN.spot.act;
+        if (a === "dig") tp = IN.spot.fmt === "cd" ? POSE({ lean: 0.02, hp: -0.08, hF: [0.5, 1.36 + Math.sin(t * 2.2) * 0.04, 0.08], hB: [0.08, 0.95, -0.27] }) : POSE({ lean: 0.36, hp: 0.48, hF: [0.46, 1.08, 0.12 + Math.sin(t * 3) * 0.04], hB: [0.44, 1.06, -0.16] });
+        else if (a === "vit") tp = POSE({ lean: 0.22, hp: 0.32, hF: [0.48, 1.0, 0.1], hB: [0.06, 0.95, -0.27] });
+        else tp = POSE({ lean: 0.08, hp: 0.0, hF: [0.42, 1.25, 0.18], hB: [0.4, 1.22, -0.18] });
+      } else if (IN.talk) {
+        tp = POSE({ twist: 0.1 + Math.sin(t * 1.3) * 0.05, hy: Math.sin(t * 0.9) * 0.15, hp: 0.04, hF: [0.24 + Math.sin(t * 3.1) * 0.06, 1.16 + Math.sin(t * 2.3) * 0.07, 0.26] });
+      } else tp = POSE({ lean: 0.04 + Math.sin(t * 1.1) * 0.015, hy: Math.sin(t * 0.45) * 0.35, hp: 0.1, hF: [0.03, 0.95, 0.27], hB: [0.02, 0.95, -0.27] });
+      if (IN.talk) { IN.talk.t -= dt; if (IN.talk.t <= 0) IN.talk = null; }
+      IN.pose = ART.lerpPose(IN.pose, tp, Math.min(1, dt * 10));
+      for (const k of ["stand", "walk", "hr", "roll"]) IN.pose[k] = tp[k];
+      const sk = look.skates ? Math.PI / 2 : 0;
+      rig.pose(M.mul(M.T(px, look.skates ? 0 : -0.1, pz), M.RY(yaw + sk)), IN.pose);
+      rig.board.hidden = true;
+      // gente lá dentro
+      for (const n of R.npcR) {
+        const near = Math.hypot(IN.x - n.x, IN.z - n.z) < 3.2;
+        const talking = IN.talk && IN.talk.who === n.who;
+        let p;
+        if (n.idle === "play") p = SITP(t, { hp: 0.14, hy: Math.sin(t * 0.7 + n.ph) * 0.12, hF: [0.44, 0.87 + Math.abs(Math.sin(t * 8 + n.ph)) * 0.02, 0.13], hB: [0.44, 0.86, -0.15], lean: 0.18 + Math.sin(t * 0.5 + n.ph) * 0.04 });
+        else if (n.idle === "browse") p = POSE({ lean: 0.04, hp: -0.05 + Math.sin(t * 0.6) * 0.05, hy: Math.sin(t * 0.3 + 1) * 0.2, hF: [0.48, 1.3 + Math.sin(t * 1.3 + n.ph) * 0.08, 0.06], hB: [0.04, 0.95, -0.27] });
+        else if (talking) p = POSE({ twist: 0.1 + Math.sin(t * 1.3) * 0.06, hp: 0.06 + Math.sin(t * 2.6) * 0.04, hF: [0.26 + Math.sin(t * 3.1) * 0.06, 1.18 + Math.sin(t * 2.3) * 0.08, 0.26] });
+        else if (n.idle === "bounce") p = POSE({ py: 0.94 + Math.abs(Math.sin(t * 4)) * 0.03, hy: Math.sin(t * 1.3) * 0.4, hp: -0.06, hF: [-0.14, 0.92, 0.15], hB: [-0.14, 0.92, -0.15] });
+        else p = POSE({ lean: 0.04 + Math.sin(t * 1.1 + n.ph) * 0.02, twist: 0.1, hy: -0.3 + Math.sin(t * 0.6 + n.ph) * 0.2, hp: 0.12, hF: [0.06, 1.0, 0.2], hB: [0.02, 0.92, -0.25] });
+        if ((near || talking) && n.idle !== "play" && n.idle !== "browse") p.hy = Math.max(-1, Math.min(1, -(Math.atan2(-(IN.z - n.z), IN.x - n.x) - n.yaw)));
+        n.pose = n.pose ? ART.lerpPose(n.pose, p, Math.min(1, dt * 8)) : p;
+        n.pose.stand = p.stand; n.pose.walk = p.walk;
+        n.rig.pose(M.mul(M.T(n.x, -0.1, n.z), M.RY(n.yaw)), n.pose);
+      }
+      // ventilador, vitrola, notas saindo das caixas
+      const D = R.dyn;
+      if (D.fan) D.fan.mo = M.mul(M.T(0, 2.95, 5.2), M.RY(t * 2.4));
+      if (R.id === "discos") {
+        const P = IN.play, lp = P && P.fmt === "lp";
+        D.disc.hidden = !lp;
+        D.labs.forEach((o, i) => (o.hidden = !lp || i !== P.ai));
+        D.nowP.forEach((o, i) => (o.hidden = !P || i !== P.ai));
+        IN.spin += ((lp ? 1 : 0) - IN.spin) * Math.min(1, dt * 1.6);
+        IN.ang += dt * 3.49 * IN.spin;
+        const TTm = M.T(...R.TT), dm = M.mul(TTm, M.mul(M.T(0, 0.124, 0), M.RY(-IN.ang)));
+        D.disc.mo = dm;
+        D.labs.forEach((o) => (o.mo = dm));
+        const tgt = lp ? armFor(0.145 - Math.max(0, Math.min(1, IN.prog)) * 0.08) : 0;
+        const da = tgt - IN.armA;
+        IN.armA += Math.sign(da) * Math.min(Math.abs(da), dt * 0.9);
+        const settled = lp && Math.abs(da) < 0.02;
+        IN.armY += ((settled ? -0.016 : 0.012 * (lp ? 1 : 0)) - IN.armY) * Math.min(1, dt * 6);
+        D.arm.mo = M.mul(TTm, M.mul(M.T(0.19, 0.165 + IN.armY, 0.13), M.RY(IN.armA)));
+        D.cdLed.tint = P && P.fmt === "cd" ? [1.25, 1.25, 1.25] : [0.25, 0.4, 0.3];
+        const playing = !!P && (P.fmt === "cd" || settled);
+        for (const nt of R.notes) {
+          nt.t += dt;
+          if (nt.t > 3.2) nt.t -= 3.2;
+          nt.hidden = !playing;
+          const k = nt.t / 3.2, x0 = nt.sp ? 3.21 : 0.75;
+          nt.mo = M.mul(M.T(x0 + Math.sin(k * 7 + nt.sp * 2) * 0.18, 1.15 + k * 1.3, 8.92 - k * 0.5), M.mul(M.RY(Math.sin(t * 2 + nt.sp) * 0.6), M.S(1 - k * 0.6, 1 - k * 0.6, 1 - k * 0.6)));
+        }
+      }
+      // câmera: atrás e acima; quando mexe em alguma coisa, chega perto por cima do ombro
+      let eye, at;
+      const sx = -fz, sz = fx;
+      if (IN.sit) { eye = [px - fx * 1.05 + sx * 0.35, 1.62, pz - fz * 1.05 + sz * 0.35]; at = [px + fx * 1.2, 0.95, pz + fz * 1.2]; }
+      else if (IN.hold && IN.spot && IN.spot.face) { const f = IN.spot.face; eye = [px - fx * 1.25 + sx * 0.45, 2.05, pz - fz * 1.25 + sz * 0.45]; at = [(px + f[0]) / 2, 1.0, (pz + f[1]) / 2]; }
+      else { eye = [px - fx * 2.4, 2.55, pz - fz * 2.4]; at = [px + fx * 0.9, 1.05, pz + fz * 0.9]; }
+      eye[0] = Math.max(-3.75, Math.min(3.75, eye[0])); eye[2] = Math.max(0.12, Math.min(9.8, eye[2])); eye[1] = Math.min(3.0, eye[1]);
+      if (IN.t < 0.05) { IN.cam.eye = eye.slice(); IN.cam.at = at.slice(); }
+      IN.cam.eye = V.lerp(IN.cam.eye, eye, Math.min(1, dt * 4.5));
+      IN.cam.at = V.lerp(IN.cam.at, at, Math.min(1, dt * 7));
+      const sc = R.scene;
+      sc.objects = R.base.concat(Object.values(D).flat(), R.npcR.map((n) => n.rig.objs[0]), rig.objs, R.notes);
+      if (!look.skates) sc.objects.push({ g: rig.board.g, mo: M.mul(M.T(0.95, 0.42, 0.16), M.mul(M.RY(0.25), M.mul(M.RX(1.3), M.RZ(Math.PI)))) });
+      Rn.draw(sc, window.__cam || IN.cam);
+    }
     function acceptMission() {
       if (soffer) return acceptStory();
-      if (poffer) { const p = poffer; poffer = null; ui.mission && ui.mission("hide"); ui.place && ui.place(p.id); return true; }
+      if (poffer) { const p = poffer; ui.mission && ui.mission("hide"); ui.place && ui.place(p.id); return true; }
       if (!offer) return false;
       if (MA) { items.forEach((o) => (o.hidden = true)); say("TROCOU DE MISSÃO", 1.4); }
       MA = { m: offer.m, left: offer.m.time || 0, pts: 0, got: offer.m.items ? offer.m.items.map(() => false) : null };
@@ -7486,6 +8434,10 @@ const STREET = (() => {
         playFrame(dt, now / 1000);
         return;
       }
+      if (IN) {
+        inFrame(dt, now / 1000);
+        return;
+      }
       if (!PH && !CUT && (S.running || S.mode !== "ground" || S.speed > 0)) {
         // passos fixos curtos pra física estável
         let left = dt;
@@ -7719,6 +8671,7 @@ const STREET = (() => {
     const SPAWN = { kf: [0, 14, Math.PI], julie: [15.5, 39.4, Math.PI], manu: [76, -48.5, Math.PI], gabi: [-1, 124.5, 0], kaua: [64, 213.5, 0], kauane: [0, -176, Math.PI] };
     const SPW = () => SPAWN[lookKey()] || SPAWN.kf;
     function reset(run) {
+      if (IN) { IN = null; rig.board.hidden = !!look.skates; ui.inside && ui.inside("exit", { reset: 1 }); }
       if (soffer) ui.mission && ui.mission("hide");
       SA = null; soffer = null; julie.follow = false;
       Object.assign(S, {
@@ -7744,6 +8697,11 @@ const STREET = (() => {
         reset(run || "session");
       },
       setSkatesForward(v) { skFwd = !!v; },
+      enterPlace, exitPlace, interact: inInteract, release: inRelease, shopAlbums,
+      get inside() { return IN ? IN.id : null; },
+      shopPlay(ai, fmt) { if (IN) { IN.play = { ai, fmt }; IN.prog = 0; } },
+      shopProg(p) { if (IN) IN.prog = p; },
+      shopStop() { if (IN) IN.play = null; },
       acceptMission, dropMission() { if (MA) { MA = null; items.forEach((o) => (o.hidden = true)); ui.mission && ui.mission("hide"); } },
       get offering() { return (!!offer && !MA) || !!soffer; },
       playCut: (k) => playCut(k || "game"),
@@ -8037,6 +8995,7 @@ function dmSet(cls,line){const dm=$('dm');clearTimeout(dmQ);
   dmQ=setTimeout(()=>{dm.className='dm show '+cls;DISC.set(cls);$('dmLine').textContent=line;clearTimeout(dmMini);
     if(cls==='play')dmMini=setTimeout(()=>dm.classList.add('mini'),5000)},Math.max(0,insertEnd-performance.now()))}
 RADIO.onEvent((ev,t,st)=>{const dm=$('dm');
+  if(game.inside){if(ev==='failed')toastC('Sem YouTube aqui: o disco gira, mas o som não sai');return}
   if(ev==='insert'){clearTimeout(dmQ);clearTimeout(dmMini);dm.style.setProperty('--dmSkin',st.hand||'#a8714a');dm.style.setProperty('--dmBand',st.band||'#e8242c');$('dmName').textContent=st.name.toUpperCase();$('dmLine').textContent=st.style;
     dm.className='dm';void dm.offsetWidth;dm.className='dm show insert';insertEnd=performance.now()+1750;DISC.setHand(st.hand||'#a8714a',st.band||'#e8242c');DISC.resize();DISC.set('insert')}
   else if(ev==='loading')dmSet('load','carregando');
@@ -8059,7 +9018,7 @@ let chillOn=false;
 const go=(run,chill)=>{chillOn=!!chill;game.stopPlay();game.photo(false);$('screen').classList.toggle('chill',chillOn);$('over').style.display='none';$('mmBox').classList.add('on');paused=false;const radio=RADIO.start(look);game.start(run,{radio});$('cv').focus()};
 $('goS').addEventListener('click',()=>go('session'));$('goF').addEventListener('click',()=>go('free'));$('goR').addEventListener('click',()=>go('free',true));
 $('mus').addEventListener('click',()=>{if(RADIO.active){RADIO.next();$('mus').textContent='♪ Próxima música';return}const n=game.nextTrack();$('mus').textContent='♪ '+n});
-function pause(v){paused=v;game.pause(v);try{RADIO.pause(v)}catch(e){}if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();drawMedia();drawMissions();drawStory();$('over').style.display='grid'}else $('over').style.display='none'}
+function pause(v){paused=v;game.pause(v);try{RADIO.pause(v||(!!game.inside&&SHOP.ai<0))}catch(e){}if(v){$('ovT').textContent='PAUSA';$('ovP').textContent='Escolha um modo pra recomeçar, ou aperte Esc pra voltar.';drawGoals();drawMedia();drawMissions();drawStory();$('over').style.display='grid'}else $('over').style.display='none'}
 // ---------- missões ----------
 let dlgOn=false,toastCT=0;
 function drawMissions(){const ml=game.missionList();$('dropM').hidden=!ml.some(m=>m.on);$('mlist').innerHTML=game.missionList().map(m=>`<li class="${m.done?'done':m.on?'on':''}">${m.who}: ${m.title}</li>`).join('');$('chal').innerHTML=game.challenges(look).map(c=>`<li class="${c.done?'done':''}">${c.t}</li>`).join('')}
@@ -8085,15 +9044,95 @@ ui.mission=(ev,d)=>{
 $('dropM').addEventListener('click',()=>{game.dropMission();drawMissions()});
 // ---------- lan house (minigames) e loja de discos ----------
 let placeOn=null;
-ui.place=(id)=>{placeOn=id;game.pause(true);dlg(false);$(id==='lan'?'lanO':'discoO').classList.add('on');if(id==='discos')drawAlbums();else MG.menu()};
-function placeClose(){const id=placeOn;placeOn=null;$('lanO').classList.remove('on');$('discoO').classList.remove('on');MG.stop();if(id==='discos'){try{RADIO.stopTrack()}catch(e){}$('nowp').firstChild.textContent='Cabine livre'}game.pause(false);$('cv').focus()}
+// entrar numa loja: tela escurece, o skatista desce do skate e aparece lá dentro
+function fadeDo(f){$('fade').classList.add('on');setTimeout(()=>{f();setTimeout(()=>$('fade').classList.remove('on'),60)},320)}
+ui.place=(id)=>{dlg(false);fadeDo(()=>game.enterPlace(id))};
+function placeClose(){const id=placeOn;placeOn=null;$('lanO').classList.remove('on');MG.stop();if(game.inside){game.release()}else game.pause(false);$('cv').focus()}
 for(const b of document.querySelectorAll('[data-close]'))b.addEventListener('click',placeClose);
-// loja de discos: prateleira de álbuns e cabine de audição (toca o álbum inteiro em sequência)
-let albCur=null;
-function drawAlbums(){const A=RADIO.albums();$('albums').innerHTML=A.map((a,i)=>`<button class="alb" data-a="${i}" style="${a.capa?`background-image:url('${a.capa}')`:`background:linear-gradient(135deg,${a.cor||'#8c5cff'},#1b1530)`}" aria-pressed="false">${a.a}<br>${a.t||''}</button>`).join('');
-  for(const b of document.querySelectorAll('.alb'))b.addEventListener('click',()=>{for(const x of document.querySelectorAll('.alb'))x.setAttribute('aria-pressed',x===b);albCur=A[+b.dataset.a];drawTracks()})}
-function drawTracks(){const a=albCur;$('tracks').innerHTML=`<h4>${a.a} — ${a.t||''}${a.y?' ('+a.y+')':''}</h4>`+a.faixas.map((f,i)=>`<button class="tk" data-i="${i}">▶ ${i+1}. ${f.t}</button>`).join('')+(a.faixas.length>1?'<button class="tk" data-i="all">💿 Ouvir o disco inteiro</button>':'');
-  for(const b of document.querySelectorAll('#tracks .tk'))b.addEventListener('click',()=>{const i=b.dataset.i==='all'?0:+b.dataset.i;const q=a.faixas.slice(i+1).map(f=>Object.assign({a:a.a},f));RADIO.playTrack(Object.assign({a:a.a,q:b.dataset.i==='all'?q:[]},a.faixas[i]));for(const x of document.querySelectorAll('#tracks .tk'))x.classList.toggle('on',x===b);$('nowp').firstChild.textContent='♪ Na cabine: '+a.a+' — '+a.faixas[i].t+(b.dataset.i==='all'?' (disco inteiro)':'')})}
+// ---------- loja de discos por dentro ----------
+const SHOP={ai:-1,fmt:null,ti:0,radioWas:false,tm:0,sayT:0};
+let INO=null;
+const albs=()=>game.shopAlbums();
+const urlOf=(a)=>a._url||(a._url=a.capa||INSIDE.coverURL(a));
+const labOf=(a,s)=>{const k='_lab'+(s||'');return a[k]||(a[k]=INSIDE.labelURL(a,s))};
+const fmtT=(n)=>Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0');
+const durs=(a)=>a.um?a.faixas.map((f,i)=>(i+1<a.faixas.length?a.faixas[i+1].s:a.fim)-f.s):a.faixas.map(()=>0);
+const sides=(a)=>{const A=a.faixas.map((f,i)=>Object.assign({i},f));if(A.some(f=>f.lado))return[['A',A.filter(f=>f.lado!=='B')],['B',A.filter(f=>f.lado==='B')]];const h=Math.ceil(A.length/2);return[['A',A.slice(0,h)],['B',A.slice(h)]]};
+function inOpen(id){INO=id;$('say').classList.remove('on');for(const o of ['digO','insO','vitO'])$(o).classList.toggle('on',o===id)}
+function inClose(){INO=null;for(const o of ['digO','insO','vitO'])$(o).classList.remove('on');game.release();$('cv').focus()}
+for(const b of document.querySelectorAll('[data-inclose]'))b.addEventListener('click',()=>{if(INO==='insO'&&INS.from==='dig'){inOpen('digO');drawDig()}else inClose()});
+ui.inside=(ev,d)=>{
+  if(ev==='enter'){$('screen').classList.add('inside');$('inName').textContent=d.name;$('mmBox').classList.remove('on');clearTimeout(dmQ);clearTimeout(dmMini);$('dm').className='dm';DISC.set('');SHOP.radioWas=RADIO.active;if(RADIO.active)RADIO.pause(true);clearInterval(SHOP.tm);SHOP.tm=setInterval(shopTick,400);inSpot(null)}
+  else if(ev==='spot')inSpot(d);
+  else if(ev==='say'){$('sayW').textContent=d.who;$('sayL').textContent='“'+d.line+'”';const b=$('say');b.classList.remove('on');void b.offsetWidth;b.classList.add('on');clearTimeout(SHOP.sayT);SHOP.sayT=setTimeout(()=>b.classList.remove('on'),4200)}
+  else if(ev==='open'){inSpot(null);if(d.act==='dig')openDig(d.fmt,d.start);else if(d.act==='insp')openIns(d.alb,d.fmt,'wall');else if(d.act==='vit')openVit();else if(d.act==='pc'){placeOn='lan';$('lanO').classList.add('on');MG.start(d.game||'rush')}}
+  else if(ev==='leave'){inSpot(null);fadeDo(()=>game.exitPlace())}
+  else if(ev==='exit'){$('screen').classList.remove('inside');$('mmBox').classList.add('on');inSpot(null);$('say').classList.remove('on');clearInterval(SHOP.tm);for(const o of ['digO','insO','vitO','lanO'])$(o).classList.remove('on');INO=null;placeOn=null;MG.stop();
+    if(d.reset){if(SHOP.ai>=0){SHOP.ai=-1;$('np').classList.remove('on');RADIO.stopTrack()}return}
+    if(SHOP.ai>=0){SHOP.ai=-1;$('np').classList.remove('on');if(SHOP.radioWas){RADIO.stopTrack();RADIO.pause(false)}else RADIO.stop()}else if(SHOP.radioWas)RADIO.pause(false);$('cv').focus()}};
+function inSpot(d){$('inP').classList.toggle('on',!!d);if(d)$('inPL').textContent=d.label}
+// toca o disco (LP na vitrola, CD no aparelho); num álbum de vídeo único é só soltar a agulha no segundo certo
+function shopPlay(ai,fmt,ti){const a=albs()[ai];ti=ti||0;const f=a.faixas[ti];
+  const base={a:a.a,once:1,onEnd:shopEnded};
+  RADIO.playTrack(Object.assign(base,f,a.um?{}:{q:a.faixas.slice(ti+1).map(x=>Object.assign({a:a.a},x))}));
+  SHOP.ai=ai;SHOP.fmt=fmt;SHOP.ti=ti;game.shopPlay(ai,fmt);game.shopProg(a.um?f.s/a.fim:ti/a.faixas.length);
+  $('npV').className='vmini'+(fmt==='cd'?' cd':'');$('npL').src=fmt==='cd'?'':labOf(a);$('npL').style.display=fmt==='cd'?'none':'';$('np').classList.add('on');shopTick();
+  toastC(fmt==='cd'?'💿 CD no aparelho':'🎶 Agulha no disco')}
+function shopStop(){if(SHOP.ai<0)return;SHOP.ai=-1;game.shopStop();$('np').classList.remove('on');RADIO.pause(true);RADIO.stopTrack()}
+function shopEnded(){SHOP.ai=-1;game.shopStop();$('np').classList.remove('on');toastC('Fim do disco ♪');if(INO==='vitO')openVit()}
+function shopCur(){const a=albs()[SHOP.ai];if(!a)return null;const t=RADIO.time();let ti=SHOP.ti,p;
+  if(a.um){if(t>0){ti=0;a.faixas.forEach((f,i)=>{if(t>=f.s-0.5)ti=i})}p=(t>0?t:a.faixas[ti].s)/a.fim}
+  else{const c=RADIO.now();if(c){const k=a.faixas.findIndex(f=>f.id===c.id&&f.t===c.t);if(k>=0)ti=k}p=(ti+Math.min(1,t/240))/a.faixas.length}
+  return{a,ti,p:Math.max(0,Math.min(1,p)),t}}
+function shopTick(){if(SHOP.ai<0)return;const c=shopCur();if(!c)return;const f=c.a.faixas[c.ti];game.shopProg(c.p);
+  set($('npT'),'textContent',(c.a.um||c.a.faixas.some(x=>x.lado)?'Lado '+(f.lado||'A')+' · ':'')+(c.ti+1)+'. '+f.t);set($('npA'),'textContent',c.a.a+' — '+c.a.t+(SHOP.fmt==='cd'?' (CD)':' (LP)'));$('npBar').style.width=Math.round(c.p*100)+'%';
+  for(const b of document.querySelectorAll('#vpB .iTr button'))b.classList.toggle('on',+b.dataset.i===c.ti)}
+// caixote: folhear os discos um por um
+let DIG={fmt:'lp',list:[],c:0};
+function openDig(fmt,start){const A=albs();DIG.fmt=fmt;DIG.list=A.map((a,i)=>i).filter(i=>(A[i].fmt||['lp']).includes(fmt));DIG.c=Math.min(DIG.list.length-1,start||0);
+  $('digT').textContent=fmt==='cd'?'ESTANTE DE CDs':'CAIXOTE DE LPs';$('digS').textContent=fmt==='cd'?'Seu Vavá: “Os CDs novos tão na prateleira do meio.”':'Seu Vavá: “Folheia com carinho, hein!”';inOpen('digO');drawDig()}
+function drawDig(){const A=albs(),L=DIG.list,stk=$('stk');let h='';
+  for(let i=Math.max(0,DIG.c-2);i<Math.min(L.length,DIG.c+8);i++){const d=i-DIG.c,a=A[L[i]];
+    const jx=((L[i]*37)%7-3)*0.6,tr=d<0?`translateZ(${54+(-d)*5}px) translateY(14%) rotateX(${-66-d*3}deg)`:d===0?'translateZ(14px) translateY(-14%) rotateX(-5deg)':`translateX(${jx}%) translateZ(${-d*16}px) translateY(${-3-d*4.5}%) rotateX(${6+d}deg)`;
+    h+=`<div class="rec${DIG.fmt==='cd'?' cd':''}${d<0?' fw':''}" data-i="${i}" style="background-image:url('${urlOf(a)}');transform:${tr};z-index:${50-Math.abs(d)};filter:brightness(${d===0?1:d<0?.75:Math.max(.35,.92-d*.09)})"></div>`}
+  h+=`<div class="crF${DIG.fmt==='cd'?' cd':''}" data-t="${DIG.fmt==='cd'?'CDs':'ROCK · POP · NACIONAL'}"></div>`;stk.innerHTML=h;
+  for(const r of stk.querySelectorAll('.rec'))r.addEventListener('click',()=>{const i=+r.dataset.i;if(i===DIG.c)digPick();else{DIG.c=i;drawDig()}});
+  const a=A[L[DIG.c]];$('digA').textContent=a?a.t:'';$('digN').textContent=a?a.a+(a.y?' · '+a.y:'')+'  ('+(DIG.c+1)+'/'+L.length+')':''}
+function digMove(d){const n=DIG.c+d;if(n<0||n>=DIG.list.length)return;DIG.c=n;drawDig();sfxFlip()}
+function digPick(){openIns(DIG.list[DIG.c],DIG.fmt,'dig')}
+$('digL').addEventListener('click',()=>digMove(-1));$('digR').addEventListener('click',()=>digMove(1));
+// barulhinho de capa de disco (ruído curto filtrado)
+let fAc=null;function sfxFlip(){try{fAc=fAc||new (window.AudioContext||window.webkitAudioContext)();const n=fAc.createBuffer(1,fAc.sampleRate*0.07,fAc.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const s=fAc.createBufferSource(),f=fAc.createBiquadFilter(),g=fAc.createGain();s.buffer=n;f.type='bandpass';f.frequency.value=2400;g.gain.value=0.18;s.connect(f);f.connect(g);g.connect(fAc.destination);s.start()}catch(e){}}
+// olhar o disco: capa, verso (gira em 3D), tirar o vinil da capa e tocar
+const INS={ai:0,fmt:'lp',ry:-18,rx:8,out:false,from:'dig'};
+function backHTML(a,fmt){const [c1,c2,c3]=INSIDE.palOf(a),D=durs(a),S=sides(a),b1=a.capa?(a.cor||'#15151c'):c3,b2=a.capa?(a.cor2||'#ffd23f'):c1;
+  const li=(f)=>`<li>${f.t}${D[f.i]?`<span>${fmtT(D[f.i])}</span>`:''}</li>`;
+  const cols=fmt==='cd'?`<div><h5>FAIXAS</h5><ol>${a.faixas.map((f,i)=>li(Object.assign({i},f))).join('')}</ol></div>`:S.map(([l,F])=>`<div><h5>LADO ${l}</h5><ol start="${F.length?F[0].i+1:1}">${F.map(li).join('')}</ol></div>`).join('');
+  return`<div class="bkd" style="--b1:${b1};--b2:${b2}"><div><div class="t1">${a.a.toUpperCase()}</div><div class="t2">${a.t||''}</div></div><div class="cols">${cols}</div>
+  <div class="ft"><span>${a.y?'℗ '+a.y:''}${a.sel?' · '+a.sel:''}<br>${fmt==='cd'?'ÁUDIO DIGITAL · ESTÉREO':'33⅓ RPM · ESTÉREO'}</span><span class="bc"></span></div><div class="pr">${fmt==='cd'?'R$<br>18':'R$<br>15'}</div></div>`}
+function openIns(ai,fmt,from){const a=albs()[ai];Object.assign(INS,{ai,fmt,ry:-18,rx:8,out:false,from});
+  const o=$('obj');o.className='obj'+(fmt==='cd'?' cdo':'');$('iFr').style.backgroundImage=`url('${urlOf(a)}')`;$('iBk').innerHTML=backHTML(a,fmt);$('iSp').textContent=(a.a+' · '+(a.t||'')).toUpperCase();
+  $('iDisc').className='disc'+(fmt==='cd'?' cdd':'');$('iLab').src=fmt==='cd'?labOf(a):labOf(a,'A');
+  $('iT').textContent=a.t||'';$('iA').textContent=a.a+(a.y?' · '+a.y:'')+(fmt==='cd'?' · CD':' · LP');
+  const D=durs(a);$('iTr').innerHTML=sides(a).map(([l,F])=>F.length?(fmt==='cd'?'':`<h6>LADO ${l}</h6>`)+F.map(f=>`<button data-i="${f.i}">▶ ${f.i+1}. ${f.t}<span>${D[f.i]?fmtT(D[f.i]):''}</span></button>`).join(''):'').join('');
+  for(const b of document.querySelectorAll('#iTr button'))b.addEventListener('click',()=>{shopPlay(INS.ai,INS.fmt,+b.dataset.i);inClose()});
+  $('bOut').textContent=fmt==='cd'?'💿 Abrir a caixinha (T)':'💿 Tirar o disco (T)';$('bPlay').textContent=fmt==='cd'?'▶ Pôr no aparelho (Enter)':'▶ Pôr na vitrola (Enter)';
+  inOpen('insO');insApply();sfxFlip()}
+function insApply(){$('obj').style.transform=`rotateX(${INS.rx}deg) rotateY(${INS.ry}deg)`;$('iDisc').classList.toggle('out',INS.out)}
+function insFlip(){INS.ry+=180;insApply();sfxFlip()}
+$('bFlip').addEventListener('click',insFlip);$('bOut').addEventListener('click',()=>{INS.out=!INS.out;insApply()});$('bPlay').addEventListener('click',()=>{shopPlay(INS.ai,INS.fmt,0);inClose()});
+{let dr=null;const st=$('stage');st.addEventListener('pointerdown',e=>{dr={x:e.clientX,y:e.clientY};$('obj').classList.add('drag');st.setPointerCapture(e.pointerId)});
+  st.addEventListener('pointermove',e=>{if(!dr)return;INS.ry+=(e.clientX-dr.x)*0.5;INS.rx=Math.max(-40,Math.min(40,INS.rx-(e.clientY-dr.y)*0.35));dr={x:e.clientX,y:e.clientY};insApply()});
+  const up=()=>{dr=null;$('obj').classList.remove('drag')};st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up)}
+// vitrola: o que tá tocando, pular faixa (levar a agulha), parar e trocar de disco
+function openVit(){const A=albs(),a=A[SHOP.ai];let h;
+  if(a){const D=durs(a),c=shopCur();h=`<div class="vpNow"><img src="${urlOf(a)}" alt=""><div><b>${a.t}</b>${a.a} · ${SHOP.fmt==='cd'?'CD':'LP'}</div></div><div class="iTr">`+sides(a).map(([l,F])=>F.length?(SHOP.fmt==='cd'?'':`<h6>LADO ${l}</h6>`)+F.map(f=>`<button data-i="${f.i}" class="${c&&c.ti===f.i?'on':''}">${f.i+1}. ${f.t}<span>${D[f.i]?fmtT(D[f.i]):''}</span></button>`).join(''):'').join('')+`</div>
+    <p style="opacity:.75">Clique numa faixa pra ${SHOP.fmt==='cd'?'pular pra ela':'levar a agulha até ela'}.</p><div class="iBtns"><button class="oBtn pk" id="vStop">⏏ ${SHOP.fmt==='cd'?'Parar o CD':'Levantar a agulha'}</button><button class="oBtn" id="vSwap">💿 Trocar de disco</button></div>`}
+  else h=`<p>A vitrola tá livre. Escolhe um disco nos caixotes ou na parede, ou um CD na estante.</p><div class="iBtns"><button class="oBtn ok" id="vLP">Escolher um LP</button><button class="oBtn" id="vCD">Escolher um CD</button></div>`;
+  $('vpB').innerHTML=h;inOpen('vitO');
+  for(const b of document.querySelectorAll('#vpB .iTr button'))b.addEventListener('click',()=>{shopPlay(SHOP.ai,SHOP.fmt,+b.dataset.i);openVit()});
+  const on=(id,f)=>{const el=$(id);if(el)el.addEventListener('click',f)};
+  on('vStop',()=>{shopStop();openVit()});on('vSwap',()=>openDig(SHOP.fmt||'lp',0));on('vLP',()=>openDig('lp',0));on('vCD',()=>openDig('cd',0))}
 // minigames da lan: Skate Rush, Cobrinha 2001 e Invasores (recorde salvo no navegador)
 const MG=(()=>{const cv=$('mg'),g=cv.getContext('2d'),W=480,H=270;let cur=null,raf=0,last=0;const K={};
   const best=(n)=>+(localStorage.getItem('plaza-mg-'+n)||0),setBest=(n,v)=>{if(v>best(n))try{localStorage.setItem('plaza-mg-'+n,v)}catch(e){}};
@@ -8204,8 +9243,14 @@ const map={w:'up',arrowup:'up',s:'down',arrowdown:'down',a:'left',arrowleft:'lef
 function legend(){const sk=look==='manu';$('kJ').textContent=sk?'mortal / parafuso / estrela':'flip (kick, heel, shove-it…)';$('kL').textContent=sk?'pegada (na borda da rampa: parada de mão)':'grab (na borda da rampa: handplant)';$('kK').textContent=sk?'grind de patins':'grind';$('skfRow').style.display=sk?'':'none'}
 legend();
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();
+  if(INO&&!placeOn){e.preventDefault();if(e.repeat&&!['arrowleft','arrowright','arrowup','arrowdown','a','d','w','s'].includes(k))return;
+    if(k==='escape'){if(INO==='insO'&&INS.from==='dig'){inOpen('digO');drawDig()}else inClose();return}
+    if(INO==='digO'){if(k==='arrowleft'||k==='a')digMove(-1);else if(k==='arrowright'||k==='d')digMove(1);else if(k==='enter'||k===' '||k==='e')digPick();return}
+    if(INO==='insO'){if(k==='arrowleft'||k==='a')INS.ry-=22;else if(k==='arrowright'||k==='d')INS.ry+=22;else if(k==='arrowup'||k==='w')INS.rx=Math.min(40,INS.rx+10);else if(k==='arrowdown'||k==='s')INS.rx=Math.max(-40,INS.rx-10);else if(k==='v'||k===' ')return insFlip();else if(k==='t')INS.out=!INS.out;else if(k==='enter'){shopPlay(INS.ai,INS.fmt,0);inClose();return}insApply();return}
+    return}
   if(placeOn){if(k==='escape'){e.preventDefault();placeClose();return}if(placeOn==='lan'){if([' ','arrowup','arrowdown','arrowleft','arrowright','enter'].includes(k))e.preventDefault();MG.key(k,true)}return}
   if(game.cutOn){if(k==='enter'||k==='escape'||k===' '){e.preventDefault();game.cutSkip()}return}
+  if(game.inside&&!paused){if(k==='enter'||k==='e'||k===' '){e.preventDefault();if(!e.repeat)game.interact();return}if(k==='f'||k==='r'||k==='c')return}
   if(dlgOn){if(k==='enter'){e.preventDefault();game.acceptMission();dlg(false);return}if(k==='escape'){e.preventDefault();dlg(false);return}}
   // fita passando: controles do videocassete
   if(game.playing){e.preventDefault();if(k===' ')game.playPause()?$('plSt').textContent='❚❚ PAUSE':$('plSt').textContent='▶ PLAY';else if(k==='arrowleft'||k==='a')game.playSeek(-2);else if(k==='arrowright'||k==='d')game.playSeek(2);else if(k==='r'){game.playRestart();$('pl').classList.remove('ended')}else if(k==='b')downloadVideo();else if(k==='escape'||k==='p')game.stopPlay();return}
@@ -8221,7 +9266,7 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();
 addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(placeOn==='lan'){MG.key(k,false);return}if(map[k])game.press(map[k],false)});
 addEventListener('blur',()=>{for(const v of Object.values(map))game.press(v,false)});
 for(const b of document.querySelectorAll('.touch button')){const k=b.dataset.k;
-  b.addEventListener('pointerdown',e=>{e.preventDefault();if(k==='cam'){game.cycleCam();return}
+  b.addEventListener('pointerdown',e=>{e.preventDefault();if(game.inside&&(k==='jump'||k==='grab'||k==='flip')){game.interact();return}if(k==='cam'){game.cycleCam();return}
     if(game.playing){if(k==='jump')game.playPause();else if(k==='rec'||k==='photo')game.stopPlay();return}
     if(k==='photo'){game.photo(!game.photoMode);return}if(k==='rec'){if(!game.photoMode)game.rec();return}
     if(game.photoMode){if(k==='jump'){takePhoto();return}if(k==='cam'){game.photoView();return}}
