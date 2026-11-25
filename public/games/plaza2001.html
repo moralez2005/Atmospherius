@@ -178,7 +178,7 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .say:after{content:'';position:absolute;left:28%;bottom:-15px;border:12px solid transparent;border-top-color:var(--ink);border-bottom:0}
 @keyframes sayIn{from{transform:translateX(-50%) scale(.6);opacity:0}}
 .fade{position:absolute;inset:0;background:#0b0816;opacity:0;pointer-events:none;transition:opacity .3s;z-index:30}.fade.on{opacity:1}
-.np{position:absolute;right:12px;bottom:12px;display:none;align-items:center;gap:10px;background:rgba(20,14,34,.9);color:#fff;border:3px solid #ffd23f;border-radius:14px;padding:6px 12px 6px 6px;font:700 12px Rubik,sans-serif;z-index:6;max-width:44%;pointer-events:none}
+.np{position:absolute;right:12px;top:12px;display:none;align-items:center;gap:10px;background:rgba(20,14,34,.9);color:#fff;border:3px solid #ffd23f;border-radius:14px;padding:6px 12px 6px 6px;font:700 12px Rubik,sans-serif;z-index:6;max-width:44%;pointer-events:none}
 .np.on{display:flex}.np b{display:block;font:900 14px Rubik,sans-serif;color:#ffd23f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.np span{display:block;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .np>div:not(.vmini){min-width:0;flex:1}.np .bar{height:4px;background:#3a2f55;border-radius:3px;margin-top:4px;overflow:hidden}.np .bar i{display:block;height:100%;width:0;background:#ff4fa3;transition:width .4s linear}
 .vmini{width:46px;height:46px;flex:none;border-radius:50%;position:relative;background:repeating-radial-gradient(circle,#0c0c10 0 1.5px,#1d1d24 1.5px 3px);box-shadow:0 0 0 2px #000;animation:vspin 1.8s linear infinite}
@@ -242,6 +242,10 @@ kbd{font:900 12px Rubik,sans-serif;background:var(--ink);color:#fff;border-radiu
 .vpan h4{margin:0;font:900 18px Rubik,sans-serif}.vpNow{display:flex;gap:10px;align-items:center}.vpNow img{width:64px;height:64px;border:2px solid var(--ink);border-radius:3px}
 .vpNow b{display:block;font:900 15px Rubik,sans-serif}.vpan .iTr button{background:#fff;color:var(--ink);border-color:var(--ink)}.vpan .iTr button.on{background:#ffd23f}
 .vpan .iTr h6{color:#d8247a}.vpan p{margin:0}
+.iTr .ti{display:flex;gap:6px;font:700 12px Rubik,sans-serif;background:rgba(255,248,230,.08);border:2px solid rgba(255,255,255,.14);border-radius:8px;padding:4px 8px}.iTr .ti span{margin-left:auto;opacity:.7}
+.ndl{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);display:none;flex-direction:column;align-items:center;gap:3px;background:rgba(20,14,34,.92);color:#fff;border:3px solid #ffd23f;border-radius:16px;padding:8px 18px;z-index:8;min-width:min(460px,80%);text-align:center}
+.ndl.on{display:flex}.ndl .row1{display:flex;align-items:center;gap:14px;font:900 18px Rubik,sans-serif}.ndl .row1 i{font-style:normal;color:#ffd23f;font-size:22px}.ndl span{font:800 13px Rubik,sans-serif;color:#ff8fc8}.ndl small{font:700 12px Rubik,sans-serif;opacity:.85}
+.np small{display:block;opacity:.65;font-size:10px;margin-top:2px}
 .win{position:absolute;inset:0;display:none;place-items:center;pointer-events:none;z-index:8}.win.on{display:grid}
 .winC{position:relative;background:#fff8e6;border:4px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:14px 30px 16px;text-align:center;max-width:78%;animation:winIn .5s cubic-bezier(.2,1.6,.4,1)}
 .win.out .winC{animation:winOut .35s ease-in forwards}
@@ -290,7 +294,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
     <div class="inHud" aria-live="polite"><span id="inName"></span><small>setas andam · Enter mexe nas coisas · Esc pausa</small></div>
     <div class="inP" id="inP"><kbd>Enter</kbd><span id="inPL"></span></div>
     <div class="say" id="say"><b id="sayW"></b><span id="sayL"></span></div>
-    <div class="np" id="np"><div class="vmini" id="npV"><img id="npL" alt=""></div><div><b id="npT"></b><span id="npA"></span><div class="bar"><i id="npBar"></i></div></div></div>
+    <div class="np" id="np"><div class="vmini" id="npV"><img id="npL" alt=""></div><div><b id="npT"></b><span id="npA"></span><div class="bar"><i id="npBar"></i></div><small>N próxima faixa · B volta uma</small></div></div>
     <div class="inO" id="digO" role="dialog" aria-label="Caixote de discos"><div class="oHead"><b id="digT">LPs</b><span id="digS"></span><button class="oBtn" data-inclose>Voltar (Esc)</button></div>
       <button class="digArr l" id="digL" aria-label="Disco anterior">‹</button><div class="crate" id="crate"><div class="stk" id="stk"></div></div><button class="digArr r" id="digR" aria-label="Próximo disco">›</button>
       <div class="digInfo"><b id="digA"></b><span id="digN"></span></div><div class="oHint">← → folheia · Enter (ou clique) pega o disco · Esc volta</div></div>
@@ -298,7 +302,7 @@ html.embed body{padding:8px 8px 0;gap:6px;background:#1b1530;min-height:0;height
       <div class="iSide"><h3 id="iT"></h3><p id="iA"></p><div class="iTr" id="iTr"></div>
         <div class="iBtns"><button class="oBtn" id="bFlip">↺ Virar (V)</button><button class="oBtn pk" id="bOut">💿 Tirar o disco (T)</button><button class="oBtn ok" id="bPlay">▶ Tocar (Enter)</button><button class="oBtn" data-inclose>Voltar (Esc)</button></div>
         <small style="opacity:.75">Arraste com o mouse (ou ← → ↑ ↓) pra girar e ver de todos os lados</small></div></div>
-    <div class="inO light" id="vitO" role="dialog" aria-label="Vitrola"><div class="vpan"><h4>🎶 Cantinho de audição</h4><div id="vpB" style="display:flex;flex-direction:column;gap:8px;flex:1;min-height:0"></div><button class="oBtn" data-inclose>Voltar (Esc)</button></div></div>
+    <div class="ndl" id="ndl" role="status" aria-live="polite"><span id="ndS"></span><div class="row1"><i>◀</i><b id="ndT"></b><i>▶</i></div><small id="ndH"></small></div>
     <div class="fade" id="fade"></div>
     <div class="win" id="win" aria-live="polite"><div class="winC"><span class="winK" id="winK"></span><b id="winT"></b><small id="winS"></small><span class="winOk">✓</span></div><div class="conf" id="conf"></div></div>
     <div class="dlg" id="dlg" role="dialog" aria-live="polite"><b id="dlgW"></b><p id="dlgL"></p><span class="mt" id="dlgT"></span><div class="row"><button class="ok" id="dlgOk">Aceitar (Enter)</button><button id="dlgNo">Agora não</button></div></div>
@@ -5708,7 +5712,19 @@ const INSIDE = (() => {
     arm.box(-0.035, -0.02, -0.25, -0.005, 0.0, -0.225, C.dark); arm.tube([0, 0, 0], [0, 0, 0.07], 0.012, 0.012, 6, C.metal, 1); arm.tube([0, 0, 0.07], [0, 0, 0.1], 0.025, 0.025, 8, C.dark);
     const nowP = albs.map((a, i) => { const m = new Mesh(); m.box(-0.155, 0, -0.004, 0.155, 0.31, 0.0, C.white); dec(m, [0, 0.155, -0.0045], [-1, 0, 0], [0, 1, 0], 0.305, 0.305, T.covers[i % 16]); return m; });
     const cdLed = new Mesh().box(0.08, 0.045, -0.166, 0.19, 0.075, -0.16, hex(0x7dff9a), { m: 2 });
+    // caixinha de CD de cada álbum (pra carregar na mão) e a gaveta do aparelho com o CD em cima
+    const cases = albs.map((a, i) => {
+      const m = new Mesh();
+      m.box(-0.071, 0, -0.012, 0.071, 0.142, 0, hex(0xdfe6ee));
+      dec(m, [0, 0.071, -0.0125], [-1, 0, 0], [0, 1, 0], 0.124, 0.124, T.covers[i % 16]);
+      m.box(-0.071, 0, -0.0128, -0.062, 0.142, -0.012, hex(0xf4f8fc));
+      return m;
+    });
+    const tray = new Mesh().box(-0.075, 0, -0.14, 0.075, 0.008, 0, hex(0x2a2a30));
+    const cdD = new Mesh();
+    dec(cdD, [0, 0.0105, -0.07], [1, 0, 0], [0, 0, -1], 0.12, 0.12, T.cd);
     const up = (m, o) => Rn.upload(m, o);
+    const nowG = nowP.map((m) => up(m, { outline: false }));
     const base = [
       { g: up(fl, { outline: false }), tex },
       { g: up(st), tex },
@@ -5719,7 +5735,11 @@ const INSIDE = (() => {
       disc: { g: up(disc), mo: M.I(), tex, hidden: true },
       labs: labs.map((m) => ({ g: up(m, { outline: false }), mo: M.I(), tex, hidden: true })),
       arm: { g: up(arm), mo: M.I(), inkw: 0.6 },
-      nowP: nowP.map((m) => ({ g: up(m, { outline: false }), mo: M.mul(M.T(1.62, 0.82, 9.6), M.RX(0.18)), tex, hidden: true })),
+      nowP: nowG.map((g) => ({ g, mo: M.mul(M.T(1.62, 0.82, 9.6), M.RX(0.18)), tex, hidden: true })),
+      heldLP: nowG.map((g) => ({ g, mo: M.I(), tex, hidden: true })),
+      heldCD: cases.map((m) => ({ g: up(m, { outline: false }), mo: M.I(), tex, hidden: true })),
+      tray: { g: up(tray), mo: M.T(...CDP), inkw: 0.6 },
+      cdDisc: { g: up(cdD, { outline: false }), mo: M.I(), tex, hidden: true },
       cdLed: { g: up(cdLed, { outline: false }), mo: M.T(...CDP), tint: [0.25, 0.4, 0.3] },
     };
     const spots = [
@@ -5728,7 +5748,8 @@ const INSIDE = (() => {
       { id: "lpB", x: 0, z: 5.2, r: 0.75, act: "dig", fmt: "lp", start: 6, label: "Fuçar nos LPs", face: [0, 6.2] },
       { id: "cd", x: -3.05, z: 5.0, r: 1.5, act: "dig", fmt: "cd", start: 0, label: "Ver os CDs", face: [-4, 5.0] },
       { id: "semana", x: 2.75, z: 4.6, r: 0.8, act: "insp", alb: star, fmt: "lp", label: "Pegar o disco da semana", face: [4, 4.6] },
-      { id: "vit", x: 1.8, z: 8.2, r: 0.8, act: "vit", label: "Mexer na vitrola", face: [1.8, 9.2] },
+      { id: "vit", x: 1.62, z: 8.2, r: 0.5, act: "tt", label: "Vitrola", face: [1.62, 9.22] },
+      { id: "cdp", x: 2.45, z: 8.2, r: 0.42, act: "cdp", label: "Aparelho de CD", face: [2.45, 9.22] },
       { id: "vava", x: -2.2, z: 7.35, r: 0.95, act: "talk", who: "vava", label: "Falar com o Seu Vavá", face: [-2.2, 9.1] },
     ];
     return {
@@ -6315,7 +6336,7 @@ const STREET = (() => {
       if (REC) recStop();
       if (PH) photoOff();
       for (const k in keys) keys[k] = false;
-      IN = { id, R, x: R.spawn[0], z: R.spawn[1], yaw: -Math.PI / 2, yawT: null, v: 0, ph: 0, spot: null, hold: false, sit: null, talk: null, li: 0, pose: POSE({}), play: null, prog: 0, ang: 0, spin: 0, armA: 0, armY: 0, cam: { eye: [0, 2.5, -1.2], at: [0, 1.1, 3], fov: 1.08 }, synth: false, t: 0 };
+      IN = { id, R, x: R.spawn[0], z: R.spawn[1], yaw: -Math.PI / 2, yawT: null, v: 0, ph: 0, spot: null, hold: false, sit: null, talk: null, li: 0, pose: POSE({}), play: null, prog: 0, ang: 0, spin: 0, armA: 0, armY: 0, carry: null, deck: { lp: null, cd: null }, anim: null, needle: null, drop: null, curTi: 0, trayK: 0, lb: null, cam: { eye: [0, 2.5, -1.2], at: [0, 1.1, 3], fov: 1.08 }, synth: false, t: 0 };
       if (music && music.playing) { music.stop(); IN.synth = true; }
       ui.inside && ui.inside("enter", { id, name: R.name });
       return true;
@@ -6345,7 +6366,12 @@ const STREET = (() => {
       if (!IN || IN.hold || IN.sit || !S.running) return false;
       const s = IN.spot;
       if (!s) return false;
-      if (s.act === "door") { ui.inside && ui.inside("leave"); return true; }
+      if (s.act === "door") {
+        if (IN.carry) { IN.carry = null; vavaSay("Ô, menino! Disco só sai daqui pago, hein. Deixa que eu guardo."); return true; }
+        ui.inside && ui.inside("leave");
+        return true;
+      }
+      if (s.act === "tt" || s.act === "cdp") return deckInteract(s);
       if (s.face) IN.yawT = Math.atan2(-(s.face[1] - IN.z), s.face[0] - IN.x);
       if (s.act === "talk") {
         const L = INSIDE.LINES[s.who];
@@ -6381,6 +6407,143 @@ const STREET = (() => {
       }
       return best;
     }
+    // ---------- vitrola e aparelho de CD: põe o disco com a mão, mexe na agulha ----------
+    const progOf = (ai, ti) => { const a = shopAlbums()[ai]; if (!a) return 0; ti = Math.max(0, Math.min(a.faixas.length - 1, ti)); return a.um ? a.faixas[ti].s / a.fim : ti / a.faixas.length; };
+    function vavaSay(line) { IN.talk = { who: "vava", t: 3.5 }; ui.inside && ui.inside("say", { who: "Seu Vavá", line }); }
+    function spotLabel(s) {
+      const c = IN.carry, d = IN.deck;
+      if (s.act === "tt") return c ? (c.fmt === "lp" ? "Pôr o disco na vitrola" : "CD vai no aparelho do lado →") : d.lp != null ? "Mexer na agulha (trocar faixa)" : "Vitrola vazia";
+      if (s.act === "cdp") return c ? (c.fmt === "cd" ? "Pôr o CD no aparelho" : "← Vinil vai na vitrola") : d.cd != null ? "Trocar faixa do CD" : "Aparelho de CD vazio";
+      if (s.act === "dig" && c) return "Trocar o disco da mão";
+      if (s.act === "door" && c) return "Sair (o disco fica)";
+      return s.label;
+    }
+    function needleInfo() {
+      const N = IN.needle, ai = N.fmt === "cd" ? IN.deck.cd : IN.deck.lp, a = shopAlbums()[ai];
+      ui.inside && ui.inside("needle", { on: true, fmt: N.fmt, ti: N.ti, n: a.faixas.length, t: a.faixas[N.ti].t, lado: a.faixas[N.ti].lado || "", a: a.a, playing: !!(IN.play && IN.play.fmt === N.fmt) });
+    }
+    function deckInteract(s) {
+      const fmt = s.act === "tt" ? "lp" : "cd", c = IN.carry;
+      if (c && c.fmt !== fmt) { vavaSay(fmt === "lp" ? "Isso é CD, menino! Vai no aparelho do lado." : "Vinil vai na vitrola, ali do lado!"); return true; }
+      if (s.face) IN.yawT = Math.atan2(-(s.face[1] - IN.z), s.face[0] - IN.x);
+      if (c) {
+        // tira o que estava tocando e põe o novo
+        if (IN.play && IN.play.fmt === fmt) ui.inside && ui.inside("lift", {});
+        IN.anim = { kind: fmt, ai: c.ai, t: 0, from: null };
+        IN.deck[fmt] = null;
+        IN.hold = true;
+        return true;
+      }
+      if (IN.deck[fmt] == null) { vavaSay(fmt === "lp" ? "Pega um disco nos caixotes ou na parede e traz aqui." : "Os CDs tão na estante do outro lado. Escolhe um e traz."); return true; }
+      IN.needle = { fmt, ti: IN.play && IN.play.fmt === fmt ? IN.curTi || 0 : 0 };
+      IN.hold = true;
+      needleInfo();
+      return true;
+    }
+    function needleMove(d) { if (!IN || !IN.needle) return; const ai = IN.needle.fmt === "cd" ? IN.deck.cd : IN.deck.lp, n = shopAlbums()[ai].faixas.length; IN.needle.ti = (IN.needle.ti + d + n) % n; needleInfo(); }
+    function needleDrop() {
+      if (!IN || !IN.needle) return;
+      const N = IN.needle;
+      if (N.fmt === "cd") ui.inside && ui.inside("drop", { ai: IN.deck.cd, fmt: "cd", ti: N.ti });
+      else IN.drop = { ti: N.ti };
+      needleExit();
+    }
+    function needleLift() { if (!IN || !IN.needle) return; if (IN.play && IN.play.fmt === IN.needle.fmt) ui.inside && ui.inside("lift", {}); needleInfo(); }
+    function needleTake() {
+      if (!IN || !IN.needle) return;
+      const f = IN.needle.fmt;
+      if (IN.play && IN.play.fmt === f) ui.inside && ui.inside("lift", {});
+      IN.carry = { ai: IN.deck[f], fmt: f };
+      IN.deck[f] = null;
+      needleExit();
+    }
+    function needleExit() { if (!IN) return; IN.needle = null; IN.hold = false; IN.spot = null; ui.inside && ui.inside("needle", { on: false }); }
+    function discosFrame(R, D, dt, t, fx, fz, px, pz, yaw) {
+      const P = IN.play, dk = IN.deck, A = IN.anim, TT = R.TT, CDP = R.CDP;
+      const ease = (a, b, x) => { const u = Math.max(0, Math.min(1, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
+      const L3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+      const ya = Math.atan2(fx, fz);
+      // segura o disco pela borda, do lado do corpo, com a capa virada pra trás (dá pra ver de longe)
+      const sdx = Math.sin(yaw), sdz = Math.cos(yaw), cdh = IN.carry && IN.carry.fmt === "cd";
+      const chest = [px + sdx * 0.3 + fx * 0.04, cdh ? 0.82 : 0.66, pz + sdz * 0.3 + fz * 0.04];
+      const standM = M.mul(M.T(1.62, 0.82, 9.6), M.RX(0.18));
+      // capa/caixinha na mão
+      D.heldLP.forEach((o) => (o.hidden = true));
+      D.heldCD.forEach((o) => (o.hidden = true));
+      const c = IN.carry;
+      if (c && !A) {
+        const o = c.fmt === "cd" ? D.heldCD[c.ai] : D.heldLP[c.ai];
+        if (o) { o.hidden = false; o.mo = M.mul(M.T(...chest), M.mul(M.RY(ya), M.T(0, c.fmt === "cd" ? -0.071 : -0.155, 0))); }
+      }
+      // capa de quem está no prato fica em pé atrás da vitrola
+      D.nowP.forEach((o, i) => { o.hidden = dk.lp !== i; o.mo = standM; });
+      let discM = null, labI = dk.lp;
+      IN.spin += ((dk.lp != null ? 1 : 0) - IN.spin) * Math.min(1, dt * 1.6);
+      IN.ang += dt * 3.49 * IN.spin;
+      const TTm = M.T(...TT), onPlate = M.mul(TTm, M.mul(M.T(0, 0.124, 0), M.RY(-IN.ang)));
+      if (dk.lp != null) discM = onPlate;
+      let trayK = IN.trayK || 0, cdOn = false, cdM = null;
+      // animação de pôr o disco
+      if (A) {
+        A.t += dt;
+        if (!A.from) { A.from = chest.slice(); IN.carry = null; }
+        if (A.kind === "lp") {
+          const over = [TT[0], 0.82 + 0.3, TT[2] - 0.12], k1 = ease(0, 0.55, A.t);
+          const slv = L3(A.from, over, k1);
+          const k3 = ease(1.25, 2.0, A.t);
+          const sl = D.heldLP[A.ai];
+          if (A.t < 2.0) { sl.hidden = false; sl.mo = M.mul(M.T(...L3(slv, [1.62, 0.82, 9.6], k3)), M.mul(M.RY(ya * (1 - k3)), M.RX(0.18 * k3))); }
+          // o vinil sai da capa (pra cima), vira deitado e desce no prato
+          const rise = ease(0.55, 1.15, A.t) * 0.3, k2 = ease(1.15, 1.9, A.t);
+          const p0 = [slv[0], slv[1] + 0.155 + rise, slv[2] - 0.01], p1 = [TT[0], 0.82 + 0.124, TT[2]];
+          const pp = L3(p0, p1, k2);
+          pp[1] += Math.sin(k2 * Math.PI) * 0.08;
+          if (A.t > 0.55) { discM = M.mul(M.T(...pp), M.mul(M.RY(ya * (1 - k2)), M.RX(-Math.PI / 2 * (1 - k2)))); labI = A.ai; }
+          if (A.t >= 2.05) { dk.lp = A.ai; IN.anim = null; IN.drop = { ti: 0 }; IN.hold = false; IN.spot = null; }
+        } else {
+          trayK = ease(0, 0.45, A.t) * (1 - ease(1.2, 1.6, A.t));
+          const over = [CDP[0], 0.82 + 0.25, CDP[2] - 0.3], k1 = ease(0, 0.5, A.t), cs = L3(A.from, over, k1);
+          const cse = D.heldCD[A.ai];
+          cse.hidden = false;
+          cse.mo = A.t < 1.0 ? M.mul(M.T(...cs), M.RY(ya)) : M.mul(M.T(CDP[0] + 0.32, 0.82, CDP[2] - 0.05), M.RX(Math.PI / 2));
+          const k2 = ease(0.5, 1.0, A.t);
+          if (A.t > 0.45) { cdOn = true; const pp = L3([cs[0], cs[1] + 0.07, cs[2] - 0.08], [CDP[0], 0.82 + 0.045, CDP[2] - 0.16 + 0.14 * (1 - trayK)], k2); cdM = M.mul(M.T(pp[0], pp[1], pp[2] + 0.07), M.T(0, 0, 0)); }
+          if (A.t >= 1.65) { dk.cd = A.ai; IN.anim = null; IN.hold = false; IN.spot = null; ui.inside && ui.inside("drop", { ai: A.ai, fmt: "cd", ti: 0 }); }
+        }
+      }
+      // caixinha do CD em cima do aparelho quando tem CD dentro
+      if (dk.cd != null && !A) { const o = D.heldCD[dk.cd]; o.hidden = false; o.mo = M.mul(M.T(CDP[0] + 0.32, 0.82, CDP[2] - 0.05), M.RX(Math.PI / 2)); }
+      IN.trayK = trayK;
+      D.tray.mo = M.mul(M.T(...CDP), M.T(0, 0.045, -0.16 + 0.14 * (1 - trayK)));
+      D.cdDisc.hidden = !cdOn;
+      if (cdM) D.cdDisc.mo = M.mul(cdM, M.T(0, 0, -0.07 + 0.07));
+      D.disc.hidden = !discM;
+      D.labs.forEach((o, i) => { o.hidden = !discM || i !== labI; if (discM) o.mo = discM; });
+      if (discM) D.disc.mo = discM;
+      // braço: vai até a faixa, desce; quando tá escolhendo faixa fica levantado
+      let tp = null, lifted = true;
+      if (dk.lp != null) {
+        if (IN.drop) { tp = progOf(dk.lp, IN.drop.ti); lifted = false; }
+        else if (IN.needle && IN.needle.fmt === "lp") { tp = progOf(dk.lp, IN.needle.ti); lifted = true; }
+        else if (P && P.fmt === "lp") { tp = IN.prog; lifted = false; }
+      }
+      const tgt = tp == null ? 0 : armFor(0.145 - Math.max(0, Math.min(1, tp)) * 0.08);
+      const da = tgt - IN.armA;
+      IN.armA += Math.sign(da) * Math.min(Math.abs(da), dt * 0.9);
+      const arrived = Math.abs(da) < 0.02, down = tp != null && !lifted && arrived;
+      IN.armY += ((down ? -0.016 : tp != null ? 0.012 : 0) - IN.armY) * Math.min(1, dt * 6);
+      D.arm.mo = M.mul(TTm, M.mul(M.T(0.19, 0.165 + IN.armY, 0.13), M.RY(IN.armA)));
+      if (IN.drop && down && IN.armY < -0.012) { const ti = IN.drop.ti; IN.drop = null; ui.inside && ui.inside("drop", { ai: dk.lp, fmt: "lp", ti }); }
+      D.cdLed.tint = P && P.fmt === "cd" ? [1.25, 1.25, 1.25] : dk.cd != null ? [0.6, 0.8, 0.6] : [0.25, 0.4, 0.3];
+      const playing = !!P && (P.fmt === "cd" || down);
+      for (const nt of R.notes) {
+        nt.t += dt;
+        if (nt.t > 3.2) nt.t -= 3.2;
+        nt.hidden = !playing;
+        const k = nt.t / 3.2, x0 = nt.sp ? 3.21 : 0.75;
+        nt.mo = M.mul(M.T(x0 + Math.sin(k * 7 + nt.sp * 2) * 0.18, 1.15 + k * 1.3, 8.92 - k * 0.5), M.mul(M.RY(Math.sin(t * 2 + nt.sp) * 0.6), M.S(1 - k * 0.6, 1 - k * 0.6, 1 - k * 0.6)));
+      }
+    }
     function inFrame(dt, t) {
       const R = IN.R;
       IN.t += dt;
@@ -6412,7 +6575,8 @@ const STREET = (() => {
       if (!IN.hold && !IN.sit) {
         let sp = null, bd = 9;
         for (const s of R.spots) { const d = Math.hypot(IN.x - s.x, IN.z - s.z); if (d < s.r && d < bd) { sp = s; bd = d; } }
-        if (sp !== IN.spot) { IN.spot = sp; ui.inside && ui.inside("spot", sp ? { label: sp.label, act: sp.act } : null); }
+        const lb = sp ? spotLabel(sp) : null;
+        if (sp !== IN.spot || lb !== IN.lb) { IN.spot = sp; IN.lb = lb; ui.inside && ui.inside("spot", sp ? { label: lb, act: sp.act } : null); }
       }
       // sentando no PC / fliperama
       let yaw = IN.yaw, px = IN.x, pz = IN.z, tp;
@@ -6440,6 +6604,9 @@ const STREET = (() => {
         tp = POSE({ twist: 0.1 + Math.sin(t * 1.3) * 0.05, hy: Math.sin(t * 0.9) * 0.15, hp: 0.04, hF: [0.24 + Math.sin(t * 3.1) * 0.06, 1.16 + Math.sin(t * 2.3) * 0.07, 0.26] });
       } else tp = POSE({ lean: 0.04 + Math.sin(t * 1.1) * 0.015, hy: Math.sin(t * 0.45) * 0.35, hp: 0.1, hF: [0.03, 0.95, 0.27], hB: [0.02, 0.95, -0.27] });
       if (IN.talk) { IN.talk.t -= dt; if (IN.talk.t <= 0) IN.talk = null; }
+      // disco (ou CD) na mão: as duas mãos seguram nas bordas, na frente do peito
+      if (IN.carry && !IN.sit && !(IN.hold && IN.spot && IN.spot.act === "dig")) { tp.hF = IN.carry.fmt === "cd" ? [0.04, 1.0, 0.3] : [0.04, 0.88, 0.3]; tp.twist = 0; }
+      if (IN.anim || IN.needle) { tp = POSE({ lean: 0.2, hp: 0.36, hF: [0.5, 1.0 + Math.sin(t * 2) * 0.02, 0.08], hB: [0.1, 0.95, -0.27] }); if (IN.anim && IN.anim.t < 1.4) { const w = IN.anim.kind === "cd" ? 0.075 : 0.16; tp.hF = [0.5, 1.12, w]; tp.hB = [0.5, 1.1, -w]; } }
       IN.pose = ART.lerpPose(IN.pose, tp, Math.min(1, dt * 10));
       for (const k of ["stand", "walk", "hr", "roll"]) IN.pose[k] = tp[k];
       const sk = look.skates ? Math.PI / 2 : 0;
@@ -6463,36 +6630,12 @@ const STREET = (() => {
       // ventilador, vitrola, notas saindo das caixas
       const D = R.dyn;
       if (D.fan) D.fan.mo = M.mul(M.T(0, 2.95, 5.2), M.RY(t * 2.4));
-      if (R.id === "discos") {
-        const P = IN.play, lp = P && P.fmt === "lp";
-        D.disc.hidden = !lp;
-        D.labs.forEach((o, i) => (o.hidden = !lp || i !== P.ai));
-        D.nowP.forEach((o, i) => (o.hidden = !P || i !== P.ai));
-        IN.spin += ((lp ? 1 : 0) - IN.spin) * Math.min(1, dt * 1.6);
-        IN.ang += dt * 3.49 * IN.spin;
-        const TTm = M.T(...R.TT), dm = M.mul(TTm, M.mul(M.T(0, 0.124, 0), M.RY(-IN.ang)));
-        D.disc.mo = dm;
-        D.labs.forEach((o) => (o.mo = dm));
-        const tgt = lp ? armFor(0.145 - Math.max(0, Math.min(1, IN.prog)) * 0.08) : 0;
-        const da = tgt - IN.armA;
-        IN.armA += Math.sign(da) * Math.min(Math.abs(da), dt * 0.9);
-        const settled = lp && Math.abs(da) < 0.02;
-        IN.armY += ((settled ? -0.016 : 0.012 * (lp ? 1 : 0)) - IN.armY) * Math.min(1, dt * 6);
-        D.arm.mo = M.mul(TTm, M.mul(M.T(0.19, 0.165 + IN.armY, 0.13), M.RY(IN.armA)));
-        D.cdLed.tint = P && P.fmt === "cd" ? [1.25, 1.25, 1.25] : [0.25, 0.4, 0.3];
-        const playing = !!P && (P.fmt === "cd" || settled);
-        for (const nt of R.notes) {
-          nt.t += dt;
-          if (nt.t > 3.2) nt.t -= 3.2;
-          nt.hidden = !playing;
-          const k = nt.t / 3.2, x0 = nt.sp ? 3.21 : 0.75;
-          nt.mo = M.mul(M.T(x0 + Math.sin(k * 7 + nt.sp * 2) * 0.18, 1.15 + k * 1.3, 8.92 - k * 0.5), M.mul(M.RY(Math.sin(t * 2 + nt.sp) * 0.6), M.S(1 - k * 0.6, 1 - k * 0.6, 1 - k * 0.6)));
-        }
-      }
+      if (R.id === "discos") discosFrame(R, D, dt, t, fx, fz, px, pz, yaw);
       // câmera: atrás e acima; quando mexe em alguma coisa, chega perto por cima do ombro
       let eye, at;
       const sx = -fz, sz = fx;
       if (IN.sit) { eye = [px - fx * 1.05 + sx * 0.35, 1.62, pz - fz * 1.05 + sz * 0.35]; at = [px + fx * 1.2, 0.95, pz + fz * 1.2]; }
+      else if ((IN.anim || IN.needle) && R.TT) { const dk = (IN.anim ? IN.anim.kind : IN.needle.fmt) === "cd" ? R.CDP : R.TT; eye = [dk[0] + 0.95, 1.78, dk[2] - 0.72]; at = [dk[0] - 0.05, 0.95, dk[2] - 0.05]; }
       else if (IN.hold && IN.spot && IN.spot.face) { const f = IN.spot.face; eye = [px - fx * 1.25 + sx * 0.45, 2.05, pz - fz * 1.25 + sz * 0.45]; at = [(px + f[0]) / 2, 1.0, (pz + f[1]) / 2]; }
       else { eye = [px - fx * 2.4, 2.55, pz - fz * 2.4]; at = [px + fx * 0.9, 1.05, pz + fz * 0.9]; }
       eye[0] = Math.max(-3.75, Math.min(3.75, eye[0])); eye[2] = Math.max(0.12, Math.min(9.8, eye[2])); eye[1] = Math.min(3.0, eye[1]);
@@ -8699,8 +8842,12 @@ const STREET = (() => {
       setSkatesForward(v) { skFwd = !!v; },
       enterPlace, exitPlace, interact: inInteract, release: inRelease, shopAlbums,
       get inside() { return IN ? IN.id : null; },
-      shopPlay(ai, fmt) { if (IN) { IN.play = { ai, fmt }; IN.prog = 0; } },
-      shopProg(p) { if (IN) IN.prog = p; },
+      shopPlay(ai, fmt) { if (IN) { IN.play = { ai, fmt }; } },
+      shopProg(p, ti) { if (IN) { IN.prog = p; if (ti != null) IN.curTi = ti; } },
+      carry(ai, fmt) { if (IN) IN.carry = { ai, fmt }; },
+      get carrying() { return IN ? IN.carry : null; },
+      get needleOn() { return !!(IN && IN.needle); },
+      needleMove, needleDrop, needleLift, needleTake, needleExit,
       shopStop() { if (IN) IN.play = null; },
       acceptMission, dropMission() { if (MA) { MA = null; items.forEach((o) => (o.hidden = true)); ui.mission && ui.mission("hide"); } },
       get offering() { return (!!offer && !MA) || !!soffer; },
@@ -9058,35 +9205,39 @@ const labOf=(a,s)=>{const k='_lab'+(s||'');return a[k]||(a[k]=INSIDE.labelURL(a,
 const fmtT=(n)=>Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0');
 const durs=(a)=>a.um?a.faixas.map((f,i)=>(i+1<a.faixas.length?a.faixas[i+1].s:a.fim)-f.s):a.faixas.map(()=>0);
 const sides=(a)=>{const A=a.faixas.map((f,i)=>Object.assign({i},f));if(A.some(f=>f.lado))return[['A',A.filter(f=>f.lado!=='B')],['B',A.filter(f=>f.lado==='B')]];const h=Math.ceil(A.length/2);return[['A',A.slice(0,h)],['B',A.slice(h)]]};
-function inOpen(id){INO=id;$('say').classList.remove('on');for(const o of ['digO','insO','vitO'])$(o).classList.toggle('on',o===id)}
-function inClose(){INO=null;for(const o of ['digO','insO','vitO'])$(o).classList.remove('on');game.release();$('cv').focus()}
+function inOpen(id){INO=id;$('say').classList.remove('on');for(const o of ['digO','insO'])$(o).classList.toggle('on',o===id)}
+function inClose(){INO=null;for(const o of ['digO','insO'])$(o).classList.remove('on');game.release();$('cv').focus()}
 for(const b of document.querySelectorAll('[data-inclose]'))b.addEventListener('click',()=>{if(INO==='insO'&&INS.from==='dig'){inOpen('digO');drawDig()}else inClose()});
 ui.inside=(ev,d)=>{
   if(ev==='enter'){$('screen').classList.add('inside');$('inName').textContent=d.name;$('mmBox').classList.remove('on');clearTimeout(dmQ);clearTimeout(dmMini);$('dm').className='dm';DISC.set('');SHOP.radioWas=RADIO.active;if(RADIO.active)RADIO.pause(true);clearInterval(SHOP.tm);SHOP.tm=setInterval(shopTick,400);inSpot(null)}
   else if(ev==='spot')inSpot(d);
   else if(ev==='say'){$('sayW').textContent=d.who;$('sayL').textContent='“'+d.line+'”';const b=$('say');b.classList.remove('on');void b.offsetWidth;b.classList.add('on');clearTimeout(SHOP.sayT);SHOP.sayT=setTimeout(()=>b.classList.remove('on'),4200)}
-  else if(ev==='open'){inSpot(null);if(d.act==='dig')openDig(d.fmt,d.start);else if(d.act==='insp')openIns(d.alb,d.fmt,'wall');else if(d.act==='vit')openVit();else if(d.act==='pc'){placeOn='lan';$('lanO').classList.add('on');MG.start(d.game||'rush')}}
+  else if(ev==='open'){inSpot(null);if(d.act==='dig')openDig(d.fmt,d.start);else if(d.act==='insp')openIns(d.alb,d.fmt,'wall');else if(d.act==='pc'){placeOn='lan';$('lanO').classList.add('on');MG.start(d.game||'rush')}}
+  else if(ev==='needle'){const n=$('ndl');n.classList.toggle('on',d.on);if(d.on){inSpot(null);$('ndT').textContent=(d.ti+1)+'. '+d.t;$('ndS').textContent=(d.fmt==='cd'?'CD · faixa '+(d.ti+1)+' de '+d.n:'LADO '+(d.lado||'A')+' · '+d.a)+(d.playing?' · tocando':'');$('ndH').textContent=d.fmt==='cd'?'← → escolhe a faixa · Enter toca · L para · T tira o CD · Esc sai':'← → leva a agulha · Enter solta a agulha · L levanta · T tira o disco · Esc sai'}}
+  else if(ev==='drop')shopPlay(d.ai,d.fmt,d.ti);
+  else if(ev==='lift')shopStop();
   else if(ev==='leave'){inSpot(null);fadeDo(()=>game.exitPlace())}
-  else if(ev==='exit'){$('screen').classList.remove('inside');$('mmBox').classList.add('on');inSpot(null);$('say').classList.remove('on');clearInterval(SHOP.tm);for(const o of ['digO','insO','vitO','lanO'])$(o).classList.remove('on');INO=null;placeOn=null;MG.stop();
+  else if(ev==='exit'){$('screen').classList.remove('inside');$('mmBox').classList.add('on');inSpot(null);$('say').classList.remove('on');clearInterval(SHOP.tm);for(const o of ['digO','insO','lanO'])$(o).classList.remove('on');INO=null;placeOn=null;MG.stop();
     if(d.reset){if(SHOP.ai>=0){SHOP.ai=-1;$('np').classList.remove('on');RADIO.stopTrack()}return}
+    $('ndl').classList.remove('on');
     if(SHOP.ai>=0){SHOP.ai=-1;$('np').classList.remove('on');if(SHOP.radioWas){RADIO.stopTrack();RADIO.pause(false)}else RADIO.stop()}else if(SHOP.radioWas)RADIO.pause(false);$('cv').focus()}};
 function inSpot(d){$('inP').classList.toggle('on',!!d);if(d)$('inPL').textContent=d.label}
 // toca o disco (LP na vitrola, CD no aparelho); num álbum de vídeo único é só soltar a agulha no segundo certo
 function shopPlay(ai,fmt,ti){const a=albs()[ai];ti=ti||0;const f=a.faixas[ti];
   const base={a:a.a,once:1,onEnd:shopEnded};
   RADIO.playTrack(Object.assign(base,f,a.um?{}:{q:a.faixas.slice(ti+1).map(x=>Object.assign({a:a.a},x))}));
-  SHOP.ai=ai;SHOP.fmt=fmt;SHOP.ti=ti;game.shopPlay(ai,fmt);game.shopProg(a.um?f.s/a.fim:ti/a.faixas.length);
+  SHOP.ai=ai;SHOP.fmt=fmt;SHOP.ti=ti;game.shopPlay(ai,fmt);game.shopProg(a.um?f.s/a.fim:ti/a.faixas.length,ti);
   $('npV').className='vmini'+(fmt==='cd'?' cd':'');$('npL').src=fmt==='cd'?'':labOf(a);$('npL').style.display=fmt==='cd'?'none':'';$('np').classList.add('on');shopTick();
-  toastC(fmt==='cd'?'💿 CD no aparelho':'🎶 Agulha no disco')}
+  toastC('♪ '+(ti+1)+'. '+f.t)}
 function shopStop(){if(SHOP.ai<0)return;SHOP.ai=-1;game.shopStop();$('np').classList.remove('on');RADIO.pause(true);RADIO.stopTrack()}
-function shopEnded(){SHOP.ai=-1;game.shopStop();$('np').classList.remove('on');toastC('Fim do disco ♪');if(INO==='vitO')openVit()}
+function shopEnded(){SHOP.ai=-1;game.shopStop();$('np').classList.remove('on');toastC('Fim do disco ♪')}
+function shopSkip(d){if(SHOP.ai<0)return;const c=shopCur(),n=albs()[SHOP.ai].faixas.length,ti=Math.max(0,Math.min(n-1,(c?c.ti:SHOP.ti)+d));if(ti!==(c?c.ti:SHOP.ti))shopPlay(SHOP.ai,SHOP.fmt,ti)}
 function shopCur(){const a=albs()[SHOP.ai];if(!a)return null;const t=RADIO.time();let ti=SHOP.ti,p;
   if(a.um){if(t>0){ti=0;a.faixas.forEach((f,i)=>{if(t>=f.s-0.5)ti=i})}p=(t>0?t:a.faixas[ti].s)/a.fim}
   else{const c=RADIO.now();if(c){const k=a.faixas.findIndex(f=>f.id===c.id&&f.t===c.t);if(k>=0)ti=k}p=(ti+Math.min(1,t/240))/a.faixas.length}
   return{a,ti,p:Math.max(0,Math.min(1,p)),t}}
-function shopTick(){if(SHOP.ai<0)return;const c=shopCur();if(!c)return;const f=c.a.faixas[c.ti];game.shopProg(c.p);
-  set($('npT'),'textContent',(c.a.um||c.a.faixas.some(x=>x.lado)?'Lado '+(f.lado||'A')+' · ':'')+(c.ti+1)+'. '+f.t);set($('npA'),'textContent',c.a.a+' — '+c.a.t+(SHOP.fmt==='cd'?' (CD)':' (LP)'));$('npBar').style.width=Math.round(c.p*100)+'%';
-  for(const b of document.querySelectorAll('#vpB .iTr button'))b.classList.toggle('on',+b.dataset.i===c.ti)}
+function shopTick(){if(SHOP.ai<0)return;const c=shopCur();if(!c)return;const f=c.a.faixas[c.ti];game.shopProg(c.p,c.ti);
+  set($('npT'),'textContent',(c.a.um||c.a.faixas.some(x=>x.lado)?'Lado '+(f.lado||'A')+' · ':'')+(c.ti+1)+'. '+f.t);set($('npA'),'textContent',c.a.a+' — '+c.a.t+(SHOP.fmt==='cd'?' (CD)':' (LP)'));$('npBar').style.width=Math.round(c.p*100)+'%';}
 // caixote: folhear os discos um por um
 let DIG={fmt:'lp',list:[],c:0};
 function openDig(fmt,start){const A=albs();DIG.fmt=fmt;DIG.list=A.map((a,i)=>i).filter(i=>(A[i].fmt||['lp']).includes(fmt));DIG.c=Math.min(DIG.list.length-1,start||0);
@@ -9114,25 +9265,16 @@ function openIns(ai,fmt,from){const a=albs()[ai];Object.assign(INS,{ai,fmt,ry:-1
   const o=$('obj');o.className='obj'+(fmt==='cd'?' cdo':'');$('iFr').style.backgroundImage=`url('${urlOf(a)}')`;$('iBk').innerHTML=backHTML(a,fmt);$('iSp').textContent=(a.a+' · '+(a.t||'')).toUpperCase();
   $('iDisc').className='disc'+(fmt==='cd'?' cdd':'');$('iLab').src=fmt==='cd'?labOf(a):labOf(a,'A');
   $('iT').textContent=a.t||'';$('iA').textContent=a.a+(a.y?' · '+a.y:'')+(fmt==='cd'?' · CD':' · LP');
-  const D=durs(a);$('iTr').innerHTML=sides(a).map(([l,F])=>F.length?(fmt==='cd'?'':`<h6>LADO ${l}</h6>`)+F.map(f=>`<button data-i="${f.i}">▶ ${f.i+1}. ${f.t}<span>${D[f.i]?fmtT(D[f.i]):''}</span></button>`).join(''):'').join('');
-  for(const b of document.querySelectorAll('#iTr button'))b.addEventListener('click',()=>{shopPlay(INS.ai,INS.fmt,+b.dataset.i);inClose()});
-  $('bOut').textContent=fmt==='cd'?'💿 Abrir a caixinha (T)':'💿 Tirar o disco (T)';$('bPlay').textContent=fmt==='cd'?'▶ Pôr no aparelho (Enter)':'▶ Pôr na vitrola (Enter)';
+  const D=durs(a);$('iTr').innerHTML=sides(a).map(([l,F])=>F.length?(fmt==='cd'?'':`<h6>LADO ${l}</h6>`)+F.map(f=>`<div class="ti">${f.i+1}. ${f.t}<span>${D[f.i]?fmtT(D[f.i]):''}</span></div>`).join(''):'').join('');
+  $('bOut').textContent=fmt==='cd'?'💿 Abrir a caixinha (T)':'💿 Tirar o disco (T)';$('bPlay').textContent=fmt==='cd'?'🤲 Pegar esse CD (Enter)':'🤲 Pegar esse disco (Enter)';
   inOpen('insO');insApply();sfxFlip()}
 function insApply(){$('obj').style.transform=`rotateX(${INS.rx}deg) rotateY(${INS.ry}deg)`;$('iDisc').classList.toggle('out',INS.out)}
 function insFlip(){INS.ry+=180;insApply();sfxFlip()}
-$('bFlip').addEventListener('click',insFlip);$('bOut').addEventListener('click',()=>{INS.out=!INS.out;insApply()});$('bPlay').addEventListener('click',()=>{shopPlay(INS.ai,INS.fmt,0);inClose()});
+$('bFlip').addEventListener('click',insFlip);$('bOut').addEventListener('click',()=>{INS.out=!INS.out;insApply()});function insTake(){game.carry(INS.ai,INS.fmt);inClose();toastC(INS.fmt==='cd'?'CD na mão: leva até o aparelho, no fundo da loja':'Disco na mão: leva até a vitrola, no fundo da loja')}
+$('bPlay').addEventListener('click',insTake);
 {let dr=null;const st=$('stage');st.addEventListener('pointerdown',e=>{dr={x:e.clientX,y:e.clientY};$('obj').classList.add('drag');st.setPointerCapture(e.pointerId)});
   st.addEventListener('pointermove',e=>{if(!dr)return;INS.ry+=(e.clientX-dr.x)*0.5;INS.rx=Math.max(-40,Math.min(40,INS.rx-(e.clientY-dr.y)*0.35));dr={x:e.clientX,y:e.clientY};insApply()});
   const up=()=>{dr=null;$('obj').classList.remove('drag')};st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up)}
-// vitrola: o que tá tocando, pular faixa (levar a agulha), parar e trocar de disco
-function openVit(){const A=albs(),a=A[SHOP.ai];let h;
-  if(a){const D=durs(a),c=shopCur();h=`<div class="vpNow"><img src="${urlOf(a)}" alt=""><div><b>${a.t}</b>${a.a} · ${SHOP.fmt==='cd'?'CD':'LP'}</div></div><div class="iTr">`+sides(a).map(([l,F])=>F.length?(SHOP.fmt==='cd'?'':`<h6>LADO ${l}</h6>`)+F.map(f=>`<button data-i="${f.i}" class="${c&&c.ti===f.i?'on':''}">${f.i+1}. ${f.t}<span>${D[f.i]?fmtT(D[f.i]):''}</span></button>`).join(''):'').join('')+`</div>
-    <p style="opacity:.75">Clique numa faixa pra ${SHOP.fmt==='cd'?'pular pra ela':'levar a agulha até ela'}.</p><div class="iBtns"><button class="oBtn pk" id="vStop">⏏ ${SHOP.fmt==='cd'?'Parar o CD':'Levantar a agulha'}</button><button class="oBtn" id="vSwap">💿 Trocar de disco</button></div>`}
-  else h=`<p>A vitrola tá livre. Escolhe um disco nos caixotes ou na parede, ou um CD na estante.</p><div class="iBtns"><button class="oBtn ok" id="vLP">Escolher um LP</button><button class="oBtn" id="vCD">Escolher um CD</button></div>`;
-  $('vpB').innerHTML=h;inOpen('vitO');
-  for(const b of document.querySelectorAll('#vpB .iTr button'))b.addEventListener('click',()=>{shopPlay(SHOP.ai,SHOP.fmt,+b.dataset.i);openVit()});
-  const on=(id,f)=>{const el=$(id);if(el)el.addEventListener('click',f)};
-  on('vStop',()=>{shopStop();openVit()});on('vSwap',()=>openDig(SHOP.fmt||'lp',0));on('vLP',()=>openDig('lp',0));on('vCD',()=>openDig('cd',0))}
 // minigames da lan: Skate Rush, Cobrinha 2001 e Invasores (recorde salvo no navegador)
 const MG=(()=>{const cv=$('mg'),g=cv.getContext('2d'),W=480,H=270;let cur=null,raf=0,last=0;const K={};
   const best=(n)=>+(localStorage.getItem('plaza-mg-'+n)||0),setBest=(n,v)=>{if(v>best(n))try{localStorage.setItem('plaza-mg-'+n,v)}catch(e){}};
@@ -9246,11 +9388,13 @@ addEventListener('keydown',e=>{const k=e.key.toLowerCase();
   if(INO&&!placeOn){e.preventDefault();if(e.repeat&&!['arrowleft','arrowright','arrowup','arrowdown','a','d','w','s'].includes(k))return;
     if(k==='escape'){if(INO==='insO'&&INS.from==='dig'){inOpen('digO');drawDig()}else inClose();return}
     if(INO==='digO'){if(k==='arrowleft'||k==='a')digMove(-1);else if(k==='arrowright'||k==='d')digMove(1);else if(k==='enter'||k===' '||k==='e')digPick();return}
-    if(INO==='insO'){if(k==='arrowleft'||k==='a')INS.ry-=22;else if(k==='arrowright'||k==='d')INS.ry+=22;else if(k==='arrowup'||k==='w')INS.rx=Math.min(40,INS.rx+10);else if(k==='arrowdown'||k==='s')INS.rx=Math.max(-40,INS.rx-10);else if(k==='v'||k===' ')return insFlip();else if(k==='t')INS.out=!INS.out;else if(k==='enter'){shopPlay(INS.ai,INS.fmt,0);inClose();return}insApply();return}
+    if(INO==='insO'){if(k==='arrowleft'||k==='a')INS.ry-=22;else if(k==='arrowright'||k==='d')INS.ry+=22;else if(k==='arrowup'||k==='w')INS.rx=Math.min(40,INS.rx+10);else if(k==='arrowdown'||k==='s')INS.rx=Math.max(-40,INS.rx-10);else if(k==='v'||k===' ')return insFlip();else if(k==='t')INS.out=!INS.out;else if(k==='enter'){insTake();return}insApply();return}
     return}
   if(placeOn){if(k==='escape'){e.preventDefault();placeClose();return}if(placeOn==='lan'){if([' ','arrowup','arrowdown','arrowleft','arrowright','enter'].includes(k))e.preventDefault();MG.key(k,true)}return}
   if(game.cutOn){if(k==='enter'||k==='escape'||k===' '){e.preventDefault();game.cutSkip()}return}
-  if(game.inside&&!paused){if(k==='enter'||k==='e'||k===' '){e.preventDefault();if(!e.repeat)game.interact();return}if(k==='f'||k==='r'||k==='c')return}
+  if(game.inside&&!paused&&game.needleOn){e.preventDefault();if(e.repeat&&!['arrowleft','arrowright','a','d'].includes(k))return;
+    if(k==='arrowleft'||k==='a')game.needleMove(-1);else if(k==='arrowright'||k==='d')game.needleMove(1);else if(k==='enter'||k===' '||k==='e')game.needleDrop();else if(k==='l'||k==='x')game.needleLift();else if(k==='t')game.needleTake();else if(k==='escape')game.needleExit();return}
+  if(game.inside&&!paused){if(k==='enter'||k==='e'||k===' '){e.preventDefault();if(!e.repeat)game.interact();return}if(k==='n'){shopSkip(1);return}if(k==='b'){shopSkip(-1);return}if(k==='f'||k==='r'||k==='c')return}
   if(dlgOn){if(k==='enter'){e.preventDefault();game.acceptMission();dlg(false);return}if(k==='escape'){e.preventDefault();dlg(false);return}}
   // fita passando: controles do videocassete
   if(game.playing){e.preventDefault();if(k===' ')game.playPause()?$('plSt').textContent='❚❚ PAUSE':$('plSt').textContent='▶ PLAY';else if(k==='arrowleft'||k==='a')game.playSeek(-2);else if(k==='arrowright'||k==='d')game.playSeek(2);else if(k==='r'){game.playRestart();$('pl').classList.remove('ended')}else if(k==='b')downloadVideo();else if(k==='escape'||k==='p')game.stopPlay();return}
