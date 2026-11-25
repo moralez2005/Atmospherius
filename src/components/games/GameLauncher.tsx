@@ -12,7 +12,6 @@ import TamagochiGame from "./TamagochiGame";
 import BubbleGame from "./BubbleGame";
 import OutrunGame from "./OutrunGame";
 import SnakeGame from "./SnakeGame";
-import PlazaGame from "./PlazaGame";
 
 // O que cada jogo recebe: voltar para a lista e registrar o placar (recorde no navegador)
 export type GameProps = { onBack: () => void; best?: number; onScore: (score: number) => boolean };
@@ -24,7 +23,6 @@ const RECORD: Partial<Record<GameId, { label: (n: number) => string; lower?: boo
   bolhas: { label: (n) => `${n} pontos` },
   outrun: { label: (n) => `${n} m` },
   cobrinha: { label: (n) => `${n} pontos` },
-  plaza: { label: (n) => `${n.toLocaleString("pt-BR")} pontos` },
 };
 
 export default function GameLauncher({ themeId, onTheme }: { themeId: ThemeId; onTheme: (id: ThemeId) => void }) {
@@ -58,7 +56,6 @@ export default function GameLauncher({ themeId, onTheme }: { themeId: ThemeId; o
     if (game === "bolhas") return <BubbleGame {...props} />;
     if (game === "outrun") return <OutrunGame {...props} />;
     if (game === "cobrinha") return <SnakeGame {...props} />;
-    if (game === "plaza") return <PlazaGame {...props} />;
   }
 
   return (

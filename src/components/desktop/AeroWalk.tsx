@@ -8,7 +8,7 @@ import { sfx } from "@/lib/uiSound";
 import "./aero-walk.css";
 
 // Frutiger Aero: passear pelo parque com um boneco de vidro e conversar com os outros
-// (mesma ideia do carro no Synthwave, do Pensador no Vaporwave e do Plaza no Soft Club).
+// (mesma ideia do carro no Synthwave e do Pensador no Vaporwave).
 // O parque é o mesmo do papel de parede (lib/aeroPark.ts), em modo passeio.
 
 let open = false;

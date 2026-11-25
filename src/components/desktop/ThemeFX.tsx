@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState, useSyncExternalStore, type CSSProperties,
 import type { ThemeId } from "@/config/themes";
 import AeroScene from "./AeroScene";
 import { AeroWalk, AeroWalkHotspot } from "./AeroWalk";
-import { PlazaGame, PlazaHotspot } from "./PlazaDesk";
 import SoftClubScene from "./SoftClubScene";
 import { CarHotspot, Cockpit } from "./SynthDrive";
 import VaporScene from "./VaporScene";
@@ -111,8 +110,6 @@ export default function ThemeFX({ themeId, playing = false }: { themeId: ThemeId
       {themeId === "frutiger" && <AeroWalkHotspot />}
       {themeId === "frutiger" && <AeroWalk />}
       {themeId === "softclub" && <SoftClubScene playing={playing} />}
-      {themeId === "softclub" && <PlazaHotspot />}
-      {themeId === "softclub" && <PlazaGame />}
       {themeId === "synthwave" && <CarHotspot />}
       {themeId === "synthwave" && <Cockpit playing={playing} />}
       {themeId === "vaporwave" && <VhsOsd playing={playing} />}

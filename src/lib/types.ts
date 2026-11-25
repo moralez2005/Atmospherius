@@ -1,1 +1,1 @@
-export type GameId = "memoria" | "truco" | "cobrinha" | "outrun" | "bolhas" | "tamagochi" | "plaza";
+export type GameId = "memoria" | "truco" | "cobrinha" | "outrun" | "bolhas" | "tamagochi";
